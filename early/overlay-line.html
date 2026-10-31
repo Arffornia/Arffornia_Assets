@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Early window overlay (assembly line)</title>
+<link rel="stylesheet" href="../ui/fonts/fonts.css">
+<style>
+  /* Drawn by our provider ON TOP of the 640x240 assembly-line sprite (at 107,48), every 20 Hz tick.
+     Transparent where the line shows, feathered into the night background at the edges. Launcher
+     palette for the type and the bar (spec 007 round 3). */
+  html, body { margin: 0; width: 854px; height: 480px; overflow: hidden; background: transparent; font-family: Montserrat, sans-serif; }
+  .mask { position: absolute; inset: 0; background: radial-gradient(340px 150px at 427px 168px, rgba(11,17,22,0) 0%, rgba(11,17,22,0) 80%, #0b1116 100%); }
+  .glow { position: absolute; inset: 0; background: radial-gradient(60% 40% at 50% 100%, rgba(38, 29, 49, .9), rgba(38, 29, 49, 0)); }
+  .brand { position: absolute; left: 0; right: 0; top: 318px; display: flex; justify-content: center; align-items: center; gap: 14px; color: #fff; }
+  .brand img { width: 34px; height: 34px; }
+  .brand b { font: 700 32px 'Chakra Petch', sans-serif; letter-spacing: .5px; }
+  .sub { position: absolute; left: 0; right: 0; top: 366px; text-align: center; font: 500 13px Montserrat, sans-serif; color: #b3a7c2; letter-spacing: .3px; }
+  .track { position: absolute; left: 227px; width: 400px; top: 400px; height: 4px; border-radius: 2px; background: #3d2f4e; }
+  .legal { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font: 500 9.5px Montserrat, sans-serif; color: rgba(179, 167, 194, .7); letter-spacing: .4px; }
+</style></head>
+<body><div class="mask"></div><div class="glow"></div>
+<div class="brand"><img src="../brand/crafting-table.png" alt=""><b>Arffornia</b></div>
+<div class="sub">Starting the factory</div><div class="track"></div>
+<div class="legal">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</div>
+</body></html>

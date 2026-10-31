@@ -6,7 +6,8 @@
  * draw frame (tick % frames) of a sprite sheet, draw the progress bar. Every tick is read back and
  * written as a PNG, so the result can be encoded at 20 fps and watched as the player would see it.
  *
- * usage: java -cp <lwjgl jars> EarlySpriteProbe.java <backdrop.png> <sheet.png> <cols> <frames> <cell> <outDir> [ticks] [static]
+ * usage: java -cp <lwjgl jars> EarlySpriteProbe.java <backdrop.png> <sheet.png> <cols> <frames> <cell> <outDir> [ticks] [static|anim]
+ *        [slotX slotY slotW slotH overlay.png]   (round 3: the assembly-line band drawn 1:1, then an overlay on top)
  * Run headless: xvfb-run -a java ... (see early-probe.sh). Nothing here ships.
  */
 import static org.lwjgl.glfw.GLFW.*;
@@ -28,6 +29,8 @@ public class EarlySpriteProbe {
         int cols = Integer.parseInt(a[2]), frames = Integer.parseInt(a[3]), cell = Integer.parseInt(a[4]);
         int ticks = a.length > 6 ? Integer.parseInt(a[6]) : 80;
         boolean still = a.length > 7 && a[7].equals("static");
+        float sx = 299, sy = 56, sw = 256, shh = 256; String overlay = null;
+        if (a.length > 12) { sx = Float.parseFloat(a[8]); sy = Float.parseFloat(a[9]); sw = Float.parseFloat(a[10]); shh = Float.parseFloat(a[11]); overlay = a[12]; }
         if (!glfwInit()) throw new IllegalStateException("glfwInit failed");
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -50,6 +53,7 @@ public class EarlySpriteProbe {
         long u0 = System.nanoTime();
         int[] bd = new int[2], sh = new int[2];
         int texBackdrop = load(backdrop, bd), texSheet = load(sheet, sh);
+        int[] ov = new int[2]; int texOverlay = overlay != null ? load(overlay, ov) : 0;
         double uploadMs = (System.nanoTime() - u0) / 1e6;
         double vramMb = (bd[0] * bd[1] + sh[0] * sh[1]) * 4 / 1048576.0;
         System.out.printf("textures: backdrop %dx%d, sheet %dx%d, %.1f MB RGBA, load+upload %.1f ms%n", bd[0], bd[1], sh[0], sh[1], vramMb, uploadMs);
@@ -70,7 +74,7 @@ public class EarlySpriteProbe {
         glUniform2f(glGetUniformLocation(prog, "size"), W, H);
         int uTextured = glGetUniformLocation(prog, "textured");
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // keep the framebuffer opaque
         STBImageWrite.stbi_flip_vertically_on_write(true);
         ByteBuffer px = BufferUtils.createByteBuffer(W * H * 4);
         long drawNs = 0;
@@ -85,10 +89,12 @@ public class EarlySpriteProbe {
             // 2. sprite frame: one quad, UVs into the sheet (this is all a GIF-like animation costs)
             int f = still ? 0 : t % frames, cx = f % cols, cy = f / cols;
             float su = 1f / cols, sv = 1f / rows;
-            draw(texSheet, uTextured, 299, 56, 256, 256, cx * su, cy * sv, (cx + 1) * su, (cy + 1) * sv, 1, 1, 1, 1);
+            draw(texSheet, uTextured, sx, sy, sw, shh, cx * su, cy * sv, (cx + 1) * su, (cy + 1) * sv, 1, 1, 1, 1);
+            if (texOverlay != 0) draw(texOverlay, uTextured, 0, 0, W, H, 0, 0, 1, 1, 1, 1, 1, 1);
             // 3. progress bar (the provider owns it; here it fills over the run)
             float p = (t + 1) / (float) ticks;
-            draw(0, uTextured, 227, 392, 400 * p, 3, 0, 0, 0, 0, 0.878f, 0.439f, 0.235f, 1f);
+            if (texOverlay != 0) draw(0, uTextured, 227, 400, 400 * p, 4, 0, 0, 0, 0, 1f, 0.451f, 0f, 1f); // launcher orange #ff7300
+            else draw(0, uTextured, 227, 392, 400 * p, 3, 0, 0, 0, 0, 0.878f, 0.439f, 0.235f, 1f);
             glFinish();
             drawNs += System.nanoTime() - d0;
             glReadPixels(0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, px);
