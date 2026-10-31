@@ -1,0 +1,33 @@
+# Model lint: the CI gate for physical plausibility (docs/MODEL-RULES.md).
+# Every model and concept is checked; a model with status "mock" is reported but does not gate.
+# Free: GitHub-hosted runner, public repo.
+name: lint
+on:
+  pull_request:
+    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'render/bbmodel.js']
+  push:
+    branches: [main]
+    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'render/bbmodel.js']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci && npx playwright install --with-deps chromium
+      - name: Lint unit tests
+        run: npm test
+      - name: Lint every model (gate)
+        id: lint
+        run: npm run lint
+      - name: Report in the job summary
+        if: always()
+        run: cat out/lint/README.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: lint-${{ github.sha }}, path: out/lint/, retention-days: 30 }

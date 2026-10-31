@@ -7,7 +7,12 @@
     "extract": "node tools/extract-mc-screens.mjs",
     "render": "node render/build.mjs",
     "render:changed": "node render/build.mjs --changed",
-    "check": "node render/build.mjs --check"
+    "check": "node render/build.mjs --check",
+    "lint": "node tools/lint/lint.mjs --snap",
+    "lint:fast": "node tools/lint/lint.mjs",
+    "test": "node --test tools/lint/lint.test.mjs",
+    "concepts": "node tools/da/build.mjs",
+    "concepts:render": "node tools/da/render.mjs"
   },
   "dependencies": {
     "three": "0.180.0"

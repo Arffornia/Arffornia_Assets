@@ -1,0 +1,20 @@
+{
+  "$comment": "Thresholds for tools/lint. Reasons for each rule: docs/MODEL-RULES.md. Changing a threshold is a DA decision: say why in the PR.",
+  "embedPx": 1,
+  "zfightMinPx2": 1,
+  "comMarginBlocks": 0.05,
+  "sweepHz": 80,
+  "detachHz": 20,
+  "portMinPx": 6,
+  "portCentreTolPx": 1,
+  "texelsPerBlock": 32,
+  "texelErr": 0.25,
+  "texelWarn": 0.1,
+  "texelMinFacePx": 2,
+  "budgets": [
+    { "name": "small (up to 2x2)", "maxArea": 4, "tris": 3000, "elements": 260, "animatedBones": 6, "texturePx": 1048576 },
+    { "name": "medium (up to 3x3)", "maxArea": 9, "tris": 6000, "elements": 520, "animatedBones": 10, "texturePx": 4194304 },
+    { "name": "large (up to 5x5)", "maxArea": 25, "tris": 10000, "elements": 860, "animatedBones": 14, "texturePx": 4194304 },
+    { "name": "huge (bigger)", "maxArea": 1e9, "tris": 16000, "elements": 1400, "animatedBones": 20, "texturePx": 16777216 }
+  ]
+}
