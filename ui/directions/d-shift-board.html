@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shift board · title screen direction D</title>
+<link rel="stylesheet" href="../base.css">
+<style>
+  /* Direction D: Shift board. No panels and no buttons-as-boxes: the menu is type. Archivo's width
+     axis does the work (expanded for actions, condensed for status), like the boards in a control room.
+     The factory stays the hero on the right; the line's machines are listed as a live strip at the bottom. */
+  :root { --ink: #f1f5f7; --dim: rgba(241, 245, 247, .38); --muted: #9cb0ba; --hot: #e0703c; --teal: #2fd1c1; }
+  .scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 10, 13, .94) 0%, rgba(6, 10, 13, .8) 32%, rgba(6, 10, 13, 0) 58%), linear-gradient(0deg, rgba(6, 10, 13, .92) 0%, rgba(6, 10, 13, .6) 14%, rgba(6, 10, 13, 0) 26%); }
+  .word { position: absolute; left: 120px; top: 92px; font: 700 34px 'Chakra Petch', sans-serif; color: var(--ink); letter-spacing: .5px; }
+  .word span { color: var(--muted); font: 400 22px Archivo, sans-serif; font-stretch: 75%; margin-left: 18px; letter-spacing: 0; }
+  nav { position: absolute; left: 120px; top: 260px; display: grid; gap: 4px; }
+  nav a { position: relative; display: block; font: 700 64px/1.1 Archivo, sans-serif; font-stretch: 112%; color: var(--dim); text-decoration: none; letter-spacing: -1px;
+    clip-path: inset(0 100% 0 0); animation: wipe .6s cubic-bezier(.6, 0, .2, 1) forwards; animation-delay: calc(var(--i) * 90ms + 250ms); }
+  @keyframes wipe { to { clip-path: inset(0 -10% 0 0); } }
+  nav a.on { color: var(--ink); }
+  nav a.on::before { content: ''; position: absolute; left: -44px; top: 16px; width: 10px; height: 42px; background: var(--hot); }
+  nav a .sub { display: block; font: 500 24px/1.3 Archivo, sans-serif; font-stretch: 75%; color: var(--muted); letter-spacing: .2px; margin: 4px 0 18px; }
+  .strip { position: absolute; left: 120px; right: 120px; bottom: 92px; display: grid; grid-template-columns: repeat(6, 1fr); border-top: 1px solid rgba(241, 245, 247, .18); }
+  .strip div { padding-top: 16px; font: 600 22px Archivo, sans-serif; font-stretch: 75%; color: var(--ink); }
+  .strip div small { display: flex; align-items: center; gap: 8px; font: 400 18px Archivo, sans-serif; font-stretch: 75%; color: var(--muted); margin-top: 6px; }
+  .strip i { width: 8px; height: 8px; background: var(--teal); border-radius: 50%; }
+  .strip i.hot { background: var(--hot); }
+  .strip div.cur { border-top: 3px solid var(--hot); margin-top: -2px; padding-top: 15px; }
+  .strip div.wait { color: var(--dim); }
+  .load { position: absolute; left: 120px; top: 270px; width: 720px; color: var(--ink); }
+  .load h2 { font: 700 76px/1.05 Archivo, sans-serif; font-stretch: 125%; margin: 0; letter-spacing: -1px; }
+  .load p { font: 500 26px Archivo, sans-serif; font-stretch: 75%; color: var(--muted); margin: 14px 0 0; }
+  .load .bar { margin-top: 40px; height: 4px; background: rgba(241, 245, 247, .16); }
+  .load .bar b { display: block; height: 100%; width: calc(var(--pp, .65) * 100%); background: var(--hot); }
+  .foot { position: absolute; bottom: 34px; font: 400 16px Archivo, sans-serif; font-stretch: 85%; color: rgba(241, 245, 247, .5); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <img id="bg" alt="">
+  <div class="scrim"></div>
+  <div class="word">Arffornia<span>Season 2, milestone 3 of 8</span></div>
+  <nav class="only-title">
+    <a class="on" href="#" style="--i:0">Play<span class="sub">Join Arffornia, 12 players online</span></a>
+    <a href="#" style="--i:1">Singleplayer</a>
+    <a href="#" style="--i:2">Mods</a>
+    <a href="#" style="--i:3">Options</a>
+    <a href="#" style="--i:4">Quit</a>
+  </nav>
+  <div class="load only-loading"><h2 id="lh">Loading mods</h2><p id="lp"></p><div class="bar"><b></b></div></div>
+  <div class="strip" id="strip"></div>
+  <div class="foot" style="left:120px">Arffornia 5.2, NeoForge 21.1.172</div>
+  <div class="foot" style="right:120px">Copyright Mojang AB. Do not distribute!</div>
+</div>
+<script src="../runtime.js"></script>
+<script>
+  const M = [['Miner', 'Drilling'], ['Smelter', 'Smelting'], ['Constructor', 'Pressing'], ['Foundry', 'Melting'], ['Assembler', 'Assembling'], ['Space Elevator', 'Loading capsule']];
+  const strip = document.getElementById('strip');
+  if (document.documentElement.dataset.mode === 'title') {
+    strip.innerHTML = M.map(([n, s], i) => `<div>${n}<small><i class="${i === 1 || i === 3 ? 'hot' : ''}"></i>${s}</small></div>`).join('');
+  } else {
+    // loading: the six machines are the six loading phases, powered on in order
+    const P = ['Discover mods', 'Load mods', 'Build registries', 'Load resources', 'Bake models', 'Open title screen'];
+    window.onFrame = (t) => { const p = Math.min(1, window.UI.progress * Math.min(1, 0.4 + t / 6)); const cur = Math.min(5, Math.floor(p * 6));
+      strip.innerHTML = M.map(([n], i) => `<div class="${i === cur ? 'cur' : i > cur ? 'wait' : ''}">${n}<small><i class="${i === cur ? 'hot' : ''}" style="${i > cur ? 'background:rgba(241,245,247,.25)' : ''}"></i>${P[i]}</small></div>`).join('');
+      document.getElementById('lh').textContent = P[cur]; document.getElementById('lp').textContent = `${Math.round(p * 331)} of 331 mods, step ${cur + 1} of 6`;
+      document.documentElement.style.setProperty('--pp', p); };
+    window.onFrame(0);
+  }
+</script>
+</body>
+</html>

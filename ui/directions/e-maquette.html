@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model studio · title screen direction E</title>
+<link rel="stylesheet" href="../base.css">
+<style>
+  /* Direction E: Model studio. Daylight instead of night: the factory is an architect's scale model
+     on a white table and the menu is the spec sheet pinned beside it. Ink-blue type, one orange marker,
+     keycaps that teach the keyboard shortcuts. */
+  :root { --paper: #fbfcfc; --ink: #1c2a35; --muted: #5b6b76; --rule: #dde4e8; --hot: #e0703c; --key: #eef2f4; }
+  .sheet { position: absolute; left: 110px; top: 120px; width: 560px; padding: 54px 56px 46px; background: var(--paper); color: var(--ink); font-family: 'Instrument Sans', sans-serif;
+    box-shadow: 0 1px 0 rgba(28, 42, 53, .05), 0 30px 60px -20px rgba(28, 42, 53, .28); border-radius: 4px; animation: pin .9s cubic-bezier(.2, .8, .2, 1) .15s both; }
+  @keyframes pin { from { opacity: 0; transform: translateY(24px) rotate(-1.2deg); box-shadow: 0 0 0 rgba(0, 0, 0, 0); } }
+  .sheet::before { content: ''; position: absolute; top: -9px; left: 50%; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--hot); box-shadow: 0 3px 6px rgba(120, 50, 10, .35); }
+  h1 { font: 700 64px/1 'Chakra Petch', sans-serif; margin: 0; letter-spacing: -.5px; }
+  .lede { font-size: 22px; line-height: 1.45; color: var(--muted); margin: 16px 0 34px; max-width: 30ch; }
+  ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  li { display: flex; align-items: center; justify-content: space-between; padding: 19px 4px; border-bottom: 1px solid var(--rule); font: 500 26px 'Instrument Sans', sans-serif; }
+  li small { display: block; font: 400 18px 'Instrument Sans', sans-serif; color: var(--muted); margin-top: 3px; }
+  li.on { color: var(--ink); position: relative; }
+  li.on::before { content: ''; position: absolute; left: -56px; top: 50%; width: 30px; height: 3px; margin-top: -1px; background: var(--hot); }
+  li.on span:first-child { font-weight: 600; }
+  kbd { min-width: 38px; height: 34px; padding: 0 10px; box-sizing: border-box; display: inline-grid; place-items: center; border-radius: 6px; background: var(--key); border: 1px solid #cfd8dd; border-bottom-width: 3px; font: 500 16px 'Instrument Sans', sans-serif; color: var(--muted); }
+  .meta { margin-top: 28px; display: flex; justify-content: space-between; font-size: 17px; color: var(--muted); }
+  .meta b { color: var(--ink); font-weight: 600; }
+  .prog { margin-top: 8px; }
+  .prog .row { display: flex; justify-content: space-between; font-size: 22px; padding: 18px 0 14px; border-top: 1px solid var(--rule); }
+  .prog .row span:last-child { color: var(--muted); }
+  .prog .track { height: 6px; background: var(--key); border-radius: 3px; }
+  .prog .track b { display: block; height: 100%; width: calc(var(--pp, .65) * 100%); background: var(--ink); border-radius: 3px; position: relative; }
+  .prog .track b::after { content: ''; position: absolute; right: -6px; top: -4px; width: 14px; height: 14px; border-radius: 50%; background: var(--hot); }
+  .prog ol { margin: 26px 0 0; padding: 0 0 0 26px; color: var(--muted); font-size: 19px; line-height: 1.9; }
+  .prog ol li { display: list-item; border: 0; padding: 0; font: inherit; }
+  .prog ol li.now { color: var(--ink); font-weight: 600; }
+  .tag { position: absolute; padding: 8px 14px; background: var(--paper); color: var(--ink); font: 500 18px 'Instrument Sans', sans-serif; border-radius: 3px; box-shadow: 0 8px 20px -8px rgba(28, 42, 53, .35); }
+  .tag::before { content: ''; position: absolute; left: 50%; bottom: -26px; width: 1px; height: 26px; background: var(--ink); }
+  .foot { position: absolute; bottom: 30px; font: 400 16px 'Instrument Sans', sans-serif; color: rgba(28, 42, 53, .6); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <img id="bg" alt="">
+  <div class="sheet">
+    <h1>Arffornia</h1>
+    <p class="lede">A modded server where you build one factory together, from the first miner to a space elevator.</p>
+    <ul class="only-title">
+      <li class="on"><span>Play on Arffornia<small>12 players online now</small></span><kbd>Enter</kbd></li>
+      <li><span>Singleplayer</span><kbd>S</kbd></li>
+      <li><span>Mods</span><kbd>M</kbd></li>
+      <li><span>Options</span><kbd>O</kbd></li>
+      <li><span>Quit game</span><kbd>Esc</kbd></li>
+    </ul>
+    <div class="prog only-loading"><div class="row"><span>Loading mods</span><span id="ct"></span></div><div class="track"><b></b></div><ol id="ph"></ol></div>
+    <div class="meta only-title"><span>Milestone <b>3 of 8</b></span><span>Version <b>5.2</b></span></div>
+  </div>
+  <div class="tag only-title" id="tag">Space Elevator, milestone 3</div>
+  <div class="foot" style="left:110px">Arffornia 5.2, NeoForge 21.1.172</div>
+  <div class="foot" style="right:40px">Copyright Mojang AB. Do not distribute!</div>
+</div>
+<script src="../runtime.js"></script>
+<script>
+  if (document.documentElement.dataset.mode === 'loading') {
+    const P = ['Discover mods', 'Load mods', 'Build registries', 'Bake models', 'Open title screen'];
+    window.onFrame = (t) => { const p = Math.min(1, window.UI.progress * Math.min(1, 0.4 + t / 6)); const cur = Math.min(4, Math.floor(p * 5));
+      document.getElementById('ct').textContent = `${Math.round(p * 331)} of 331`; document.documentElement.style.setProperty('--pp', p);
+      document.getElementById('ph').innerHTML = P.map((n, i) => `<li class="${i === cur ? 'now' : ''}">${n}${i < cur ? ', done' : ''}</li>`).join(''); };
+    window.onFrame(0);
+  }
+  // pin the tag above the space elevator: position comes from the render job (?tag=x,y)
+  const tg = new URLSearchParams(location.search).get('tag');
+  if (tg) { const [x, y] = tg.split(',').map(Number); const el = document.getElementById('tag'); el.style.left = `${x}px`; el.style.top = `${y}px`; el.style.transform = 'translate(-50%, -100%) translateY(-26px)'; }
+  else document.getElementById('tag').style.display = 'none';
+</script>
+</body>
+</html>

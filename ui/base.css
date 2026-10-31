@@ -1,0 +1,6 @@
+@import url(fonts/fonts.css);
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+.stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform: translate(-50%, -50%) scale(var(--scale, 1)); transform-origin: 50% 50%; overflow: hidden; }
+#bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+[data-mode="title"] .only-loading, [data-mode="loading"] .only-title { display: none !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

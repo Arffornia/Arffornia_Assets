@@ -1,0 +1,67 @@
+/* Review gallery: Agent Kit v2 language (Chakra Petch + Archivo, orange/teal on cool slate). Screens are the content; the page stays quiet around them. */
+:root {
+  --bg: #f3f5f7; --panel: #ffffff; --sunk: #e8ecf0; --line: #d5dce2;
+  --ink: #172026; --muted: #55636d; --orange: #c25a24; --orange-ink: #a8461a; --teal: #0e7a72;
+  --band: #121a20; --band-ink: #eef2f5; --band-muted: #b9c5cd;
+  --f-display: "Chakra Petch", "Archivo", system-ui, sans-serif;
+  --f-body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1317; --panel: #151c22; --sunk: #10161b; --line: #2a333c; --ink: #e6ecef; --muted: #9aa9b3;
+  --orange: #f0894a; --orange-ink: #f59a62; --teal: #3cc2b5; --band: #0a0d12; --band-ink: #eef2f5; --band-muted: #b9c5cd; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0e1317; --panel: #151c22; --sunk: #10161b; --line: #2a333c; --ink: #e6ecef; --muted: #9aa9b3;
+  --orange: #f0894a; --orange-ink: #f59a62; --teal: #3cc2b5; --band: #0a0d12; --band-ink: #eef2f5; --band-muted: #b9c5cd; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 48px 72px; display: flex; flex-direction: column; gap: 72px }
+h1, h2 { text-wrap: balance; margin: 0 }
+p { margin: 0 }
+code { font-size: .9em }
+a { color: var(--orange-ink); text-underline-offset: 3px }
+a:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; border-radius: 4px }
+.eyebrow { font-family: var(--f-display); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px }
+.eyebrow::before { content: ""; width: 10px; height: 10px; background: var(--orange); flex: none }
+.hero { display: flex; flex-direction: column; gap: 16px; max-width: 860px }
+.hero h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(36px, 6vw, 64px); line-height: 1.02 }
+.hero p { color: var(--muted); font-size: 18px; max-width: 64ch }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px }
+.jump a { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px }
+.jump a b { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--sunk); font-family: var(--f-display); font-size: 14px; color: var(--orange-ink) }
+.jump a:hover b { background: var(--orange); color: var(--panel) }
+.dir { display: flex; flex-direction: column; gap: 18px; scroll-margin-top: 24px }
+.head { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 18px; align-items: start; max-width: 900px }
+.key { font-family: var(--f-display); font-weight: 700; font-size: 56px; line-height: .9; color: var(--orange) }
+.head h2 { font-stretch: 112%; font-weight: 750; font-size: 30px; line-height: 1.15 }
+.head p { margin-top: 6px; max-width: 70ch }
+.head .bold { color: var(--muted); font-size: 15px }
+figure { margin: 0; min-width: 0 }
+figure img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); background: var(--sunk) }
+figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px }
+.band { background: var(--band); color: var(--band-ink); border-radius: 14px }
+.band .inner { padding: 32px; display: flex; flex-direction: column; gap: 16px }
+.band h2, section > h2 { font-stretch: 112%; font-weight: 750; font-size: 30px; line-height: 1.15 }
+.band p { color: var(--band-muted); max-width: 72ch }
+.band .eyebrow, .band figcaption { color: var(--band-muted) }
+.band figure img { border-color: #2a333c }
+.band .note { font-size: 15px }
+section > .eyebrow + h2 { margin-top: 10px }
+.lede { color: var(--muted); max-width: 72ch; margin-top: 10px !important }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px }
+.grid figcaption b { color: var(--ink); font-weight: 650; margin-right: 6px }
+.decide dl { margin: 18px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px }
+.decide dl div { border-top: 1px solid var(--line); padding: 14px 0; min-width: 0 }
+.decide dt { font-weight: 700 }
+.decide dd { margin: 4px 0 0; color: var(--muted) }
+.decide dd b { color: var(--ink) }
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px }
+@media (max-width: 760px) {
+  .pair, .decide dl { grid-template-columns: 1fr }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .head { grid-template-columns: 44px minmax(0, 1fr) }
+  .key { font-size: 40px }
+  .band .inner { padding: 22px }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }

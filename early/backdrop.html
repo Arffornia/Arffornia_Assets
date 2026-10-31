@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Early window backdrop</title>
+<link rel="stylesheet" href="../ui/fonts/fonts.css">
+<style>
+  /* The early window (854x480, before Minecraft starts): one baked image. The provider draws the
+     animated press sprite in the empty slot and the progress bar + mod text on top, at 20 Hz. */
+  html, body { margin: 0; width: 854px; height: 480px; overflow: hidden; }
+  body { background: radial-gradient(120% 90% at 50% 38%, #16232b 0%, #0d161c 55%, #080d11 100%); font-family: Archivo, sans-serif; color: #eef3f5; }
+  .floor { position: absolute; inset: 0; background-image: linear-gradient(30deg, transparent 49.4%, rgba(47, 209, 193, .07) 50%, transparent 50.6%), linear-gradient(-30deg, transparent 49.4%, rgba(47, 209, 193, .07) 50%, transparent 50.6%); background-size: 48px 28px; -webkit-mask: radial-gradient(60% 50% at 50% 46%, #000 0%, transparent 100%); }
+  .brand { position: absolute; left: 0; right: 0; top: 318px; display: flex; justify-content: center; align-items: center; gap: 14px; }
+  .brand img { width: 38px; height: 38px; image-rendering: auto; }
+  .brand b { font: 700 34px 'Chakra Petch', sans-serif; letter-spacing: .5px; }
+  .track { position: absolute; left: 227px; width: 400px; top: 392px; height: 3px; background: rgba(238, 243, 245, .12); }
+  body.static .slot { position: absolute; left: 299px; top: 56px; width: 256px; height: 256px; background: url(../out/early/press-still.png) center / contain no-repeat; }
+</style></head>
+<body><div class="floor"></div><div class="slot"></div><div class="brand"><img src="../brand/crafting-table.png" alt=""><b>Arffornia</b></div><div class="track"></div>
+<script>if (location.search.includes('static')) document.body.classList.add('static');</script></body></html>
