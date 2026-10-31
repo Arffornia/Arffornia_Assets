@@ -1,0 +1,8 @@
+{
+ "name": "early-press",
+ "note": "The Constructor alone, for the early (pre-Minecraft) loading window: the Arffornia take on Forge 1.7.10's hammer and anvil.",
+ "center": [1, 1],
+ "ground": false,
+ "models": [{ "model": "constructor", "at": [0, 0] }],
+ "cameras": { "strip": { "target": [1, 1.25, 1], "height": 3.6 } }
+}

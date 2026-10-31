@@ -1,0 +1,18 @@
+{
+  "name": "arffornia-assets",
+  "private": true,
+  "type": "module",
+  "description": "Arffornia 3D models (Blockbench) and the pipeline that re-exports every derived asset.",
+  "scripts": {
+    "extract": "node tools/extract-mc-screens.mjs",
+    "render": "node render/build.mjs",
+    "render:changed": "node render/build.mjs --changed",
+    "check": "node render/build.mjs --check"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

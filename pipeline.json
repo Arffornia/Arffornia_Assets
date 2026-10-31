@@ -1,0 +1,282 @@
+{
+  "$comment": "What render/build.mjs produces. Every model in models/ gets the 'model' outputs; scenes list their own. Paths are relative to out/. 'publish' maps outputs to consumer repos (copied by render/publish.mjs into a checkout, never pushed by CI).",
+  "model": [
+    {
+      "id": "icon",
+      "kind": "still",
+      "size": [
+        1024,
+        1024
+      ],
+      "transparent": true,
+      "file": "models/{id}/{id}.icon.png"
+    },
+    {
+      "id": "card",
+      "kind": "still",
+      "size": [
+        1200,
+        900
+      ],
+      "look": "night",
+      "file": "models/{id}/{id}.night.png"
+    },
+    {
+      "id": "turntable",
+      "kind": "clip",
+      "size": [
+        720,
+        720
+      ],
+      "look": "night",
+      "seconds": 4,
+      "fps": 24,
+      "turntable": true,
+      "formats": [
+        "mp4",
+        "webp"
+      ],
+      "file": "models/{id}/{id}.turntable"
+    },
+    {
+      "id": "sheet",
+      "kind": "sheet",
+      "cell": 192,
+      "fps": 20,
+      "transparent": true,
+      "file": "models/{id}/{id}.sheet.png"
+    },
+    {
+      "id": "svg",
+      "kind": "svg",
+      "cell": 160,
+      "fps": 12,
+      "file": "models/{id}/{id}.anim.svg"
+    },
+    {
+      "id": "glb",
+      "kind": "glb",
+      "file": "models/{id}/{id}.glb"
+    }
+  ],
+  "scenes": {
+    "factory-line": [
+      {
+        "id": "title-night",
+        "kind": "still",
+        "camera": "title",
+        "size": [
+          1920,
+          1080
+        ],
+        "look": "night",
+        "t": 3.2,
+        "file": "scenes/factory-line/title.night.png"
+      },
+      {
+        "id": "title-maquette",
+        "kind": "still",
+        "camera": "title",
+        "size": [
+          1920,
+          1080
+        ],
+        "look": "maquette",
+        "t": 3.2,
+        "file": "scenes/factory-line/title.maquette.png"
+      },
+      {
+        "id": "loop",
+        "kind": "clip",
+        "camera": "title",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "night",
+        "seconds": 6,
+        "fps": 30,
+        "formats": [
+          "mp4"
+        ],
+        "file": "scenes/factory-line/title.loop"
+      },
+      {
+        "id": "early-window",
+        "kind": "sheet",
+        "camera": "loading",
+        "size": [
+          427,
+          240
+        ],
+        "look": "night",
+        "seconds": 3,
+        "fps": 20,
+        "file": "scenes/factory-line/early-window.sheet.png"
+      },
+      {
+        "id": "ui-still-title-night",
+        "kind": "still",
+        "camera": "title",
+        "size": [
+          1920,
+          1080
+        ],
+        "look": "night",
+        "t": 3.2,
+        "file": "scenes/factory-line/ui/title-night.png"
+      },
+      {
+        "id": "ui-frames-title-night",
+        "kind": "frames",
+        "camera": "title",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "night",
+        "seconds": 4,
+        "fps": 24,
+        "start": 1,
+        "file": "scenes/factory-line/ui/title-night.frames"
+      },
+      {
+        "id": "ui-still-menu-left-night",
+        "kind": "still",
+        "camera": "menu-left",
+        "size": [
+          1920,
+          1080
+        ],
+        "look": "night",
+        "t": 3.2,
+        "file": "scenes/factory-line/ui/menu-left-night.png"
+      },
+      {
+        "id": "ui-frames-menu-left-night",
+        "kind": "frames",
+        "camera": "menu-left",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "night",
+        "seconds": 4,
+        "fps": 24,
+        "start": 1,
+        "file": "scenes/factory-line/ui/menu-left-night.frames"
+      },
+      {
+        "id": "ui-still-menu-right-night",
+        "kind": "still",
+        "camera": "menu-right",
+        "size": [
+          1920,
+          1080
+        ],
+        "look": "night",
+        "t": 3.2,
+        "file": "scenes/factory-line/ui/menu-right-night.png"
+      },
+      {
+        "id": "ui-frames-menu-right-night",
+        "kind": "frames",
+        "camera": "menu-right",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "night",
+        "seconds": 4,
+        "fps": 24,
+        "start": 1,
+        "file": "scenes/factory-line/ui/menu-right-night.frames"
+      },
+      {
+        "id": "ui-still-menu-right-maquette",
+        "kind": "still",
+        "camera": "menu-right",
+        "size": [
+          1920,
+          1080
+        ],
+        "look": "maquette",
+        "t": 3.2,
+        "file": "scenes/factory-line/ui/menu-right-maquette.png"
+      },
+      {
+        "id": "ui-frames-menu-right-maquette",
+        "kind": "frames",
+        "camera": "menu-right",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "maquette",
+        "seconds": 4,
+        "fps": 24,
+        "start": 1,
+        "file": "scenes/factory-line/ui/menu-right-maquette.frames"
+      },
+      {
+        "id": "fancymenu-bg",
+        "kind": "still",
+        "camera": "fancymenu",
+        "size": [
+          1920,
+          1080
+        ],
+        "look": "night",
+        "t": 2,
+        "file": "scenes/factory-line/loading-bg.night.png"
+      }
+    ],
+    "early-press": [
+      {
+        "id": "fml-strip",
+        "kind": "sheet",
+        "camera": "strip",
+        "size": [
+          256,
+          128
+        ],
+        "transparent": true,
+        "seconds": 1.6667,
+        "fps": 16.8,
+        "cols": 1,
+        "file": "early/fml-strip.png"
+      },
+      {
+        "id": "loop-20fps",
+        "kind": "sheet",
+        "camera": "strip",
+        "size": [
+          256,
+          256
+        ],
+        "transparent": true,
+        "seconds": 1.6667,
+        "fps": 20,
+        "file": "early/press-20fps.sheet.png"
+      }
+    ]
+  },
+  "publish": {
+    "Arffornia/.github": {
+      "models/space-elevator/space-elevator.anim.svg": "profile/assets/space-elevator.svg"
+    },
+    "Arffornia/docs": {
+      "models/{id}/{id}.icon.png": "docs/assets/machines/{id}.png"
+    },
+    "Arffornia/Arffornia_Launcher_V.5.2": {
+      "scenes/factory-line/title.loop.mp4": "src/assets/backgrounds/factory-line.mp4"
+    },
+    "Arffornia/Arffornia_Mods": {
+      "models/{id}/{id}.glb": "(not used: the mod will consume the .bbmodel through the GeckoLib exporter, see docs/SPEC.md)"
+    },
+    "Arffornia/Arffornia_Provisioning": {
+      "scenes/factory-line/loading-bg.night.png": "config/launcher/storage/config/fancymenu/assets/background.png",
+      "brand/wordmark.png": "config/launcher/storage/config/fancymenu/assets/logo.png"
+    }
+  }
+}
