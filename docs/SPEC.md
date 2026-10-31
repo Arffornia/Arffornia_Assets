@@ -85,7 +85,8 @@ pipeline.json ────┘          │                  renderFrame(t): pure
 
 ## Decisions for Brian (defaults in bold)
 
-- **D1 Repo**: name **`Arffornia/arffornia-assets`** (or `Arffornia/assets`); visibility **public**
+- **D1 Repo** (decided 2026-10-31): **`Arffornia/Arffornia_Assets`**, public. Brian created it and kept the
+  org naming convention `Arffornia/Arffornia_<Name>`. The options were: visibility **public**
   (free Actions minutes, free LFS-less storage, art is meant to be seen; the mocks contain nothing
   private) / private.
 - **D2 In-game format**: **GeckoLib** (animated block entities, arbitrary rotations, multiblock

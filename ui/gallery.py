@@ -70,9 +70,9 @@ def main(out):
 <div><dt>UI direction</dt><dd>A, B, C, D, E, or a mix (for example D's type with A's tiles). <b>Default: D Shift board</b>, with A Honeycomb as the alternative.</dd></div>
 <div><dt>Early window</dt><dd>Press loop at 20 fps, or a static branded image. <b>Default: the press loop.</b></dd></div>
 <div><dt>Web menus (Paladium-style)</dt><dd>Native screens with TesseraUI templates for menus and machine GUIs; a browser (MCEF/WebGUI, about 150 MB per player) only for content pages such as shop or news, if ever. <b>Default: native.</b></dd></div>
-<div><dt>Assets repository</dt><dd><code>Arffornia/arffornia-assets</code>, public. <b>Default: create it as public.</b></dd></div>
+<div><dt>Assets repository</dt><dd><code>Arffornia/Arffornia_Assets</code>, public (created by Brian, 2026-10-31).</dd></div>
 </dl></section>''')
-    h.append('<footer>Rendered 31 October 2026 by the arffornia-assets pipeline (three.js on a software GPU, deterministic). Screens are mock-ups: server status, players and news are example data.</footer></div>')
+    h.append('<footer>Rendered 31 October 2026 by the Arffornia_Assets pipeline (three.js on a software GPU, deterministic). Screens are mock-ups: server status, players and news are example data.</footer></div>')
     open(out, 'w').write('\n'.join(h))
     print(out, round(os.path.getsize(out) / 1e6, 2), 'MB')
 
