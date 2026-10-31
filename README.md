@@ -12,6 +12,11 @@ npm run render:changed    # only what a model/scene change made stale
 npm run check             # CI gate: fails if out/ is stale
 node ui/render.mjs        # title/loading UI direction mock-ups -> out/ui/
 sh early/run.sh           # early-window probes (static vs 20 fps animation) -> out/early/
+npm test                  # model lint unit tests
+npm run lint              # model lint (CI gate): plausibility, block grid, ports, sweeps, texels, budget -> out/lint/
+npm run concepts          # rebuild the DA research concepts (concepts/) from tools/da/
+npm run concepts:render   # their hero renders and silhouettes -> out/da/
+node early/line.mjs       # round 3 early window: the assembly line as a 20 fps sheet -> out/early/
 ```
 
 Open a model live: serve the repo root (`npx serve .`) and visit
@@ -19,6 +24,9 @@ Open a model live: serve the repo root (`npx serve .`) and visit
 
 - [Spec and decisions](docs/SPEC.md)
 - [Moodboard: the DA library](moodboard/README.md)
+- [Model rules (what the lint enforces and why)](docs/MODEL-RULES.md)
+- [Art direction research: 5 machines × 3 directions + the synthesis](docs/DA.md)
+- Concepts: `concepts/<direction>/<machine>/` (generated, lint-gated, not shipped)
 - Models: `models/` (the six tier 0–3 machine mocks from the loading-screen previews: Miner,
   Smelter, Constructor, Foundry, Assembler, Space Elevator)
 
