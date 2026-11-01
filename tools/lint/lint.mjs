@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Model lint: physical plausibility, block grid, ports, animation sweeps, texel density, budget.
+// Model lint: physical plausibility, block grid, ports, animation sweeps, mechanics (cantilevers,
+// belts, gears, joints), texel density, budget.
 //
 //   node tools/lint/lint.mjs                 every model in models/ and concepts/
 //   node tools/lint/lint.mjs smelter         only the models whose id contains "smelter"
@@ -32,7 +33,7 @@ export function discover(root = ROOT) {
 }
 
 // colour per check in the snapshot: geometry problems only (texel and budget are not about a place)
-export const COLOURS = { overlap: '#ff2bd6', sweep: '#e5193b', floating: '#ff8a00', footprint: '#f2c200', ports: '#00a3ff', zfight: '#8a3cff' };
+export const COLOURS = { overlap: '#ff2bd6', sweep: '#e5193b', floating: '#ff8a00', footprint: '#f2c200', ports: '#00a3ff', zfight: '#8a3cff', cantilever: '#00c48c', belt: '#7a5cff', kinematics: '#ff5a1f' };
 const highlights = (r) => { const m = {}; for (const f of r.findings) if (f.level === 'error' && COLOURS[f.check]) for (const p of f.parts) m[p] ||= COLOURS[f.check]; return m; };
 
 const ICON = { error: 'ERROR', warn: 'warn', info: 'info' };

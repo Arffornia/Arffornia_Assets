@@ -118,7 +118,7 @@ function catmull(p0, p1, p2, p3, t) {
   const t2 = t * t, t3 = t2 * t;
   return 0.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
 }
-function sampleChannel(kfs, t) {
+export function sampleChannel(kfs, t) {
   if (!kfs.length) return null;
   const v = (k) => [num(k.data_points[0].x), num(k.data_points[0].y), num(k.data_points[0].z)];
   if (t <= kfs[0].time) return v(kfs[0]);
