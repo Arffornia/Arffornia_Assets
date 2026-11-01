@@ -206,6 +206,18 @@ export function lintModel(json, rules, { id = json.name } = {}) {
     add('texel', 'error', `${bad} of ${dens.length} face axes are off ${target} px/block by more than ${rules.texelErr * 100}% (median ${med.toFixed(1)}). Worst: ${worst.map(([nm, r]) => `${nm} ${(r * target).toFixed(1)}`).join(', ')}.`, worst.map(([nm]) => nm));
   } else if (warn) add('texel', 'warn', `${warn} of ${dens.length} face axes are off ${target} px/block by more than ${rules.texelWarn * 100}%.`);
 
+  // 8b. deploy (P6, Brian 2026-11-01): every multiblock machine from tier 2 unfolds, Oritech-style:
+  // a `packaged` pose, a `deploy` animation (whose seams the kinematics check verifies), then idle/working
+  const cells = fp ? fp[0] * fp[1] : 0;
+  if (cells > 1 && meta.kind !== 'scenery') {
+    if (typeof meta.tier !== 'number') add('deploy', 'warn', `arffornia.tier is not set: the deploy rule (multiblocks from tier ${rules.deployFromTier}) is not checked.`);
+    else if (meta.tier >= rules.deployFromTier) {
+      const has = (re) => anims.some((x) => re.test(x.name.split('.').pop()));
+      if (!has(/^(packaged|folded|crated)/i)) add('deploy', 'error', `tier ${meta.tier} multiblock with no \`packaged\` animation: multiblocks from tier ${rules.deployFromTier} start packaged and deploy (P6).`);
+      if (!has(/^(deploy|setup|assemble|unfold)/i)) add('deploy', 'error', `tier ${meta.tier} multiblock with no \`deploy\` animation: multiblocks from tier ${rules.deployFromTier} unfold when they form (P6).`);
+    }
+  }
+
   // 9. budget
   const facesDrawn = sk.elements.reduce((s, x) => s + Object.values(x.el.faces || {}).filter((f) => f && f.texture !== null && f.texture !== undefined).length, 0);
   const area = fp ? fp[0] * fp[1] : 1;

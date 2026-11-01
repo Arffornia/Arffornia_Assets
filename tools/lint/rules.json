@@ -29,6 +29,7 @@
   "scaleTol": 0.05,
   "maxJumpPx": 2,
   "loopSeamPx": 0.5,
+  "deployFromTier": 2,
   "budgets": [
     { "name": "small (up to 2x2)", "maxArea": 4, "tris": 3000, "elements": 260, "animatedBones": 6, "texturePx": 1048576 },
     { "name": "medium (up to 3x3)", "maxArea": 9, "tris": 6000, "elements": 520, "animatedBones": 10, "texturePx": 4194304 },
