@@ -1,6 +1,8 @@
 # Concept-to-model pipeline (machines)
 
-Status: **proposed**, needs Brian's decisions P1–P7 (at the end). Owner: agents. Date: 2026-11-01.
+Status: **approved** by Brian on 2026-11-01, with his answers to P2–P7 (at the end); P1 is open. Owner: agents.
+Images are made by Brian's [image-generation-lab](https://github.com/TheGostsniperfr/image-generation-lab)
+(ComfyUI in Docker behind Caddy, his workflows and Go client); this repo only composes the prompts and files the results.
 Research behind it: `_work/veille/concept-to-model.html` (tech-watch card, sources with dates).
 
 ## Why
@@ -62,10 +64,10 @@ gate decides. **Human**: Brian decides.
 |---|---|---|---|---|---|
 | 0 | **DA brief**: style, palette, tier accents, glow rule, scale cue, negative prompt | Human + agent | `tools/concepts/brief.json` | the brief, versioned | Brian edits it after each round |
 | 1 | **Prompt pack**: machine × mark × design variation × palette × view | Automated | `generate.py prompts` | `out/concepts/<round>/prompts.{jsonl,md}`, readable and model-agnostic | none |
-| 2 | **Generate** on Brian's GPU: N stable seeds per prompt, resumable, with a manifest | Automated | `generate.py comfyui` (Qwen-Image-2.1, or his own workflow) or `generate.py diffusers` | PNGs + `manifest.jsonl` | none |
+| 2 | **Generate** on Brian's GPU: N stable seeds per prompt, resumable, with a manifest. First a 12-image smelter test, then the round (P2) | Automated | `generate.py lab`: the image-generation-lab client and workflow (`qwen21-q4` by default) | PNGs + `manifest.jsonl` | Brian looks at the 12 before the 112 |
 | 3 | **Pre-sort** (optional): a vision model scores each image against a checklist (one machine, mechanism legible, footprint ratio, no text, scale figure) and the review page is sorted by score | AI-assisted | Claude on the PNGs (later: a headless session) | `scores.json` | not a gate, it only orders |
 | 4 | **Pick**: one image per machine and mark, plus notes on what to change in the brief | Human | `review.py` page (rows = marks, so the tier evolution reads left to right) | `concepts/picks/<round>.json` | Brian. Loop to 0 until he likes a set |
-| 5 | **Turnaround** of the picked image: front, side and top at the same scale | AI-assisted | Qwen-Image-2.1 edit mode (same model, image input), or `--view sheet`; optional image-to-3D (TRELLIS.2 / Hunyuan3D 2.1) as a proportion mesh | `concepts/<machine>/<mark>/sheet.png`, optional `ref.obj` | human check: same machine in every view |
+| 5 | **Turnaround** of the picked image: front, side and top at the same scale | AI-assisted | `--view sheet`, or an image-edit workflow added to the lab later; optional image-to-3D (TRELLIS.2 / Hunyuan3D 2.1) as a proportion mesh, reference only (P5) | `concepts/<machine>/<mark>/sheet.png`, optional `ref.obj` | human check: same machine in every view |
 | 6 | **Translation sheet**: the part list (each mechanism to cubes / n-gon compounds / texture), joints with axes and limits, ports on block cells, footprint, budget class, and what is painted rather than modelled | AI-assisted | agent draft, from the sheet and the rules below | `concepts/<machine>/<mark>/translation.md` | Brian approves |
 | 7 | **Blockout**: primary shapes first, at 32 px/block, the concept and sheet as Blockbench reference images, the optional mesh as an underlay | AI-assisted | the kit (`tools/da/kit.mjs`) for generated models; Blockbench + MCP plugin to edit in the app | `.bbmodel` | lint after every pass |
 | 8 | **Lint**: plausibility, grid, ports, sweeps, **cantilevers, belts, gears, joint kinematics** | Automated | `npm run lint` (CI gate) | `out/lint/<id>.{md,json,png}` | errors block the PR |
@@ -77,7 +79,7 @@ gate decides. **Human**: Brian decides.
 | 14 | **Approve** | Human | the PR with the before/after | merge | Brian |
 
 What exists today:
-- Steps 1, 2 and 4: `tools/concepts/` (this PR).
+- Steps 1, 2 and 4: `tools/concepts/` (this PR), on top of the lab.
 - Step 8: `tools/lint/`, with the mechanics checks in PR #2.
 - Step 11: `render/`.
 
@@ -85,7 +87,8 @@ Still to build:
 - step 3 (the scorer);
 - step 9 (the projection);
 - step 13 (the exporter and the harness);
-- the Blockbench MCP setup for step 7.
+- the Blockbench MCP setup for step 7;
+- an image-edit workflow in the lab for step 5 (a PR there, when the turnaround starts).
 
 ## Translation rules (concept to Minecraft)
 
@@ -119,23 +122,31 @@ These rules keep the look of the concept without the "rotated vanilla blocks" fa
    colours, and noise as texture. When a part needs more than 4 boxes to approximate a curve, paint
    the curve.
 
-## Tier evolution rules
+## Tier evolution rules (P4: per machine, and coherent)
 
-- **One chassis per machine.** The marks of a machine keep its footprint and silhouette (Satisfactory
-  Miner Mk1–3).
-- **The power module changes**, visibly:
-  - Mark 1: a coal firebox or a steam engine;
-  - Mark 2: electric (motor, transformer, cables);
-  - Mark 3: plasma (a field ring, a torch).
-  The power module is a swappable sub-assembly, so the models share most of their parts.
-- **Each mark adds visible features**, like Satisfactory's belts: more automation, guards, lights,
-  glass.
-- **The accent colour follows the tier band** of spec 003 (copper/orange 0–2, steel 3–4, yellow 5–6,
-  teal 7, violet 8, white/cyan 9). The panel colour stays the house colour, so machines stay one
-  family.
-- **Exceptions are allowed and labelled** (`exception` in `machines.json`):
-  - the assembler's Mk3 becomes a sealed micro-assembly pod;
-  - the refinery has no Mk3.
+Brian (2026-11-01): we can test both ideas, but no machine is forced into a pattern that improves
+per tier. It has to be coherent: a particle accelerator has no primitive tier that looks like a
+particle accelerator.
+
+So each machine declares its **lineage** in `machines.json`, with a reason:
+
+| Mode | What it means | Machines in round 1 |
+|---|---|---|
+| `evolves` | Every later mark keeps the Mk1 chassis: footprint, silhouette and the parts listed in `keeps`. The power module and details change (Satisfactory's Miner Mk1–3, its belts Mk1–6). | smelter (coal → induction → plasma arc, always a crucible furnace), constructor (steam hammer → hydraulic press → servo cell), refinery (fired heater → catalytic cracker; it stops at Mk2, there is no believable plasma refinery) |
+| `branches` | Some later mark is a new machine, because the process itself changes. The new mark says why. | assembler (Mk3 is a sealed micro-assembly pod), foundry (Mk3 holds the melt in a field, with no furnace walls to share) |
+| `single` | One mark only: the machine has no believable earlier tier. | none in round 1; the particle accelerator when it comes |
+
+How it reaches the images:
+- A shared mark's prompt says what it keeps from Mk1, and it reuses Mk1's seeds, so a variation's
+  marks start from the same composition. A new mark gets its own seeds and is prompted as a new design.
+- `generate.py check` (and every run) rejects a lineage that contradicts its marks: `evolves` with a
+  new design, `branches` with none, `single` with several marks, a shared mark without `keeps`.
+- The review page shows the mode per machine and "same chassis" / "new design" per mark.
+- Round 1 therefore tests both ideas at once (P4 "tests sur les 2"). The picks tell which reads better.
+
+**Colour (P7, decided).** Trims and status lights follow the tier band of spec 003 (copper/orange 0–2,
+steel 3–4, yellow 5–6, teal 7, violet 8, white/cyan 9). Panels stay the house colour at every tier, so
+machines stay one family.
 
 ## Footprints
 
@@ -177,30 +188,19 @@ These rules keep the look of the concept without the "rotated vanilla blocks" fa
   2004). If tunnelling shows up, the cheap fix is adaptive sampling (halve the step while any part
   moves more than its thickness).
 
-## Decisions for Brian (defaults in bold)
+## Decisions (Brian, 2026-11-01)
 
-- **P1 Image model:**
-  - **Qwen-Image-2.1 on your machine through ComfyUI** (licence: Qwen Research, non-commercial;
-    fine for internal references);
-  - Qwen-Image-2512 (Apache-2.0);
-  - a hosted model.
-- **P2 Round size:**
-  - **5 machines × their marks (14) × 4 variations × 2 seeds = 112 images, about 1 h on one GPU**;
-  - 3 variations × 1 seed (42 images) for a first look.
-- **P3 Machines:**
-  - **the spec 002/003 set: smelter, constructor, assembler, foundry, refinery** (gameplay-aligned,
-    with non-square footprints);
-  - round 1's set (crusher and accelerator instead of constructor and foundry).
-- **P4 Tier evolution:**
-  - **one machine evolves Mk1 coal/steam → Mk2 electric → Mk3 plasma, with labelled exceptions**;
-  - one new machine per tier only.
-- **P5 Image-to-3D:**
-  - **reference only (an underlay mesh and turnaround help), never the model**;
-  - skip it;
-  - an R&D spike on cube fitting.
-- **P6 Deploy animations:**
-  - **every multiblock from tier 2 gets `packaged` → `deploy` → `idle` / `working`, lint-gated**;
-  - flagship machines only.
-- **P7 Tier colour:**
-  - **the accent (trims, lights) follows the spec 003 band, panels stay the house colour**;
-  - the panel colour changes per tier.
+- **P1 Image model: open.** Brian answered "Other" with no text, and pointed to his
+  image-generation-lab. The pipeline now uses the lab with its `qwen21-q4` workflow (Qwen-Image-2.1,
+  community Q4 quantisation, fits a 16 GB GPU). `--workflow` picks any other lab workflow
+  (`qwen21-bf16`, `qwen2512-fp8`, `zimage`, `flux2` once added). To ask: which model he means, or
+  whether "the lab, whatever it runs" is the answer.
+- **P2 Round size: a 12-image smelter test first, then 112 images (about 1 h of GPU).** The test is
+  `--only 'smelter/*' --seeds 1`; the round reuses those 12.
+- **P3 Machines: smelter, constructor, assembler, foundry, refinery.**
+- **P4 Tier evolution: per machine, coherent, both ideas tested.** See the lineage table above.
+- **P5 Image-to-3D: reference only.** A proportion underlay or turnaround, never the model.
+- **P6 Deploy animations: every multiblock from tier 2, lint-checked.** The `deploy` check in
+  `tools/lint` (rule in `docs/MODEL-RULES.md`) requires `packaged` and `deploy`; `kinematics` checks
+  their seams.
+- **P7 Tier colour: trims and lights follow the tier colour; panels stay the house colour.**

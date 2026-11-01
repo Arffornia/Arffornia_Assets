@@ -1,16 +1,40 @@
 {
-  "$comment": "Five production machines from Arffornia/docs specs 002 and 003, each with its marks (the same machine at a later tier) and four design variations. A prompt = machine.core + mark.power + variation + footprint + brief. Footprints are W x D x H in blocks (spec 002, before decision DA2 on scale). 'exception' marks break the shared-chassis rule on purpose, as Satisfactory sometimes does.",
-  "version": 1,
+  "$comment": "Five production machines from Arffornia/docs specs 002 and 003 (P3), each with its marks (the machine at a later tier) and four design variations. A prompt = machine.core + mark.text + lineage + variation + footprint + brief. Footprints are W x D x H in blocks (spec 002, before decision DA2 on scale). Lineage (P4, Brian: 'pas forcé sur toutes les machines d'avoir un pattern qui s'améliore, il faut que ce soit cohérent'): each machine says how its tiers relate. mode 'evolves': every later mark keeps the Mk1 chassis (chassis 'shared', with 'keeps'). mode 'branches': some later mark is a new design (chassis 'new', with 'why'). mode 'single': one mark only, for machines with no believable primitive tier (a particle accelerator). Shared marks reuse the Mk1 seeds, so a variation's marks start from the same composition.",
+  "version": 2,
   "machines": {
     "smelter": {
       "title": "Smelter",
-      "footprint": [2, 2, 3],
+      "footprint": [
+        2,
+        2,
+        3
+      ],
       "aspect": "4:3",
       "core": "A compact ore smelter: crushed ore goes in at the top, glowing ingots come out of a pour spout into an ingot mould line at the front. Square footprint, squat and heavy, about three metres tall.",
+      "lineage": {
+        "mode": "evolves",
+        "why": "All three are crucible furnaces; only the heat source changes, like Satisfactory's Miner Mk1-3."
+      },
       "marks": {
-        "mk1": { "tier": 0, "power": "coal", "text": "Mark 1, coal-fired: a cast-iron firebox door at the bottom with flames visible through the vents, a small coal hopper and a short riveted chimney with a spark guard." },
-        "mk2": { "tier": 3, "power": "electric", "text": "Mark 2, electric induction: the firebox is replaced by thick copper induction coils wrapped around the crucible, a cable conduit and a transformer box bolted to the side; no chimney, a fume extraction duct instead." },
-        "mk3": { "tier": 8, "power": "plasma", "text": "Mark 3, plasma arc: a plasma torch head on an articulated mount points down into the crucible, with magnetic field rings around the hearth and heavy shielding plates." }
+        "mk1": {
+          "tier": 0,
+          "power": "coal",
+          "text": "Mark 1, coal-fired: a cast-iron firebox door at the bottom with flames visible through the vents, a small coal hopper and a short riveted chimney with a spark guard."
+        },
+        "mk2": {
+          "tier": 3,
+          "power": "electric",
+          "text": "Mark 2, electric induction: the firebox is replaced by thick copper induction coils wrapped around the crucible, a cable conduit and a transformer box bolted to the side; no chimney, a fume extraction duct instead.",
+          "chassis": "shared",
+          "keeps": "the square steel frame, the crucible, the pour spout and the ingot mould line"
+        },
+        "mk3": {
+          "tier": 8,
+          "power": "plasma",
+          "text": "Mark 3, plasma arc: a plasma torch head on an articulated mount points down into the crucible, with magnetic field rings around the hearth and heavy shielding plates.",
+          "chassis": "shared",
+          "keeps": "the square steel frame, the crucible, the pour spout and the ingot mould line"
+        }
       },
       "variations": {
         "v1": "Round crucible furnace inside a square steel frame, ore fed by a small bucket elevator on the side.",
@@ -21,13 +45,37 @@
     },
     "constructor": {
       "title": "Constructor",
-      "footprint": [2, 3, 3],
+      "footprint": [
+        2,
+        3,
+        3
+      ],
       "aspect": "16:9",
       "core": "A forming machine that turns one ingot into one part (plates, rods, screws): a press station on a long narrow base, raw ingots enter on a short conveyor at one end and finished parts drop into a chute at the other end. Rectangular footprint, longer than wide.",
+      "lineage": {
+        "mode": "evolves",
+        "why": "A press stays a press: the frame and the flow stay, the drive goes steam, hydraulic, servo."
+      },
       "marks": {
-        "mk1": { "tier": 0, "power": "steam", "text": "Mark 1, steam: a heavy drop hammer driven by a large flywheel and a flat drive belt from a small coal-fired steam engine with a piston and crank at the back." },
-        "mk2": { "tier": 3, "power": "electric", "text": "Mark 2, electric hydraulic: the steam engine is replaced by an electric motor driving a hydraulic pump, the hammer becomes a hydraulic press with two guide columns and visible hoses." },
-        "mk3": { "tier": 7, "power": "electric", "text": "Mark 3, servo forming cell: a multi-stage servo press with a transfer arm moving parts between three dies, a glass guard panel, cable chains." }
+        "mk1": {
+          "tier": 0,
+          "power": "steam",
+          "text": "Mark 1, steam: a heavy drop hammer driven by a large flywheel and a flat drive belt from a small coal-fired steam engine with a piston and crank at the back."
+        },
+        "mk2": {
+          "tier": 3,
+          "power": "electric",
+          "text": "Mark 2, electric hydraulic: the steam engine is replaced by an electric motor driving a hydraulic pump, the hammer becomes a hydraulic press with two guide columns and visible hoses.",
+          "chassis": "shared",
+          "keeps": "the long narrow base, the input conveyor, the output chute and the press frame"
+        },
+        "mk3": {
+          "tier": 7,
+          "power": "electric",
+          "text": "Mark 3, servo forming cell: a multi-stage servo press with a transfer arm moving parts between three dies, a glass guard panel, cable chains.",
+          "chassis": "shared",
+          "keeps": "the long narrow base, the input conveyor, the output chute and the press frame"
+        }
       },
       "variations": {
         "v1": "C-frame press with the ram visible from the side, open front.",
@@ -38,13 +86,37 @@
     },
     "assembler": {
       "title": "Assembler",
-      "footprint": [3, 5, 3],
+      "footprint": [
+        3,
+        5,
+        3
+      ],
       "aspect": "16:9",
       "core": "An assembly station that combines two input parts into one component: two input conveyors on the long sides, a work table in the middle, the finished component leaves on a conveyor at the end. Long rectangular footprint, three by five blocks.",
+      "lineage": {
+        "mode": "branches",
+        "why": "Mechanical arms become robots on the same table; micro-assembly needs a sealed room, so Mk3 is a new machine."
+      },
       "marks": {
-        "mk1": { "tier": 2, "power": "steam", "text": "Mark 1, mechanical: line shafts and cams drive two simple pick-and-place arms on real hinges, a rotating index table, everything powered by a belt from an overhead shaft." },
-        "mk2": { "tier": 5, "power": "electric", "text": "Mark 2, electric robotics: two six-axis industrial robot arms on pedestals with cable dress packs, a welding torch on one arm, a gripper on the other, a safety fence around the cell." },
-        "mk3": { "tier": 8, "power": "plasma", "text": "Mark 3, exception, sealed micro-assembly: the open cell becomes a sealed cleanroom pod with small arms behind a glass window, an airlock on the input side and violet energy conduits; the silhouette changes." }
+        "mk1": {
+          "tier": 2,
+          "power": "steam",
+          "text": "Mark 1, mechanical: line shafts and cams drive two simple pick-and-place arms on real hinges, a rotating index table, everything powered by a belt from an overhead shaft."
+        },
+        "mk2": {
+          "tier": 5,
+          "power": "electric",
+          "text": "Mark 2, electric robotics: two six-axis industrial robot arms on pedestals with cable dress packs, a welding torch on one arm, a gripper on the other, a safety fence around the cell.",
+          "chassis": "shared",
+          "keeps": "the long work table, the two side input conveyors and the output conveyor"
+        },
+        "mk3": {
+          "tier": 8,
+          "power": "plasma",
+          "text": "Mark 3, sealed micro-assembly: the open cell becomes a sealed cleanroom pod with small arms behind a glass window, an airlock on the input side and violet energy conduits.",
+          "chassis": "new",
+          "why": "a cleanroom pod has nothing in common with an open cell"
+        }
       },
       "variations": {
         "v1": "Overhead gantry crane spanning the table, arms hanging from the gantry carriage.",
@@ -55,13 +127,37 @@
     },
     "foundry": {
       "title": "Foundry",
-      "footprint": [5, 5, 5],
+      "footprint": [
+        5,
+        5,
+        5
+      ],
       "aspect": "1:1",
       "core": "A large alloy foundry, the first flagship multiblock: two ores or ingots go in, molten alloy is poured from a big crucible into a casting line. Big square footprint, five blocks wide and tall, with a walkway around the top.",
+      "lineage": {
+        "mode": "branches",
+        "why": "Coke and arc furnaces share a tilting body; a levitation crucible has no walls to share, so Mk3 is a new machine."
+      },
       "marks": {
-        "mk1": { "tier": 3, "power": "coal", "text": "Mark 1, coke-fired: a brick-lined tilting crucible furnace with a coke hopper, a tall chimney stack with a damper, hot slag runner at the side." },
-        "mk2": { "tier": 5, "power": "electric", "text": "Mark 2, electric arc furnace: three huge graphite electrodes on a hydraulic mast pass through a swinging roof, a transformer vault beside it, bus bars and water-cooled cables." },
-        "mk3": { "tier": 8, "power": "plasma", "text": "Mark 3, levitation crucible: the molten alloy floats inside a ring of electromagnets, no crucible walls, violet-white plasma heating, heavy radiation shielding." }
+        "mk1": {
+          "tier": 3,
+          "power": "coal",
+          "text": "Mark 1, coke-fired: a brick-lined tilting crucible furnace with a coke hopper, a tall chimney stack with a damper, hot slag runner at the side."
+        },
+        "mk2": {
+          "tier": 5,
+          "power": "electric",
+          "text": "Mark 2, electric arc furnace: three huge graphite electrodes on a hydraulic mast pass through a swinging roof, a transformer vault beside it, bus bars and water-cooled cables.",
+          "chassis": "shared",
+          "keeps": "the furnace body on its trunnions, the casting line and the top walkway"
+        },
+        "mk3": {
+          "tier": 8,
+          "power": "plasma",
+          "text": "Mark 3, levitation crucible: the molten alloy floats inside a ring of electromagnets, no crucible walls, violet-white plasma heating, heavy radiation shielding.",
+          "chassis": "new",
+          "why": "a field-held melt replaces the furnace itself"
+        }
       },
       "variations": {
         "v1": "Furnace tilts on big trunnions driven by a hydraulic ram to pour into a ladle.",
@@ -72,12 +168,30 @@
     },
     "refinery": {
       "title": "Refinery",
-      "footprint": [5, 7, 7],
+      "footprint": [
+        5,
+        7,
+        7
+      ],
       "aspect": "3:4",
       "core": "A fluid refinery: crude goes in by pipe on one face, fuel and plastic come out by pipe on the opposite face. A tall distillation column, a heater and heat exchangers on a long rectangular steel skid, five by seven blocks, seven tall.",
+      "lineage": {
+        "mode": "evolves",
+        "why": "Two marks on one skid; there is no believable plasma refinery, so it stops at Mk2."
+      },
       "marks": {
-        "mk1": { "tier": 5, "power": "coal", "text": "Mark 1, fired heater: an oil-fired box heater with a small flare stack, the column has external ladders and platforms, valves and pressure gauges everywhere." },
-        "mk2": { "tier": 7, "power": "electric", "text": "Mark 2, electric catalytic cracker: the heater becomes an electric reactor vessel with a catalyst hopper and a cyclone separator, teal status lights; exception: there is no Mark 3." }
+        "mk1": {
+          "tier": 5,
+          "power": "coal",
+          "text": "Mark 1, fired heater: an oil-fired box heater with a small flare stack, the column has external ladders and platforms, valves and pressure gauges everywhere."
+        },
+        "mk2": {
+          "tier": 7,
+          "power": "electric",
+          "text": "Mark 2, electric catalytic cracker: the heater becomes an electric reactor vessel with a catalyst hopper and a cyclone separator, teal status lights.",
+          "chassis": "shared",
+          "keeps": "the steel skid, the distillation column and the pipe faces"
+        }
       },
       "variations": {
         "v1": "One tall column with a spiral stair, the heater at its foot.",

@@ -14,7 +14,8 @@
     "concepts": "node tools/da/build.mjs",
     "concepts:render": "node tools/da/render.mjs",
     "concepts:prompts": "python3 tools/concepts/generate.py prompts",
-    "concepts:generate": "python3 tools/concepts/generate.py comfyui",
+    "concepts:generate": "python3 tools/concepts/generate.py lab",
+    "concepts:test": "python3 -m unittest discover -s tools/concepts",
     "concepts:review": "python3 tools/concepts/review.py out/concepts/r1"
   },
   "dependencies": {

@@ -17,7 +17,8 @@ npm run lint              # model lint (CI gate): plausibility, block grid, port
 npm run concepts          # rebuild the DA research concepts (concepts/) from tools/da/
 npm run concepts:render   # their hero renders and silhouettes -> out/da/
 npm run concepts:prompts  # concept image prompts (brief x machines x tiers) -> out/concepts/r1/prompts.md
-npm run concepts:generate # render them on a local ComfyUI (Qwen-Image-2.1), see tools/concepts/README.md
+npm run concepts:generate # render them through image-generation-lab (LAB_URL, LAB_TOKEN), see tools/concepts/README.md
+npm run concepts:test     # prompt pack, lineage and lab-client tests
 node early/line.mjs       # round 3 early window: the assembly line as a 20 fps sheet -> out/early/
 ```
 

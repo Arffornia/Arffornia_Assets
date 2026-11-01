@@ -30,7 +30,7 @@ section{margin:0 0 28px}h2{font-size:16px;margin:0 0 8px}.row{display:flex;gap:1
 .cell .meta span{flex:1}.cell.pick{border-color:var(--acc)}.cell.keep{border-color:var(--ok)}.cell.drop{opacity:.35}
 .cell button{padding:1px 6px;font-size:12px}textarea{width:100%;min-height:44px;font:inherit;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px}
 dialog{max-width:min(1400px,96vw);border:0;border-radius:10px;background:var(--card);color:var(--fg);padding:12px}dialog img{max-width:100%;max-height:72vh;display:block;margin:auto}
-dialog p{font-size:12px;color:var(--mut);max-height:18vh;overflow:auto}.exc{color:var(--acc)}
+dialog p{font-size:12px;color:var(--mut);max-height:18vh;overflow:auto}.exc{color:var(--acc)}.lin{margin:-4px 0 8px;color:var(--mut);font-size:12px}
 @media (max-width:700px){.row{flex-direction:column}.lab{flex:none}.cell{flex-basis:160px}}
 </style></head><body>
 <header><h1>Concept review: __ROUND__</h1><span id="count" class="sp"></span>
@@ -48,10 +48,11 @@ function render() {
   const by = {}; for (const it of ITEMS) ((by[it.machine] ||= {})[it.mark] ||= []).push(it);
   let html = '';
   for (const [m, marks] of Object.entries(by)) {
-    html += `<section><h2>${esc(m)}</h2>`;
+    const l0 = Object.values(marks)[0][0];
+    html += `<section><h2>${esc(m)}</h2>${l0.lineage ? `<p class="lin">tiers: ${esc(l0.lineage)}</p>` : ''}`;
     for (const [mk, items] of Object.entries(marks)) {
       const t = items[0];
-      html += `<div class="row"><div class="lab"><b>${esc(mk.toUpperCase())}</b>tier ${t.tier}<br><span class="chip">${esc(t.band)}</span>${t.exception ? '<br><span class="exc">exception</span>' : ''}</div><div class="cells">`;
+      html += `<div class="row"><div class="lab"><b>${esc(mk.toUpperCase())}</b>tier ${t.tier}<br><span class="chip">${esc(t.band)}</span>${t.chassis === 'new' || (!t.chassis && t.exception) ? '<br><span class="exc">new design</span>' : t.chassis === 'shared' ? '<br>same chassis' : ''}</div><div class="cells">`;
       for (const it of items) {
         const s = st.marks[it.file] || '';
         if (onlyPicks && s !== 'pick' && s !== 'keep') continue;
@@ -105,7 +106,7 @@ def main():
                 continue
             seen.add(r["file"])
             r["band"] = tiers[str(r["tier"])]["band"]
-            items.append({k: r[k] for k in ("id", "machine", "mark", "tier", "variation", "palette", "view", "seed", "file", "prompt", "band", "exception")})
+            items.append({k: r.get(k) for k in ("id", "machine", "mark", "tier", "variation", "palette", "view", "seed", "file", "prompt", "band", "exception", "lineage", "chassis")})
     items.sort(key=lambda r: (r["machine"], r["mark"], r["variation"], r["seed"]))
     rnd = os.path.basename(d)
     page = (PAGE.replace("__ROUNDJSON__", json.dumps(rnd)).replace("__ROUND__", html.escape(rnd))
