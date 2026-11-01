@@ -16,6 +16,8 @@ npm test                  # model lint unit tests
 npm run lint              # model lint (CI gate): plausibility, block grid, ports, sweeps, texels, budget -> out/lint/
 npm run concepts          # rebuild the DA research concepts (concepts/) from tools/da/
 npm run concepts:render   # their hero renders and silhouettes -> out/da/
+npm run concepts:prompts  # concept image prompts (brief x machines x tiers) -> out/concepts/r1/prompts.md
+npm run concepts:generate # render them on a local ComfyUI (Qwen-Image-2.1), see tools/concepts/README.md
 node early/line.mjs       # round 3 early window: the assembly line as a 20 fps sheet -> out/early/
 ```
 
@@ -25,7 +27,8 @@ Open a model live: serve the repo root (`npx serve .`) and visit
 - [Spec and decisions](docs/SPEC.md)
 - [Moodboard: the DA library](moodboard/README.md)
 - [Model rules (what the lint enforces and why)](docs/MODEL-RULES.md)
-- [Art direction research: 5 machines × 3 directions + the synthesis](docs/DA.md)
+- [Art direction research: 5 machines × 3 directions + the synthesis](docs/DA.md) (round 1, rejected: see the pipeline)
+- [Concept-to-model pipeline: concept images first, then Blockbench](docs/PIPELINE.md) and its tools in `tools/concepts/`
 - Concepts: `concepts/<direction>/<machine>/` (generated, lint-gated, not shipped)
 - Models: `models/` (the six tier 0–3 machine mocks from the loading-screen previews: Miner,
   Smelter, Constructor, Foundry, Assembler, Space Elevator)
