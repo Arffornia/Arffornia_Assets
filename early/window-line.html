@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Early window, assembly line (round 4)</title>
+<link rel="stylesheet" href="../ui/fonts/fonts.css">
+<style>
+  /* The early window (854x480, before Minecraft starts), in two baked layers around the sprite:
+       ?layer=backdrop  drawn first (night gradient, a faint plum floor glow)
+       sprite           the 480x288 assembly-line frame, drawn 1:1 at (187, 20), transparent around the line
+       ?layer=overlay   drawn last (brand block, track, legal line); transparent elsewhere
+     The provider draws the bar fill, the status line and the MOTD live on top (here they are baked
+     with sample text so the still shows the whole screen). Round 4: the title is the org banner's
+     treatment (Chakra Petch Bold, #ffb36b -> #e0703c, same eyebrow), and nothing masks the sprite:
+     it is transparent around the line, so there is no edge left to hide.
+     Round 4b (Brian): back to round 3's long lockup, the crafting-table logo (brand/crafting-table.png)
+     left of the title, in one row. Only the logo, the wordmark and the empty track are baked: every
+     line a player reads (eyebrow, MOTD, status, legal) is drawn live by the provider with the early
+     window's font, from the language in options.txt, so nothing in the PNG needs a translation. */
+  html, body { margin: 0; width: 854px; height: 480px; overflow: hidden; background: transparent; }
+  body.backdrop { background: radial-gradient(90% 75% at 50% 32%, #141d24 0%, #0d1318 55%, #0a0e13 100%); }
+  body.backdrop::after { content: ''; position: absolute; inset: 0; background: radial-gradient(55% 38% at 50% 100%, rgba(52, 36, 66, .55), rgba(52, 36, 66, 0)); }
+  .layer-overlay { display: none; } body.overlay .layer-overlay { display: block; }
+  .eyebrow { position: absolute; left: 0; right: 0; top: 318px; text-align: center; font: 500 10.5px 'Chakra Petch', sans-serif; letter-spacing: 1.9px; color: #ffb36b; }
+  .title { position: absolute; left: 0; right: 0; top: 332px; display: flex; justify-content: center; align-items: center; gap: 14px; }
+  .title img { width: 42px; height: 42px; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .5)); }
+  .title b { display: inline-block; font: 700 44px/1 'Chakra Petch', sans-serif; letter-spacing: 2.4px; padding-left: 2.4px;
+    background: linear-gradient(90deg, #ffb36b, #e0703c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .motd { position: absolute; left: 0; right: 0; top: 385px; text-align: center; font: 500 14px 'Chakra Petch', sans-serif; color: #e6ecef; opacity: .9; }
+  .track { position: absolute; left: 252px; width: 350px; top: 416px; height: 4px; border-radius: 2px; background: #2a2433; }
+  .fill { position: absolute; left: 252px; top: 416px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #ffb36b, #e0703c); }
+  .status { position: absolute; left: 252px; width: 350px; top: 427px; display: flex; justify-content: space-between; font: 500 10.5px Montserrat, sans-serif; color: #8da0ab; letter-spacing: .2px; }
+  .legal { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font: 500 10px Montserrat, sans-serif; color: rgba(255, 255, 255, .55); /* review: was 8.5 px grey, unreadable */ letter-spacing: .4px; }
+  body.overlay .live { display: none; } body.overlay.sample .live { display: block; } body.overlay.sample .status.live { display: flex; }
+</style></head>
+<body>
+<div class="layer-overlay">
+  <div class="eyebrow live">MODDED MINECRAFT · NEOFORGE 1.21.1</div>
+  <div class="title"><img src="../brand/crafting-table.png" alt=""><b>ARFFORNIA</b></div>
+  <div class="motd live">Your factory is not big enough. Yet.</div>
+  <div class="track"></div>
+  <div class="fill live" style="width: 140px"></div>
+  <div class="status live"><span>Loading mods</span><span>132 / 331</span></div>
+  <div class="legal live">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  document.body.classList.add(q.get('layer') || 'overlay');
+  if (q.has('sample')) document.body.classList.add('sample');
+</script></body></html>

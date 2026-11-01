@@ -21,6 +21,7 @@ const DIRS = {
   b: { page: 'b-drafting', bg: 'menu-left-night' },
   c: { page: 'c-launcher', bg: 'title-night' },
   d: { page: 'd-shift-board', bg: 'menu-right-night' },
+  f: { page: 'f-honeycomb-launcher', bg: 'menu-left-night' },
   e: { page: 'e-maquette', bg: 'menu-right-maquette', extra: () => `&tag=${proj(S.cameras['menu-right'], [24, 9.4, 3.5]).join(',')}` },
 };
 const want = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(DIRS);
@@ -53,7 +54,7 @@ for (const k of want) {
   const frames = [];
   for (let i = 0; i < files.length; i++) { await pg.evaluate(([t, f]) => window.UI.frame(t, f), [i / 24, `/${BG}/${D.bg}.frames/${files[i]}`]); frames.push(await pg.screenshot()); }
   await pg.close();
-  await ff(['-f', 'image2pipe', '-framerate', '24', '-c:v', 'png', '-i', '-', ...BX, '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', path.join(out, 'title.mp4')], frames);
+  await ff(['-f', 'image2pipe', '-framerate', '24', '-c:v', 'png', '-i', '-', ...BX, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', path.join(out, 'title.mp4')], frames);
   await ff(['-f', 'image2pipe', '-framerate', '24', '-c:v', 'png', '-i', '-', ...BX, '-vf', 'scale=640:-1:flags=lanczos', '-c:v', 'libwebp_anim', '-q:v', '72', '-loop', '0', path.join(out, 'title.webp')], frames);
   console.log(`ok ${D.page}`);
 }
