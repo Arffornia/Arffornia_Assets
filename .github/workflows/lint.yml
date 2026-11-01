@@ -4,10 +4,10 @@
 name: lint
 on:
   pull_request:
-    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'render/bbmodel.js']
+    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'tools/concepts/**', 'render/bbmodel.js']
   push:
     branches: [main]
-    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'render/bbmodel.js']
+    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'tools/concepts/**', 'render/bbmodel.js']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,6 +22,8 @@ jobs:
       - run: npm ci && npx playwright install --with-deps chromium
       - name: Lint unit tests
         run: npm test
+      - name: Concept pipeline tests (the lab end-to-end test skips here: no lab checkout)
+        run: npm run concepts:test
       - name: Lint every model (gate)
         id: lint
         run: npm run lint

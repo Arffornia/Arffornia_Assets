@@ -1,0 +1,141 @@
+{
+  "$comment": "The DA brief for concept images: the parts every prompt shares. Model-agnostic text (Qwen-Image, FLUX, SDXL, Midjourney, ChatGPT). tools/concepts/generate.py composes it with machines.json. Change the brief, not each prompt. Read docs/PIPELINE.md first.",
+  "version": 2,
+  "intent": "Concept images are references for modelling, never shipped. They show what a machine should feel like: real mechanisms, believable mass, readable function. The Minecraft translation happens later, in Blockbench.",
+  "style": "Concept art of one industrial machine for a factory-building game. Stylised hard-surface realism with the industrial building design of Satisfactory: believable working mechanisms you can follow (pistons, hydraulic rams, robotic arms on real joints, gears, drive belts on pulleys, rollers, hinges, bolts, pipes with flanges and valves), chunky readable primary forms, clean painted cover panels over a dark gunmetal steel structure, chamfered edges, maintenance walkway with railings, ladders and hatches, light consistent wear and grime near the ground.",
+  "scale": "A human worker in overalls stands next to it for scale.",
+  "palette": {
+    "default": "orange",
+    "options": {
+      "orange": "About 60% dark gunmetal structure, 30% warm signal-orange painted panels (the house colour, the same at every tier), 10% trims and status lights in {accent}.",
+      "teal-brass": "About 60% dark gunmetal structure, 30% dark teal enamel panels (the house colour, the same at every tier), 10% trims and status lights in {accent}.",
+      "graphite-white": "About 60% graphite structure, 30% off-white ceramic panels (the house colour, the same at every tier), 10% trims and status lights in {accent}."
+    },
+    "$comment": "P7 (decided): panels stay the house colour at every tier; only trims and status lights follow the tier band. The options are house-colour candidates, not tier colours."
+  },
+  "light": "Glow only where it means something: amber for heat or molten metal; the power source shows as {power}. No neon decoration.",
+  "views": {
+    "hero": "Three-quarter view from slightly above, the whole machine in frame with margin, isolated on a plain light grey studio background, soft key light from the upper left, sharp focus, no text, no logo, no watermark.",
+    "side": "Straight side elevation, orthographic, the whole machine in frame, plain light grey background, even light, no perspective, no text.",
+    "sheet": "Orthographic concept sheet of the same machine: front view, side view and top view laid out on one page, same scale in every view, plain light grey background, even light, no perspective distortion, no text labels."
+  },
+  "negative": "minecraft, voxel, pixel art, blocky, lego, low poly, cartoon, toy, chibi, anime, text, letters, watermark, logo, signature, crowd, several machines, cropped machine, blurry, floating parts, impossible geometry, spaceship, vehicle, weapon",
+  "tiers": {
+    "$comment": "Accent per tier from Arffornia/docs spec 003 (Visual identity per tier). P7: trims and lights follow the band of the tier a mark unlocks at; panels do not.",
+    "0": {
+      "accent": "polished copper and orange trims",
+      "band": "copper/orange"
+    },
+    "1": {
+      "accent": "polished copper and orange trims",
+      "band": "copper/orange"
+    },
+    "2": {
+      "accent": "polished copper and orange trims",
+      "band": "copper/orange"
+    },
+    "3": {
+      "accent": "brushed steel and blue-grey trims",
+      "band": "steel/blue-grey"
+    },
+    "4": {
+      "accent": "brushed steel and blue-grey trims",
+      "band": "steel/blue-grey"
+    },
+    "5": {
+      "accent": "industrial yellow trims with black hazard edges on moving parts only",
+      "band": "industrial yellow"
+    },
+    "6": {
+      "accent": "industrial yellow trims with black hazard edges on moving parts only",
+      "band": "industrial yellow"
+    },
+    "7": {
+      "accent": "teal trims and teal status lights",
+      "band": "teal"
+    },
+    "8": {
+      "accent": "violet trims and violet energy conduits",
+      "band": "violet"
+    },
+    "9": {
+      "accent": "white and cyan trims",
+      "band": "white/cyan"
+    }
+  },
+  "power": {
+    "coal": "amber firelight",
+    "steam": "amber firelight and white steam",
+    "electric": "small cool-white status lights",
+    "plasma": "a violet-white plasma glow"
+  },
+  "aspects": {
+    "lab": {
+      "1:1": [
+        1024,
+        1024
+      ],
+      "4:3": [
+        1152,
+        864
+      ],
+      "3:4": [
+        864,
+        1152
+      ],
+      "16:9": [
+        1344,
+        768
+      ],
+      "3:2": [
+        1216,
+        832
+      ]
+    },
+    "$comment": "Width x height per aspect for each size family. 'lab' is the default: about one megapixel, the size Brian's image-generation-lab workflows use (1024 x 1024), so 112 images take about an hour on one GPU. The model-card native sizes stay available with --sizes. --scale multiplies.",
+    "qwen-image": {
+      "1:1": [
+        1328,
+        1328
+      ],
+      "4:3": [
+        1472,
+        1140
+      ],
+      "3:4": [
+        1140,
+        1472
+      ],
+      "16:9": [
+        1664,
+        928
+      ],
+      "3:2": [
+        1584,
+        1056
+      ]
+    },
+    "qwen-image-2.1": {
+      "1:1": [
+        2048,
+        2048
+      ],
+      "4:3": [
+        2400,
+        1792
+      ],
+      "3:4": [
+        1792,
+        2400
+      ],
+      "16:9": [
+        2752,
+        1536
+      ],
+      "3:2": [
+        2528,
+        1696
+      ]
+    }
+  }
+}

@@ -158,3 +158,16 @@ test('kinematics: limits, rigid motion, hinge pivot, loop seam, scale, deploy', 
   assert.ok(kin(mk([[0, [45, 0, 0]], [1, [20, 0, 0]]], hinge, { origin: [0, 20, -2], name: 'deploy' })).some((f) => /bind pose/.test(f.msg)));
   assert.ok(kin(mk([[0, [0, 0, 0]], [0.5, [0, 0, 0]], [0.5001, [0, 0, 40]]], null, { channel: 'position' })).some((f) => /jumps/.test(f.msg)));
 });
+
+test('deploy: a multiblock machine from tier 2 needs packaged and deploy (P6)', () => {
+  const lid = cube('lid', [-6, 4, -6], [6, 6, 6]);
+  const anim = (name) => ({ name, length: 1, loop: 'once', animators: {} });
+  const m = (meta, names = []) => lintModel(model([base(), lid], { meta: { kind: 'machine', ...meta }, animations: names.map(anim) }), rules)
+    .findings.filter((f) => f.check === 'deploy');
+  assert.equal(m({ tier: 2 }).filter((f) => f.level === 'error').length, 2);
+  assert.deepEqual(m({ tier: 2 }, ['model.packaged', 'model.deploy']), []);
+  assert.deepEqual(m({ tier: 1 }), []);
+  assert.deepEqual(m({ tier: 5, footprint: [1, 1] }), []);
+  assert.ok(m({}).some((f) => f.level === 'warn' && /tier is not set/.test(f.msg)));
+  assert.deepEqual(m({ tier: 4, kind: 'scenery' }), []);
+});
