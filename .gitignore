@@ -4,3 +4,4 @@ node_modules
 out/*
 !out/manifest.json
 tools/concepts/workflows/local*.json
+__pycache__/
