@@ -1,5 +1,6 @@
 // The model lint checks. Each returns findings { check, level: 'error'|'warn'|'info', msg, parts, t }.
 // Rules and their reasons: docs/MODEL-RULES.md. Thresholds: tools/lint/rules.json.
+import { checkCantilevers, checkBelts, checkKinematics } from './mechanics.mjs';
 import { PX, TOL, skeleton, poseAt, obbs, aabb, sat, contains, volume, faces, coplanarOverlap, hull, insideDistance, stemOf } from './geom.mjs';
 
 const glob = (pat) => new RegExp(`^${pat.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`);
@@ -12,12 +13,13 @@ export function lintModel(json, rules, { id = json.name } = {}) {
   const findings = [];
   const add = (check, level, msg, parts = [], extra = {}) => findings.push({ check, level, msg, parts, ...extra });
   const sk = skeleton(json);
-  const waivers = ((meta.lint || {}).allow || []).map((w) => ({ ...w, ra: glob(w.a), rb: glob(w.b), used: 0 }));
+  const waivers = ((meta.lint || {}).allow || []).map((w) => ({ ...w, ra: glob(w.a), rb: glob(w.b || '*'), used: 0 }));
   const waived = (a, b, check) => waivers.find((w) => (!w.check || w.check === check) && ((w.ra.test(a) && w.rb.test(b)) || (w.ra.test(b) && w.rb.test(a))));
+  const waivedOne = (name, check) => { const w = waivers.find((x) => x.check === check && x.ra.test(name)); if (w) w.used++; return w; };
   const EMBED = rules.embedPx * PX;
 
   if (!fp) add('meta', 'error', 'arffornia.footprint is missing: the lint cannot check the block grid.');
-  for (const w of waivers) if (!w.why) add('meta', 'error', `waiver ${w.a} / ${w.b} has no "why".`);
+  for (const w of waivers) if (!w.why) add('meta', 'error', `waiver ${w.a} / ${w.b || '*'} has no "why".`);
 
   // ---------------------------------------------------------------- rest pose
   // the bind pose (animation t=0 is not always the rest pose)
@@ -142,6 +144,12 @@ export function lintModel(json, rules, { id = json.name } = {}) {
     }
   }
   if (anims.length && !movers.size) add('sweep', 'warn', 'animations exist but no element is under an animated bone.');
+
+  // 6b. mechanics: cantilevers and seats, belts and gears, joint kinematics (tools/lint/mechanics.mjs)
+  const mctx = { sk, json, meta, rest, boxes, rules, add, waivedOne, anims };
+  checkCantilevers(mctx);
+  checkBelts(mctx);
+  checkKinematics(mctx);
   for (const [name, { worst, t }] of out) add('footprint', 'error', `${name} leaves the ${fp[0]}×${fp[1]}${meta.height ? `×${meta.height}` : ''} block grid by ${px(worst)} px${t !== null ? ` (during animation, ${fmtT(t)})` : ''}.`, [name]);
   if (fp && meta.height === undefined) add('meta', 'warn', 'arffornia.height is not set: the vertical size is not checked.');
 
@@ -198,6 +206,18 @@ export function lintModel(json, rules, { id = json.name } = {}) {
     add('texel', 'error', `${bad} of ${dens.length} face axes are off ${target} px/block by more than ${rules.texelErr * 100}% (median ${med.toFixed(1)}). Worst: ${worst.map(([nm, r]) => `${nm} ${(r * target).toFixed(1)}`).join(', ')}.`, worst.map(([nm]) => nm));
   } else if (warn) add('texel', 'warn', `${warn} of ${dens.length} face axes are off ${target} px/block by more than ${rules.texelWarn * 100}%.`);
 
+  // 8b. deploy (P6, Brian 2026-11-01): every multiblock machine from tier 2 unfolds, Oritech-style:
+  // a `packaged` pose, a `deploy` animation (whose seams the kinematics check verifies), then idle/working
+  const cells = fp ? fp[0] * fp[1] : 0;
+  if (cells > 1 && meta.kind !== 'scenery') {
+    if (typeof meta.tier !== 'number') add('deploy', 'warn', `arffornia.tier is not set: the deploy rule (multiblocks from tier ${rules.deployFromTier}) is not checked.`);
+    else if (meta.tier >= rules.deployFromTier) {
+      const has = (re) => anims.some((x) => re.test(x.name.split('.').pop()));
+      if (!has(/^(packaged|folded|crated)/i)) add('deploy', 'error', `tier ${meta.tier} multiblock with no \`packaged\` animation: multiblocks from tier ${rules.deployFromTier} start packaged and deploy (P6).`);
+      if (!has(/^(deploy|setup|assemble|unfold)/i)) add('deploy', 'error', `tier ${meta.tier} multiblock with no \`deploy\` animation: multiblocks from tier ${rules.deployFromTier} unfold when they form (P6).`);
+    }
+  }
+
   // 9. budget
   const facesDrawn = sk.elements.reduce((s, x) => s + Object.values(x.el.faces || {}).filter((f) => f && f.texture !== null && f.texture !== undefined).length, 0);
   const area = fp ? fp[0] * fp[1] : 1;
@@ -207,7 +227,7 @@ export function lintModel(json, rules, { id = json.name } = {}) {
   const over = (val, max, what) => { if (val > max) add('budget', 'error', `${what} ${val} over the ${cls.name} budget (${max}).`); else if (val > max * 0.8) add('budget', 'warn', `${what} ${val} is above 80% of the ${cls.name} budget (${max}).`); };
   over(stats.tris, cls.tris, 'triangles'); over(stats.elements, cls.elements, 'elements'); over(stats.animatedBones, cls.animatedBones, 'animated bones'); over(texPx, cls.texturePx, 'texture pixels');
 
-  for (const w of waivers) if (!w.used) add('meta', 'warn', `waiver ${w.a} / ${w.b} matches nothing: remove it.`);
+  for (const w of waivers) if (!w.used) add('meta', 'warn', `waiver ${w.a} / ${w.b || '*'} matches nothing: remove it.`);
   stats.size = [0, 1, 2].map((k) => +(env.max[k] - env.min[k]).toFixed(3));
   stats.texelMedian = +med.toFixed(1);
   const gating = meta.status !== 'mock';

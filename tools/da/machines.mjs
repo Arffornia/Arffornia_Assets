@@ -87,7 +87,7 @@ export const MACHINES = {
       else if (C === 'B') b.box('elev_light', [xe + 0.5, 8, 6], [21.5, 48, 6.5], m.energy);
       else for (let k = 0; k < 7; k++) b.box(`bucket${k}`, [xe + 0.5, 8 + k * 6.4, 6], [21.5, 11 + k * 6.4, 8], m.steel);
       b.box('head', [11, 52, -7], [23, 58, 7], m.body);
-      b.box('spout', [5, 49, -4], [11, 52, 4], m.dark);
+      b.box('spout', [5, 50, -4], [11, 55, 4], m.dark); // hangs from the head's west face, not from its edge
       K.lamp('lamp', [17, 58, 0]);
       K.port('in', 'east', [24, 8, 0]);
       K.port('out', 'west', [-24, 8, 0]);
@@ -206,6 +206,7 @@ export const MACHINES = {
   // Reads as: tall distillation columns, a storage tank, pipes between them, a pump, a flare.
   refinery: {
     title: 'Refinery', role: 'Crude to fuel and plastics. Tier 3.', footprint: [3, 3], height: 7,
+    joints: { flame: { type: 'free', why: 'a gas flare: a flame, not a rigid part' } },
     ports: [{ id: 'in', kind: 'fluid', face: 'west', cell: [1, 0] }, { id: 'out', kind: 'fluid', face: 'south', cell: [1, 0] }],
     lint: () => ({ allow: [{ a: 'deck*', b: 'column1*', why: 'the grating deck is clamped around the column' }] }),
     build(b, K) {
@@ -296,7 +297,7 @@ export const MACHINES = {
       b.box('door', [27, 4, 38], [33, 30, 38.5], m.dark);
       b.box('window', [24, 24, 26], [23.5, 32, 36], m.glass);
       K.lamp('lamp', [31, 38, 31]);
-      b.anim('run', 2, { bunch: { rotation: [[0, [0, 0, 0]], [2, [0, 360, 0]]] }, scanner: { rotation: [[0, [0, 0, 0]], [2, [0, -90, 0]]] } }, 'linear');
+      b.anim('run', 2, { bunch: { rotation: [[0, [0, 0, 0]], [2, [0, 360, 0]]] }, scanner: { rotation: [[0, [0, 0, 0]], [2, [0, -360, 0]]] } }, 'linear');
     },
   },
 };

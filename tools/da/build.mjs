@@ -11,7 +11,7 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../.
 const filters = process.argv.slice(2);
 for (const [did, D] of Object.entries(DIRECTIONS)) for (const [mid, MC] of Object.entries(MACHINES)) {
   const id = `${did}/${mid}`; if (filters.length && !filters.some((f) => id.includes(f))) continue;
-  const b = new Model(mid, { title: `${MC.title} (${D.title})`, note: MC.role, footprint: MC.footprint, height: MC.height, ports: MC.ports, kind: 'machine', status: 'concept', direction: did, ...(MC.lint && MC.lint(D) ? { lint: MC.lint(D) } : {}), ...(MC.camera ? { camera: MC.camera } : {}) });
+  const b = new Model(mid, { title: `${MC.title} (${D.title})`, note: MC.role, footprint: MC.footprint, height: MC.height, ports: MC.ports, kind: 'machine', status: 'concept', direction: did, ...(MC.lint && MC.lint(D) ? { lint: MC.lint(D) } : {}), ...(MC.camera ? { camera: MC.camera } : {}), ...(MC.joints ? { joints: MC.joints } : {}) });
   MC.build(b, kit(b, D));
   const { bbmodel, texPng, glowPng, atlas } = b.build();
   const dir = path.join(ROOT, 'concepts', did, mid); fs.mkdirSync(dir, { recursive: true });

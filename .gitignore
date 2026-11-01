@@ -3,3 +3,5 @@ node_modules
 # Derived assets: rebuilt by `npm run render` / CI (see docs/SPEC.md D3). Only the manifest is tracked.
 out/*
 !out/manifest.json
+tools/concepts/workflows/local*.json
+__pycache__/

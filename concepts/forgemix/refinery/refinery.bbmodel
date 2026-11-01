@@ -12958,6 +12958,12 @@
      "why": "the grating deck is clamped around the column"
     }
    ]
+  },
+  "joints": {
+   "flame": {
+    "type": "free",
+    "why": "a gas flare: a flame, not a rigid part"
+   }
   }
  }
 }
