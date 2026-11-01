@@ -32,13 +32,26 @@ const args = process.argv.slice(2);
 if (args[0] === '--frames') {
   const cam = args[1] || 'menu-left'; const dir = path.join(ROOT, `out/scenes/factory-line/ui/${cam}-night.frames`);
   fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
-  const fr = await frames([1280, 720], S.cameras[cam], Array.from({ length: 96 }, (_, i) => 1 + i / 24));
+  // round 4: `--frames <cam> 72` renders exactly one 3 s loop (24 fps), so a long clip can repeat it seamlessly
+  const n = parseInt(args[2] || '96', 10);
+  const fr = await frames([1280, 720], S.cameras[cam], Array.from({ length: n }, (_, i) => 1 + i / 24));
+  fr.forEach((b, i) => fs.writeFileSync(path.join(dir, `f${String(i).padStart(4, '0')}.png`), b));
+} else if (args[0] === '--probe') {
+  // measure the line's real extent over the whole loop: a big cell at the sheet's pixel density
+  const dir = args[1]; fs.mkdirSync(dir, { recursive: true });
+  const cam = JSON.parse(args[2]); const size = JSON.parse(args[3]);
+  const fr = await frames(size, cam, Array.from({ length: 60 }, (_, i) => i / 20), true);
   fr.forEach((b, i) => fs.writeFileSync(path.join(dir, `f${String(i).padStart(4, '0')}.png`), b));
 } else {
   // 3 s loop (60 ticks): belts repeat every 1.67 s and the machines every 0.6-3 s, so 3 s is the
-  // shortest loop that closes for the whole line. The band is 640x240, the line framed tight.
-  const cell = [640, 240], n = 60, cols = 6, rows = 10;
-  const cam = { target: [12.6, 2.2, 1.6], height: 13.4 };
+  // shortest loop that closes for the whole line.
+  // Round 4 fix: round 3 used a 640x240 cell, but at this density the line is 424x269 px over the
+  // loop and sits 44 px below the camera target, so the cell cut ~60 px off its bottom (the straight
+  // edge Brian saw across the middle of the window). The cell now fits the measured extent
+  // (`--probe`) with the content centred, and `early/check-sheet.py` fails the build if any frame
+  // touches its cell edge. Same pixel density as round 3 (17.9 px per block), drawn 1:1.
+  const cell = [480, 288], n = 60, cols = 6, rows = 10;
+  const cam = { target: [12.6, 2.2, 1.6], height: 288 / 17.91, offset: [27 / 17.91, 44.5 / 17.91] };
   const fr = await frames(cell, cam, Array.from({ length: n }, (_, i) => i / 20), true); // transparent: the line sits on the window's own night colour
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'line-'));
   fr.forEach((b, i) => fs.writeFileSync(path.join(tmp, `f${String(i).padStart(4, '0')}.png`), b));

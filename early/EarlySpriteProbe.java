@@ -8,6 +8,7 @@
  *
  * usage: java -cp <lwjgl jars> EarlySpriteProbe.java <backdrop.png> <sheet.png> <cols> <frames> <cell> <outDir> [ticks] [static|anim]
  *        [slotX slotY slotW slotH overlay.png]   (round 3: the assembly-line band drawn 1:1, then an overlay on top)
+ *        [bar.png barX barY barW barH]           (round 4: the bar fill is a gradient strip, cropped to the progress)
  * Run headless: xvfb-run -a java ... (see early-probe.sh). Nothing here ships.
  */
 import static org.lwjgl.glfw.GLFW.*;
@@ -30,6 +31,8 @@ public class EarlySpriteProbe {
         int ticks = a.length > 6 ? Integer.parseInt(a[6]) : 80;
         boolean still = a.length > 7 && a[7].equals("static");
         float sx = 299, sy = 56, sw = 256, shh = 256; String overlay = null;
+        String barPath = null; float bx = 0, by = 0, bw = 0, bh = 0;
+        if (a.length > 17) { barPath = a[13]; bx = Float.parseFloat(a[14]); by = Float.parseFloat(a[15]); bw = Float.parseFloat(a[16]); bh = Float.parseFloat(a[17]); }
         if (a.length > 12) { sx = Float.parseFloat(a[8]); sy = Float.parseFloat(a[9]); sw = Float.parseFloat(a[10]); shh = Float.parseFloat(a[11]); overlay = a[12]; }
         if (!glfwInit()) throw new IllegalStateException("glfwInit failed");
         glfwDefaultWindowHints();
@@ -54,6 +57,7 @@ public class EarlySpriteProbe {
         int[] bd = new int[2], sh = new int[2];
         int texBackdrop = load(backdrop, bd), texSheet = load(sheet, sh);
         int[] ov = new int[2]; int texOverlay = overlay != null ? load(overlay, ov) : 0;
+        int[] bs = new int[2]; int texBar = barPath != null ? load(barPath, bs) : 0;
         double uploadMs = (System.nanoTime() - u0) / 1e6;
         double vramMb = (bd[0] * bd[1] + sh[0] * sh[1]) * 4 / 1048576.0;
         System.out.printf("textures: backdrop %dx%d, sheet %dx%d, %.1f MB RGBA, load+upload %.1f ms%n", bd[0], bd[1], sh[0], sh[1], vramMb, uploadMs);
@@ -93,7 +97,8 @@ public class EarlySpriteProbe {
             if (texOverlay != 0) draw(texOverlay, uTextured, 0, 0, W, H, 0, 0, 1, 1, 1, 1, 1, 1);
             // 3. progress bar (the provider owns it; here it fills over the run)
             float p = (t + 1) / (float) ticks;
-            if (texOverlay != 0) draw(0, uTextured, 227, 400, 400 * p, 4, 0, 0, 0, 0, 1f, 0.451f, 0f, 1f); // launcher orange #ff7300
+            if (texBar != 0) draw(texBar, uTextured, bx, by, bw * p, bh, 0, 0, p, 1, 1, 1, 1, 1);
+            else if (texOverlay != 0) draw(0, uTextured, 227, 400, 400 * p, 4, 0, 0, 0, 0, 1f, 0.451f, 0f, 1f); // launcher orange #ff7300
             else draw(0, uTextured, 227, 392, 400 * p, 3, 0, 0, 0, 0, 0.878f, 0.439f, 0.235f, 1f);
             glFinish();
             drawNs += System.nanoTime() - d0;
