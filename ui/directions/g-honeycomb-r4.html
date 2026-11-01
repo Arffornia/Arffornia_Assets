@@ -10,6 +10,9 @@
      - brand block = the org banner's treatment: Chakra Petch, eyebrow "MODDED MINECRAFT · NEOFORGE 1.21.1"
        in #ffb36b, "ARFFORNIA" in the #ffb36b -> #e0703c gradient, the banner's tagline under it;
      - the MOTD (server-list ping, line 2) as vanilla's yellow splash: -20 deg, 1 s pulse, scaled by length;
+     Round 4b (Brian, 2026-11-01): the crafting-table logo (brand/crafting-table.png, the same file as
+       Crafting_Table.png on the website and the launcher) left of the wordmark, and a smaller splash
+       (at most 380 px wide, two lines over 28 characters, cap height never under 15 px);
      - tiles with depth, three skins: ?skin=machined | glass | extruded;
      - keyboard: Play is selected on open, arrows move the orange selector to the neighbouring tile,
        Enter activates; the mouse still works (hover moves the same selector).
@@ -26,7 +29,9 @@
   /* ---------- brand: the org banner, scaled 1.5x (banner is 1280 wide, the screen 1920) */
   .brand { position: absolute; left: 120px; top: 196px; }
   .brand .eyebrow { font: 500 20px 'Chakra Petch', sans-serif; letter-spacing: 3px; color: var(--t1); }
-  .brand h1 { margin: 6px 0 0 -6px; font: 700 132px/1 'Chakra Petch', sans-serif; letter-spacing: 5px;
+  .brand .lockup { display: flex; align-items: center; gap: 26px; margin-top: 10px; }
+  .brand .logo { width: 104px; height: 104px; image-rendering: auto; filter: drop-shadow(0 6px 16px rgba(0, 0, 0, .45)); }
+  .brand h1 { margin: 0; font: 700 120px/1 'Chakra Petch', sans-serif; letter-spacing: 5px;
     background: linear-gradient(90deg, var(--t1), var(--t2)); -webkit-background-clip: text; background-clip: text; color: transparent;
     filter: drop-shadow(0 6px 18px rgba(224, 112, 60, .22)); display: inline-block; }
   .brand p { margin: 22px 0 0; font: 500 32px 'Chakra Petch', sans-serif; color: #e6ecef; white-space: nowrap; }
@@ -122,7 +127,7 @@
   <div class="comb" id="comb"></div>
   <div class="brand" id="brand">
     <div class="eyebrow">MODDED MINECRAFT · NEOFORGE 1.21.1</div>
-    <h1 id="word">ARFFORNIA</h1>
+    <div class="lockup"><img class="logo" src="../../brand/crafting-table.png" alt=""><h1 id="word">ARFFORNIA</h1></div>
     <p>Progression that keeps every mod worth playing.</p>
   </div>
   <div class="splash" id="splash"></div>
@@ -203,6 +208,8 @@
   // ---------- vanilla splash: scale = 1.8 - |sin(2 pi * (ms % 1000) / 1000)| * 0.1, then * 100 / (width + 32)
   const splash = document.getElementById('splash'); splash.textContent = MOTD;
   const GUI = 4; // the GUI scale Minecraft picks at 1920x1080
+  // round 4b: Brian found the 460 px splash "un poil gros"; 380 px keeps it under his D15 cap of 460
+  const SPLASH_MAX_W = 380, SPLASH_MIN_CAP = 15;
   const measure = document.createElement('canvas').getContext('2d'); measure.font = '100px Monocraft';
   const mcWidth = (txt) => [...txt].reduce((w, ch) => w + (ch === ' ' ? 4 : 'il.,:;!|\''.includes(ch) ? 2 : 'tI[]'.includes(ch) ? 4 : 6), 0); // Minecraft's default font advances, in font px
   const splitHalf = (txt) => { const mid = txt.length / 2; let best = -1; for (let i = 0; i < txt.length; i++) if (txt[i] === ' ' && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i; return best < 0 ? [txt] : [txt.slice(0, best), txt.slice(best + 1)]; };
@@ -212,17 +219,17 @@
     // vanilla glyphs are 8 font px tall on a 9 px line; Monocraft is sized to the same cap height
     // (it runs ~10 % wider than the real font, so long MOTDs look slightly longer here than in game)
     // review: vanilla's own scale gives ~600 px for a 36-character MOTD here, which slices across the
-    // screen; cap the width at 460 px (cap height never below 18 px) and break MOTDs over 28 characters
+    // screen; cap the width (SPLASH_MAX_W) and break MOTDs over 28 characters
     const lines = MOTD.length > 28 ? splitHalf(MOTD) : [MOTD]; /* two lines when one would fall under the 18 px cap height at 460 px */ splash.textContent = lines.join('\n'); splash.style.whiteSpace = 'pre'; splash.style.textAlign = 'center';
     const widest = Math.max(...lines.map(mcWidth)); const sv = pulse * 100 / (widest + 32) * GUI;
-    const sMax = Math.max(18 / 7, 460 / widest) * (pulse / 1.8); const sc0 = Math.min(sv, sMax);
+    const sMax = Math.max(SPLASH_MIN_CAP / 7, SPLASH_MAX_W / widest) * (pulse / 1.8); const sc0 = Math.min(sv, sMax);
     splash.style.fontSize = (sc0 * 9.6).toFixed(2) + 'px'; splash.style.lineHeight = '1.05'; splash.style.setProperty('--sh', sc0.toFixed(2) + 'px');
-    const over = splash.offsetWidth / (460 * pulse / 1.8); if (over > 1) { splash.style.fontSize = (sc0 * 9.6 / over).toFixed(2) + 'px'; splash.style.setProperty('--sh', (sc0 / over).toFixed(2) + 'px'); } // cap on the rendered width (Monocraft runs wider than the real font)
+    const over = splash.offsetWidth / (SPLASH_MAX_W * pulse / 1.8); if (over > 1) { splash.style.fontSize = (sc0 * 9.6 / over).toFixed(2) + 'px'; splash.style.setProperty('--sh', (sc0 / over).toFixed(2) + 'px'); } // cap on the rendered width (Monocraft runs wider than the real font)
     const w = document.getElementById('word'), st = document.getElementById('stage').getBoundingClientRect(), sc = st.width / 1920;
     const r = w.getBoundingClientRect(); // vanilla centres the splash on the centred logo's right end; our logo is left-aligned and the
     // MOTDs are long, so the splash starts at the wordmark's lower right corner and rises away from it
     const half = splash.offsetWidth / 2, rad = 20 * Math.PI / 180;
-    const ax = (r.right - st.left) / sc - 20 + half * Math.cos(rad), ay = (r.bottom - st.top) / sc - 24 - half * Math.sin(rad); // overlaps the "A" by ~20 px, like vanilla on the logo
+    const ax = (r.right - st.left) / sc - 6 + half * Math.cos(rad), ay = (r.bottom - st.top) / sc - 24 - half * Math.sin(rad); // touches the "A" like vanilla on the logo (round 4b: -6 px, the smaller splash covered the A at -20)
     splash.style.transform = `translate(${ax}px, ${ay}px) translate(-50%, -50%) rotate(-20deg)`;
     splash.style.opacity = clamp((t - 0.9) / 0.3, 0, 1);
   }
