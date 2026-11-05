@@ -233,14 +233,15 @@
       {
         "id": "login-night",
         "kind": "clip",
-        "camera": "title",
+        "camera": "login",
         "size": [
           1280,
-          720
+          1600
         ],
+        "supersample": 2,
         "look": "night",
         "seconds": 6,
-        "fps": 24,
+        "fps": 30,
         "formats": [
           "webm"
         ],
@@ -249,11 +250,12 @@
       {
         "id": "login-poster-night",
         "kind": "still",
-        "camera": "title",
+        "camera": "login",
         "size": [
           1280,
-          720
+          1600
         ],
+        "supersample": 2,
         "look": "night",
         "t": 0,
         "file": "scenes/factory-line/login.night.jpg"
@@ -261,14 +263,15 @@
       {
         "id": "login-maquette",
         "kind": "clip",
-        "camera": "title",
+        "camera": "login",
         "size": [
           1280,
-          720
+          1600
         ],
+        "supersample": 2,
         "look": "maquette",
         "seconds": 6,
-        "fps": 24,
+        "fps": 30,
         "formats": [
           "webm"
         ],
@@ -277,11 +280,12 @@
       {
         "id": "login-poster-maquette",
         "kind": "still",
-        "camera": "title",
+        "camera": "login",
         "size": [
           1280,
-          720
+          1600
         ],
+        "supersample": 2,
         "look": "maquette",
         "t": 0,
         "file": "scenes/factory-line/login.maquette.jpg"

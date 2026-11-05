@@ -221,7 +221,8 @@
     -1.5,
     6.2
    ]
-  }
+  },
+    "login": { "target": [15, 2.6, 2.2], "height": 19, "offset": [0.8, 2.5] }
  },
  "cameraNote": "camera target is in three.js axes: [x, height, y]"
 }
