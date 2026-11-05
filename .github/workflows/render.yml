@@ -10,7 +10,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
-concurrency: { group: render-${{ github.ref }}, cancel-in-progress: true }
+concurrency:
+  group: render-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   render:
     runs-on: ubuntu-24.04
@@ -26,7 +28,10 @@ jobs:
       - name: Outputs must be fresh
         run: npm run check
       - uses: actions/upload-artifact@v4
-        with: { name: assets-${{ github.sha }}, path: out/, retention-days: 14 }
+        with:
+          name: assets-${{ github.sha }}
+          path: out/
+          retention-days: 14
       # On main, commit refreshed outputs back (SPEC D3). Publishing to consumer repos is D4.
       - if: github.event_name == 'push'
         run: |
