@@ -81,9 +81,9 @@ function ffmpeg(argv, input) {
   });
 }
 const encoders = {
-  mp4: (fps, out) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out],
-  // Login page background (keycloak-theme-arffornia): VP9 keeps a 6 s 720p loop near 1 MB.
-  webm: (fps, out) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, '-c:v', 'libvpx-vp9', '-crf', '40', '-b:v', '0', '-deadline', 'good', '-cpu-used', '2', '-pix_fmt', 'yuv420p', '-an', out],
+  mp4: (fps, out, vf = []) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, ...vf, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out],
+  // Login page background (keycloak-theme-arffornia): VP9 at CRF 30 keeps edges sharp on HiDPI screens.
+  webm: (fps, out, vf = []) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, ...vf, '-c:v', 'libvpx-vp9', '-crf', '30', '-b:v', '0', '-deadline', 'good', '-cpu-used', '2', '-pix_fmt', 'yuv420p', '-an', out],
   webp: (fps, out) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, '-vf', 'scale=480:-1:flags=lanczos', '-c:v', 'libwebp_anim', '-q:v', '78', '-loop', '0', out],
 };
 
@@ -99,9 +99,14 @@ const loopLen = (info, want) => { const L = Math.max(0, ...info.anim); return L 
 async function run(j) {
   const out = path.join(OUT, j.file); fs.mkdirSync(path.dirname(out), { recursive: true });
   const s = j.spec;
+  // supersample: render at N x size, then downscale with Lanczos. The post-processing chain drops
+  // the renderer's MSAA, so this is what gives clean edges.
+  const ss = s.supersample || 1;
+  const bigSize = ss > 1 ? { size: [s.size[0] * ss, s.size[1] * ss] } : {};
+  const down = ss > 1 ? ['-vf', `scale=${s.size[0]}:${s.size[1]}:flags=lanczos`] : [];
   if (s.kind === 'still') {
-    const st = await stage(modelOpts(j)); const png = await st.frame(s.t ?? 0.4); await st.pg.close();
-    if (out.endsWith('.jpg')) return ffmpeg(['-f', 'png_pipe', '-i', '-', ...BITEXACT, '-q:v', '4', out], (w) => w.end(png));
+    const st = await stage(modelOpts(j, bigSize)); const png = await st.frame(s.t ?? 0.4); await st.pg.close();
+    if (out.endsWith('.jpg') || ss > 1) return ffmpeg(['-f', 'png_pipe', '-i', '-', ...BITEXACT, ...down, ...(out.endsWith('.jpg') ? ['-q:v', '3'] : []), out], (w) => w.end(png));
     fs.writeFileSync(out, png); return;
   }
   if (s.kind === 'glb') {
@@ -109,11 +114,17 @@ async function run(j) {
   }
   if (s.kind === 'clip') {
     const probe = await stage(modelOpts(j)); const L = loopLen(probe.info, s.seconds); await probe.pg.close();
-    const st = await stage(modelOpts(j, { turntable: s.turntable ? 360 / L : 0 }));
-    const n = Math.round(L * s.fps); const frames = [];
-    for (let i = 0; i < n; i++) frames.push(await st.frame(i / s.fps));
+    const st = await stage(modelOpts(j, { turntable: s.turntable ? 360 / L : 0, ...bigSize }));
+    const n = Math.round(L * s.fps);
+    // Frames are streamed to every encoder as they render: a supersampled clip does not fit in memory.
+    let pipes = []; const done = s.formats.map((f) => ffmpeg(encoders[f](s.fps, `${out}.${f}`, f === 'webp' ? [] : down), (w) => pipes.push(w)));
+    for (let i = 0; i < n; i++) {
+      const b = await st.frame(i / s.fps);
+      await Promise.all(pipes.map((w) => (w.write(b) ? null : new Promise((r) => w.once('drain', r)))));
+    }
     await st.pg.close();
-    for (const f of s.formats) await ffmpeg(encoders[f](s.fps, `${out}.${f}`), (w) => { for (const b of frames) w.write(b); w.end(); });
+    for (const w of pipes) w.end();
+    await Promise.all(done);
     return;
   }
   if (s.kind === 'frames') { // a PNG sequence (backgrounds for UI mock-ups, editing in a video tool)
