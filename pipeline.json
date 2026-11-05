@@ -229,6 +229,62 @@
         "look": "night",
         "t": 2,
         "file": "scenes/factory-line/loading-bg.night.png"
+      },
+      {
+        "id": "login-night",
+        "kind": "clip",
+        "camera": "title",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "night",
+        "seconds": 6,
+        "fps": 24,
+        "formats": [
+          "webm"
+        ],
+        "file": "scenes/factory-line/login.night"
+      },
+      {
+        "id": "login-poster-night",
+        "kind": "still",
+        "camera": "title",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "night",
+        "t": 0,
+        "file": "scenes/factory-line/login.night.jpg"
+      },
+      {
+        "id": "login-maquette",
+        "kind": "clip",
+        "camera": "title",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "maquette",
+        "seconds": 6,
+        "fps": 24,
+        "formats": [
+          "webm"
+        ],
+        "file": "scenes/factory-line/login.maquette"
+      },
+      {
+        "id": "login-poster-maquette",
+        "kind": "still",
+        "camera": "title",
+        "size": [
+          1280,
+          720
+        ],
+        "look": "maquette",
+        "t": 0,
+        "file": "scenes/factory-line/login.maquette.jpg"
       }
     ],
     "early-press": [
@@ -277,6 +333,13 @@
     "Arffornia/Arffornia_Provisioning": {
       "scenes/factory-line/loading-bg.night.png": "config/launcher/storage/config/fancymenu/assets/background.png",
       "brand/wordmark.png": "config/launcher/storage/config/fancymenu/assets/logo.png"
+    },
+    "Arffornia/keycloak-theme-arffornia": {
+      "scenes/factory-line/login.night.webm": "src/login/assets/da/login.night.webm",
+      "scenes/factory-line/login.night.jpg": "src/login/assets/da/login.night.jpg",
+      "scenes/factory-line/login.maquette.webm": "src/login/assets/da/login.maquette.webm",
+      "scenes/factory-line/login.maquette.jpg": "src/login/assets/da/login.maquette.jpg",
+      "brand/wordmark.png": "src/login/assets/da/wordmark.png"
     }
   }
 }
