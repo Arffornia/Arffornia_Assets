@@ -1,313 +1,337 @@
 {
- "engine": "c636000b42c4c7d9",
+ "engine": "eddb3be5776fc016",
  "outputs": {
   "assembler:card": {
-   "hash": "6bc163c3e833b7a9",
+   "hash": "a8688072c69fab34",
    "files": [
     "models/assembler/assembler.night.png"
    ]
   },
   "assembler:glb": {
-   "hash": "046f58435b05858e",
+   "hash": "afa632ea8d85069d",
    "files": [
     "models/assembler/assembler.glb"
    ]
   },
   "assembler:icon": {
-   "hash": "0f5c48c98c2479e1",
+   "hash": "4df259cc235542b6",
    "files": [
     "models/assembler/assembler.icon.png"
    ]
   },
   "assembler:sheet": {
-   "hash": "8f9e1c9531fb8712",
+   "hash": "8589511eee625200",
    "files": [
     "models/assembler/assembler.sheet.png"
    ]
   },
   "assembler:svg": {
-   "hash": "295eff0ac6d10dfc",
+   "hash": "33ceedf448e91281",
    "files": [
     "models/assembler/assembler.anim.svg"
    ]
   },
   "assembler:turntable": {
-   "hash": "17502175dd0231ca",
+   "hash": "bfb6c4cae7b37d5d",
    "files": [
     "models/assembler/assembler.turntable.mp4",
     "models/assembler/assembler.turntable.webp"
    ]
   },
   "constructor:card": {
-   "hash": "b4d1b675e54f030b",
+   "hash": "daec14de59956c0a",
    "files": [
     "models/constructor/constructor.night.png"
    ]
   },
   "constructor:glb": {
-   "hash": "0d94067b2339b3f0",
+   "hash": "8c921027f9c89e73",
    "files": [
     "models/constructor/constructor.glb"
    ]
   },
   "constructor:icon": {
-   "hash": "93c4916bb742eff5",
+   "hash": "d7453640b3272ec4",
    "files": [
     "models/constructor/constructor.icon.png"
    ]
   },
   "constructor:sheet": {
-   "hash": "fb6e574357dda543",
+   "hash": "55400d458ac5ec96",
    "files": [
     "models/constructor/constructor.sheet.png"
    ]
   },
   "constructor:svg": {
-   "hash": "dddff0b7baa8f49c",
+   "hash": "25723132fd84dcc1",
    "files": [
     "models/constructor/constructor.anim.svg"
    ]
   },
   "constructor:turntable": {
-   "hash": "d10f4aaf66eccda3",
+   "hash": "74c7fefbb2a6b149",
    "files": [
     "models/constructor/constructor.turntable.mp4",
     "models/constructor/constructor.turntable.webp"
    ]
   },
   "early-press:fml-strip": {
-   "hash": "bcb4e293771ce876",
+   "hash": "e3511a1ab47bab94",
    "files": [
     "early/fml-strip.png"
    ]
   },
   "early-press:loop-20fps": {
-   "hash": "338eef16065bab1f",
+   "hash": "eb8f7e3f30cdf873",
    "files": [
     "early/press-20fps.sheet.png"
    ]
   },
   "factory-line:early-window": {
-   "hash": "d1d09081f63cf61f",
+   "hash": "2a4ebf333367d90f",
    "files": [
     "scenes/factory-line/early-window.sheet.png"
    ]
   },
   "factory-line:fancymenu-bg": {
-   "hash": "11a88781d67897d7",
+   "hash": "8ab5085a8126f326",
    "files": [
     "scenes/factory-line/loading-bg.night.png"
    ]
   },
+  "factory-line:login-maquette": {
+   "hash": "965fda60a82f230d",
+   "files": [
+    "scenes/factory-line/login.maquette.webm"
+   ]
+  },
+  "factory-line:login-night": {
+   "hash": "e36174ee3a4ca7ff",
+   "files": [
+    "scenes/factory-line/login.night.webm"
+   ]
+  },
+  "factory-line:login-poster-maquette": {
+   "hash": "d23ed43f80aed2a5",
+   "files": [
+    "scenes/factory-line/login.maquette.jpg"
+   ]
+  },
+  "factory-line:login-poster-night": {
+   "hash": "fceda821db37b6d8",
+   "files": [
+    "scenes/factory-line/login.night.jpg"
+   ]
+  },
   "factory-line:loop": {
-   "hash": "e53a8be5207186d7",
+   "hash": "922374d906ad2274",
    "files": [
     "scenes/factory-line/title.loop.mp4"
    ]
   },
   "factory-line:title-maquette": {
-   "hash": "34ffc600b5fcb851",
+   "hash": "1f25e1837694c036",
    "files": [
     "scenes/factory-line/title.maquette.png"
    ]
   },
   "factory-line:title-night": {
-   "hash": "25bcbef5e3733844",
+   "hash": "c4f979f537773ba8",
    "files": [
     "scenes/factory-line/title.night.png"
    ]
   },
   "factory-line:ui-frames-menu-left-night": {
-   "hash": "1429a1c8af6a5971",
+   "hash": "11e0c67b75eb153a",
    "files": [
     "scenes/factory-line/ui/menu-left-night.frames"
    ]
   },
   "factory-line:ui-frames-menu-right-maquette": {
-   "hash": "902dc50419a028dd",
+   "hash": "aae8168079c09364",
    "files": [
     "scenes/factory-line/ui/menu-right-maquette.frames"
    ]
   },
   "factory-line:ui-frames-menu-right-night": {
-   "hash": "689acd193b28a73c",
+   "hash": "018dc85b4cbaedc9",
    "files": [
     "scenes/factory-line/ui/menu-right-night.frames"
    ]
   },
   "factory-line:ui-frames-title-night": {
-   "hash": "39afdb72b800669c",
+   "hash": "a058b9dce13023fa",
    "files": [
     "scenes/factory-line/ui/title-night.frames"
    ]
   },
   "factory-line:ui-still-menu-left-night": {
-   "hash": "cdb66ebaf99924df",
+   "hash": "fbd424fb5dc238b7",
    "files": [
     "scenes/factory-line/ui/menu-left-night.png"
    ]
   },
   "factory-line:ui-still-menu-right-maquette": {
-   "hash": "f2fdc6f4e811150d",
+   "hash": "145390efb0b99c50",
    "files": [
     "scenes/factory-line/ui/menu-right-maquette.png"
    ]
   },
   "factory-line:ui-still-menu-right-night": {
-   "hash": "18f1bb4c703cb9d5",
+   "hash": "21ab16fdec2a03d6",
    "files": [
     "scenes/factory-line/ui/menu-right-night.png"
    ]
   },
   "factory-line:ui-still-title-night": {
-   "hash": "1234bfd33a7e55dc",
+   "hash": "5854596c6778fe50",
    "files": [
     "scenes/factory-line/ui/title-night.png"
    ]
   },
   "foundry:card": {
-   "hash": "43d9024bb1bd8e1d",
+   "hash": "74d827082b5f9551",
    "files": [
     "models/foundry/foundry.night.png"
    ]
   },
   "foundry:glb": {
-   "hash": "f5327aef124ceb9f",
+   "hash": "d3c5f31042bd4a70",
    "files": [
     "models/foundry/foundry.glb"
    ]
   },
   "foundry:icon": {
-   "hash": "cdc0fe09b744fd12",
+   "hash": "bcbfebcb539120cf",
    "files": [
     "models/foundry/foundry.icon.png"
    ]
   },
   "foundry:sheet": {
-   "hash": "792ed8f630c187f1",
+   "hash": "33af7ce068ab6f8e",
    "files": [
     "models/foundry/foundry.sheet.png"
    ]
   },
   "foundry:svg": {
-   "hash": "fc70e143928ed154",
+   "hash": "1f9c93c104da4dd3",
    "files": [
     "models/foundry/foundry.anim.svg"
    ]
   },
   "foundry:turntable": {
-   "hash": "b2b067c500772237",
+   "hash": "37a98b96d8c229db",
    "files": [
     "models/foundry/foundry.turntable.mp4",
     "models/foundry/foundry.turntable.webp"
    ]
   },
   "miner:card": {
-   "hash": "f58f95419a0ab876",
+   "hash": "0e5a79afb05a3955",
    "files": [
     "models/miner/miner.night.png"
    ]
   },
   "miner:glb": {
-   "hash": "0fd0b2992bd749d1",
+   "hash": "79f4b9d61fc9bed3",
    "files": [
     "models/miner/miner.glb"
    ]
   },
   "miner:icon": {
-   "hash": "15a95a2891a61744",
+   "hash": "2dc168a83cd457cb",
    "files": [
     "models/miner/miner.icon.png"
    ]
   },
   "miner:sheet": {
-   "hash": "5c690a910796bc60",
+   "hash": "b91befbcaa205e91",
    "files": [
     "models/miner/miner.sheet.png"
    ]
   },
   "miner:svg": {
-   "hash": "c3d8a5c4328b5ac9",
+   "hash": "dc70b338bf8409e6",
    "files": [
     "models/miner/miner.anim.svg"
    ]
   },
   "miner:turntable": {
-   "hash": "dab4d376bfdb5dc2",
+   "hash": "20db25e8ce493a1c",
    "files": [
     "models/miner/miner.turntable.mp4",
     "models/miner/miner.turntable.webp"
    ]
   },
   "smelter:card": {
-   "hash": "67e4fdd5afd992a5",
+   "hash": "90ddff5f46fb5734",
    "files": [
     "models/smelter/smelter.night.png"
    ]
   },
   "smelter:glb": {
-   "hash": "b6a1cb67c9cf9013",
+   "hash": "a59d0d74e1834965",
    "files": [
     "models/smelter/smelter.glb"
    ]
   },
   "smelter:icon": {
-   "hash": "0ad9e3babbe2116f",
+   "hash": "9e3669bd54b28567",
    "files": [
     "models/smelter/smelter.icon.png"
    ]
   },
   "smelter:sheet": {
-   "hash": "9768b28537225836",
+   "hash": "d4d5ddda96c5fb36",
    "files": [
     "models/smelter/smelter.sheet.png"
    ]
   },
   "smelter:svg": {
-   "hash": "22aae01af9036c0d",
+   "hash": "33b4edfc496142c8",
    "files": [
     "models/smelter/smelter.anim.svg"
    ]
   },
   "smelter:turntable": {
-   "hash": "f9b3c04372371b98",
+   "hash": "31dc277297666f3d",
    "files": [
     "models/smelter/smelter.turntable.mp4",
     "models/smelter/smelter.turntable.webp"
    ]
   },
   "space-elevator:card": {
-   "hash": "95a85389c3191eac",
+   "hash": "c3b8acbab21a2bfb",
    "files": [
     "models/space-elevator/space-elevator.night.png"
    ]
   },
   "space-elevator:glb": {
-   "hash": "a06ea65a8dccf709",
+   "hash": "01d6d11c9eebe80c",
    "files": [
     "models/space-elevator/space-elevator.glb"
    ]
   },
   "space-elevator:icon": {
-   "hash": "d5f2d470d3849a19",
+   "hash": "984fe6b8123cefdd",
    "files": [
     "models/space-elevator/space-elevator.icon.png"
    ]
   },
   "space-elevator:sheet": {
-   "hash": "778332e791c5d0f2",
+   "hash": "07eeb237015d9a3c",
    "files": [
     "models/space-elevator/space-elevator.sheet.png"
    ]
   },
   "space-elevator:svg": {
-   "hash": "ed9170a2c272cc2b",
+   "hash": "9bf4afe1020752a8",
    "files": [
     "models/space-elevator/space-elevator.anim.svg"
    ]
   },
   "space-elevator:turntable": {
-   "hash": "9ae5622ddd734a8c",
+   "hash": "68e194e858f86a68",
    "files": [
     "models/space-elevator/space-elevator.turntable.mp4",
     "models/space-elevator/space-elevator.turntable.webp"
