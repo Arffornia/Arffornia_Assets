@@ -82,6 +82,8 @@ function ffmpeg(argv, input) {
 }
 const encoders = {
   mp4: (fps, out) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out],
+  // Login page background (keycloak-theme-arffornia): VP9 keeps a 6 s 720p loop near 1 MB.
+  webm: (fps, out) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, '-c:v', 'libvpx-vp9', '-crf', '40', '-b:v', '0', '-deadline', 'good', '-cpu-used', '2', '-pix_fmt', 'yuv420p', '-an', out],
   webp: (fps, out) => ['-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'png', '-i', '-', ...BITEXACT, '-vf', 'scale=480:-1:flags=lanczos', '-c:v', 'libwebp_anim', '-q:v', '78', '-loop', '0', out],
 };
 
@@ -98,7 +100,9 @@ async function run(j) {
   const out = path.join(OUT, j.file); fs.mkdirSync(path.dirname(out), { recursive: true });
   const s = j.spec;
   if (s.kind === 'still') {
-    const st = await stage(modelOpts(j)); fs.writeFileSync(out, await st.frame(s.t ?? 0.4)); await st.pg.close(); return;
+    const st = await stage(modelOpts(j)); const png = await st.frame(s.t ?? 0.4); await st.pg.close();
+    if (out.endsWith('.jpg')) return ffmpeg(['-f', 'png_pipe', '-i', '-', ...BITEXACT, '-q:v', '4', out], (w) => w.end(png));
+    fs.writeFileSync(out, png); return;
   }
   if (s.kind === 'glb') {
     const st = await stage(modelOpts(j, { size: [64, 64], transparent: true })); fs.writeFileSync(out, Buffer.from(await st.pg.evaluate(() => window.STAGE.exportGLB()), 'base64')); await st.pg.close(); return;
