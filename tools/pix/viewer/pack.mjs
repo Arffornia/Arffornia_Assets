@@ -9,7 +9,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '../../..');
 const out = join(root, 'out/viewer');
 mkdirSync(join(out, 'models'), { recursive: true });
 copyFileSync(join(root, 'tools/pix/viewer/index.html'), join(out, 'index.html'));
-copyFileSync(join(root, 'render/bbmodel.js'), join(out, 'bbmodel.js'));
+// the loader imports 'three' bare; point it at the same +esm build as the page (no import map in an artifact)
+writeFileSync(join(out, 'bbmodel.js'), readFileSync(join(root, 'render/bbmodel.js'), 'utf8').replace("from 'three'", "from 'https://cdn.jsdelivr.net/npm/three@0.180.0/+esm'"));
 const list = process.argv.slice(2).map((arg) => {
   const [ref, id] = arg.split(':');
   const src = join(root, 'concepts/pix', id);

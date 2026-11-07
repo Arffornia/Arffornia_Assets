@@ -43,14 +43,15 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none }
   <div class="hint">Glisser : tourner · Molette : zoom · Clic droit : déplacer</div>
 </div>
 
-<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/" } }</script>
 <script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+// no import map: the artifact frame loads a module before this page, and import maps must come first.
+// jsDelivr's +esm builds rewrite their own 'three' imports to the same URL, so everything shares one three.js.
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/+esm';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js/+esm';
+import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/postprocessing/EffectComposer.js/+esm';
+import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/postprocessing/RenderPass.js/+esm';
+import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/postprocessing/UnrealBloomPass.js/+esm';
+import { OutputPass } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/postprocessing/OutputPass.js/+esm';
 import { buildModel, pose, loadImage } from './bbmodel.js';
 
 const $ = (id) => document.getElementById(id);
