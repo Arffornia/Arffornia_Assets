@@ -309,8 +309,20 @@ export function checkBelts(ctx) {
   const sources = [...(meta.ports || []).filter((p) => p.kind === 'rotation' && p.bone).map((p) => p.bone), ...(meta.sources || []).map((x) => x.bone)];
   for (const x of meta.sources || []) if (!x.why) add('drivetrain', 'error', `source ${x.bone}: an internal power source needs a why (what turns it).`);
   const working = anims.filter((an) => /^(working|idle|run)/i.test(an.name));
-  const spinners = Object.entries(meta.joints || {}).filter(([, j]) => j.type === 'revolute').map(([bn, j]) => ({ bn, w: wheel(ctx, { part: bn, axis: j.axis }) }))
-    .filter(({ w }) => w && working.some((an) => Math.abs(spin(ctx, w, an)) * (an.length || 0) >= 2 * Math.PI * 0.95));
+  // a spinner keeps turning relative to its parent: a crucible that only tilts on a turning carousel is not one
+  const localTurns = (bn, axis, an) => {
+    const bone = ctx.sk.bones.get(bn); if (!bone) return 0;
+    const k = Math.max(2, Math.ceil((an.length || 0) * rules.sweepHz)), ax = AXES[axis] ?? 0; let prev = null, total = 0;
+    for (let s = 0; s <= k; s++) {
+      poseAt(ctx.sk, Math.min((s / k) * an.length, an.length - 1e-6), an.name);
+      const q = bone.quaternion, v = [q.x, q.y, q.z][ax], a = 2 * Math.atan2(v, q.w);
+      if (prev !== null) { let d = a - prev; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; total += d; }
+      prev = a;
+    }
+    return Math.abs(total) / (2 * Math.PI);
+  };
+  const spinners = Object.entries(meta.joints || {}).filter(([, j]) => j.type === 'revolute').map(([bn, j]) => ({ bn, j }))
+    .filter(({ bn, j }) => working.some((an) => localTurns(bn, j.axis, an) >= 0.95));
   if (spinners.length) {
     const edges = new Map();
     const link = (x, y) => { for (const [p, q] of [[x, y], [y, x]]) { if (!edges.has(p)) edges.set(p, new Set()); edges.get(p).add(q); } };
