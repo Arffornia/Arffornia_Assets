@@ -69,6 +69,10 @@ export function lintModel(json, rules, { id = json.name } = {}) {
     }
   }
 
+  // parts under a joint marked light (fire, glow, fields) are not solid: no support, no seat, no loose check
+  const jointsAll = meta.joints || {};
+  const lightNames = new Set(sk.elements.filter((e) => { let n = e.obj.parent; while (n) { if (jointsAll[n.name]) return !!jointsAll[n.name].light; n = n.parent; } return false; }).map((e) => e.name));
+  const solid = (grp) => grp.filter((nm) => !lightNames.has(nm));
   // 3. connectivity: every part must be held by something that reaches the ground
   const grounded = (B) => B.map((b) => b.min[1] <= TOL);
   const components = (O, B) => {
@@ -78,7 +82,7 @@ export function lintModel(json, rules, { id = json.name } = {}) {
     const groups = new Map(); O.forEach((_, i) => { if (!ok.has(f(i))) { const r = f(i); groups.set(r, [...(groups.get(r) || []), O[i].name]); } });
     return [...groups.values()];
   };
-  for (const grp of components(rest, boxes)) add('floating', 'error', `not connected to the ground: ${grp.slice(0, 6).join(', ')}${grp.length > 6 ? ` (+${grp.length - 6})` : ''}. Add a support, bracket or mount.`, grp);
+  for (const grp0 of components(rest, boxes)) { const grp = solid(grp0); if (!grp.length) continue; add('floating', 'error', `not connected to the ground: ${grp.slice(0, 6).join(', ')}${grp.length > 6 ? ` (+${grp.length - 6})` : ''}. Add a support, bracket or mount.`, grp); }
 
   // 4. stability: the centre of mass must sit over the ground contact
   const base = []; let M = 0, cx = 0, cz = 0;
@@ -132,10 +136,10 @@ export function lintModel(json, rules, { id = json.name } = {}) {
         if (!h || pen > h.pen) hits.set(key, { a, b, pen, t, first: h ? h.first : t });
       }
       if (Math.abs(t * rules.detachHz - Math.round(t * rules.detachHz)) < 1e-6) {
-        for (const grp of components(O, B)) if (grp.some((nm) => sk.elements.find((e) => e.name === nm)?.mover)) {
+        for (const grp0 of components(O, B)) { const grp = solid(grp0); if (grp.length && grp.some((nm) => sk.elements.find((e) => e.name === nm)?.mover)) {
           const key = `detach|${grp.join(',')}`;
           if (!hits.has(key)) hits.set(key, { detach: grp, t });
-        }
+        } }
       }
     }
     for (const h of hits.values()) {
@@ -160,7 +164,7 @@ export function lintModel(json, rules, { id = json.name } = {}) {
 
   // 6b. mechanics: cantilevers and seats, belts and gears, joint kinematics (tools/lint/mechanics.mjs)
   const mctx = { sk, json, meta, rest, boxes, rules, add, waivedOne, anims };
-  checkCantilevers(mctx);
+  checkCantilevers({ ...mctx, lightNames });
   checkBelts(mctx);
   checkKinematics(mctx);
   for (const [name, { worst, t }] of out) add('footprint', 'error', `${name} leaves the ${fp[0]}×${fp[1]}${meta.height ? `×${meta.height}` : ''} block grid by ${px(worst)} px${t !== null ? ` (during animation, ${fmtT(t)})` : ''}.`, [name]);

@@ -174,6 +174,14 @@ test('kinematics: a respawning work piece may teleport only while hidden', () =>
   assert.ok(kinErrors(mk(1)).length > 0);
 });
 
+test('floating: a part under a light joint (flame, glow) needs no support', () => {
+  const flame = cube('flame', [-2, 10, -2], [2, 14, 2]);
+  const mk = (light) => model([base(), flame], { outliner: [base().uuid, bone('flame', [0, 10, 0], [flame])],
+    meta: { joints: { flame: { type: 'free', why: 'a flame', ...(light ? { light: true } : {}) } } } });
+  assert.ok(!checks(lintModel(mk(true), rules)).includes('floating'));
+  assert.ok(checks(lintModel(mk(false), rules)).includes('floating'));
+});
+
 test('kinematics: limits, rigid motion, hinge pivot, loop seam, scale, deploy', () => {
   const lid = cube('lid', [-6, 20, -6], [6, 22, 6]);
   const mk = (frames, joint, { origin = [0, 20, -6], loop = 'once', name = 'open', channel = 'rotation', length = 1 } = {}) => model([base(), post(), lid], {

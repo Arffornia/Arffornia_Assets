@@ -34,7 +34,7 @@ export const meta = {
     carousel: { type: 'revolute', axis: 'y' }, pinion: { type: 'revolute', axis: 'y' },
     crucible_1: { type: 'revolute', axis: 'x' }, crucible_2: { type: 'revolute', axis: 'z' }, crucible_3: { type: 'revolute', axis: 'x' }, crucible_4: { type: 'revolute', axis: 'z' },
     coil_arm: { type: 'revolute', axis: 'y' },
-    field: { type: 'free', why: 'induction field glow: light that pulses' },
+    field: { type: 'free', light: true, why: 'induction field glow: light that pulses' },
     stream: { type: 'free', why: 'molten metal stream, only while pouring' },
     ingot: { type: 'free', respawn: true, why: 'the work piece: the ingot sets in the mold, leaves by the port, the next one is cast' },
   },

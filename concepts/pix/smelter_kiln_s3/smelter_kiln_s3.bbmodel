@@ -20693,18 +20693,22 @@
    },
    "flame_1": {
     "type": "free",
+    "light": true,
     "why": "flame: light that flickers and lights up"
    },
    "flame_2": {
     "type": "free",
+    "light": true,
     "why": "flame: light that flickers and lights up"
    },
    "flame_3": {
     "type": "free",
+    "light": true,
     "why": "flame: light that flickers and lights up"
    },
    "flame_4": {
     "type": "free",
+    "light": true,
     "why": "flame: light that flickers and lights up"
    },
    "roller_wn": {
