@@ -26,7 +26,10 @@ for (const line of readFileSync(join(root, tsvPath), 'utf8').split('\n')) {
   if (!existsSync(png)) continue;
   const jpg = join(imgDir, `${ref}.jpg`);
   execFileSync('magick', [png, '-resize', '1024x1024', '-quality', '82', jpg]);
-  items.push({ ref, group, title, tier: Number(tier), mechanism, predicted: predict?.trim() === 'y', img: `img/${round}/${ref}.jpg` });
+  // a 3D model round may carry an animation next to the still: <ref>.gif, shown in the enlarged view
+  const gifSrc = join(srcDir, `${ref}.gif`), gif = existsSync(gifSrc) ? `img/${round}/${ref}.gif` : undefined;
+  if (gif) copyFileSync(gifSrc, join(imgDir, `${ref}.gif`));
+  items.push({ ref, group, title, tier: Number(tier), mechanism, predicted: predict?.trim() === 'y', img: `img/${round}/${ref}.jpg`, ...(gif ? { gif } : {}) });
 }
 
 const usedGroups = [...new Set(items.map((i) => i.group))].map((id) => ({ id, ...groups[id] }));
