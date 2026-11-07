@@ -6,13 +6,15 @@ import { execFileSync } from 'node:child_process';
 import { openViewer } from '../view/driver.mjs';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
-const [id, animName, n = 48, yaw = 38] = process.argv.slice(2);
+const [id, animName, nArg, yaw = 38] = process.argv.slice(2);
 if (!id) { console.error('usage: gif.mjs <id> [anim] [frames] [yaw]'); process.exit(2); }
 const dir = path.join(ROOT, 'concepts/pix', id);
 const model = JSON.parse(fs.readFileSync(path.join(dir, `${id}.bbmodel`), 'utf8'));
 const glowmask = `data:image/png;base64,${fs.readFileSync(path.join(dir, `${id}_glowmask.png`)).toString('base64')}`;
 const anim = animName ? model.animations.find((a) => a.name === animName) : model.animations[0];
 if (!anim) { console.error(`${id}: no animation ${animName || ''}`); process.exit(1); }
+// 15 frames per second by default: at 8 fps a gear advancing one tooth per frame looks frozen (stroboscope)
+const n = Number(nArg) || Math.min(240, Math.round(15 * anim.length));
 const out = path.join(ROOT, 'out/pix', id); const tmp = path.join(out, `.${anim.name}-frames`);
 fs.mkdirSync(tmp, { recursive: true });
 const v = await openViewer();

@@ -327,13 +327,15 @@ export function build(b, { mat: plainMat }) {
   b.group('billet', [BX, WORK, 0], () => b.box('billet', [BX - BILLET.len / 2, WORK, -BILLET.w / 2], [BX + BILLET.len / 2, WORK + BILLET.h, BILLET.w / 2], billetMat));
 
   // ---------------------------------------------------------------- animation
-  const L = 6, TC = 2, DRIVE_TURNS = -6;
+  const L = 12, TC = 2, DRIVE_TURNS = -12; // rollers 1 turn/s: 9.4 px/s at the surface
   const spinZ = (turns, off = 0) => ({ rotation: range(8 * L + 1).map((q) => [q / 8, [0, 0, off + (turns * 360 * q) / (8 * L)]]) });
   // hammer: the cam lifts the tappet by LOBE·sin(angle) from the moment the lobe reaches west, until the tip slips
   // off the tappet end (RELEASE); then the ram falls onto whatever lies on the anvil. Blows at 0.6, 2.6 and 4.6 s.
-  const TR = (TC * RELEASE) / (2 * Math.PI), BLOWS = [0.6, 2.6, 4.6], T0 = BLOWS[0] - TR;
+  // the cam turns from its bind angle with no offset (an offset would break the gear mesh), so each lift starts
+  // on a whole cam turn and the blows land TR later
+  const TR = (TC * RELEASE) / (2 * Math.PI), T0 = 4, BLOWS = [4, 6, 8].map((b) => b + TR);
   const H = [BILLET.h, 2.0, 1.6, 1.6]; // billet height before blow 1, after blow 1, 2, 3
-  const restAt = (t) => (t < BLOWS[0] ? 0 : t < BLOWS[1] ? H[1] : t < BLOWS[2] ? H[2] : t < 4.95 ? H[3] : 0); // die height above the anvil at rest
+  const restAt = (t) => (t < BLOWS[0] ? 0 : t < BLOWS[1] ? H[1] : t < BLOWS[2] ? H[2] : t < 9.6 ? H[3] : 0); // die height above the anvil at rest
   const lifted = (t) => { const c = mod(t - T0, TC); return c > TR ? null : CAM[1] - TAPPET + LOBE * Math.sin((2 * Math.PI * c) / TC); };
   const ramKeys = [];
   for (let q = 0; q <= 8 * L; q++) {
@@ -341,19 +343,20 @@ export function build(b, { mat: plainMat }) {
     ramKeys.push([t, [0, lf === null ? restAt(t) : Math.max(restAt(t), lf), 0]]);
   }
   for (const tb of BLOWS) ramKeys.push([tb - 0.01, [0, Math.max(restAt(tb - 0.02), LOBE * Math.sin(RELEASE)), 0]], [tb + 0.12, [0, restAt(tb + 0.01), 0]]);
-  ramKeys.push([4.9, [0, restAt(4.9), 0]], [5.0, [0, restAt(5.0), 0]]);
+  ramKeys.push([9.55, [0, restAt(9.55), 0]], [9.65, [0, restAt(9.65), 0]]);
   ramKeys.sort((a, c) => a[0] - c[0]);
   // billet: out of the furnace, under the hammer for three blows, through the rolls, into the bin
   const bx = (x, y = 0) => [x - BX, y, 0];
   const h = (k) => H[k] / BILLET.h;
   const billet = {
-    position: [[0, bx(-32)], [0.5, bx(0)], [4.75, bx(0)], [5.05, bx(MILL_X - 4)], [5.4, bx(MILL_X + 8)], [5.55, bx(36)], [5.7, bx(39.5, -1)], [5.88, bx(39.5, -1)], [5.89, bx(-32)], [L, bx(-32)]],
-    scale: [[0, [1, 1, 1]], [0.6, [1, 1, 1]], [0.72, [1.1, h(1), 1]], [2.6, [1.1, h(1), 1]], [2.72, [1.2, h(2), 1]], [4.6, [1.2, h(2), 1]], [4.72, [1.3, h(3), 1]], [5.05, [1.3, h(3), 1]], [5.25, [1.6, GAP / BILLET.h, 1]], [5.85, [1.6, GAP / BILLET.h, 1]], [5.86, [0.02, 0.02, 0.02]], [5.9, [0.02, 0.02, 0.02]], [L, [1, 1, 1]]],
+    // it rolls to the hammer and waits, slips under while the cam holds the ram up, takes three blows, rolls on
+    position: [[0, bx(-32)], [2.0, bx(-12.5)], [4.12, bx(-12.5)], [4.32, bx(0)], [8.6, bx(0)], [10.4, bx(MILL_X - 4)], [11.3, bx(MILL_X + 8)], [11.5, bx(34)], [11.62, bx(39.5, -1)], [11.83, bx(39.5, -1)], [11.84, bx(-32)], [L, bx(-32)]],
+    scale: [[0, [1, 1, 1]], [4.34, [1, 1, 1]], [4.46, [1.1, h(1), 1]], [6.34, [1.1, h(1), 1]], [6.46, [1.2, h(2), 1]], [8.34, [1.2, h(2), 1]], [8.46, [1.3, h(3), 1]], [10.4, [1.3, h(3), 1]], [10.7, [1.6, GAP / BILLET.h, 1]], [11.7, [1.6, GAP / BILLET.h, 1]], [11.82, [0.02, 0.02, 0.02]], [11.88, [0.02, 0.02, 0.02]], [L, [1, 1, 1]]],
   };
   const CAM_TURNS = (DRIVE_TURNS * GD) / GC;
   const working = {
     shaft_in: spinZ(DRIVE_TURNS / -1.5), drive_out: spinZ(DRIVE_TURNS), idler: spinZ(-DRIVE_TURNS * GD / GI),
-    cam: spinZ(CAM_TURNS, -((CAM_TURNS * 360) / L) * T0),
+    cam: spinZ(CAM_TURNS),
     roll_bot: spinZ(DRIVE_TURNS * 1.5 / MILL_SPRK), roll_top: spinZ(-DRIVE_TURNS * 1.5 / MILL_SPRK),
     ...Object.fromEntries(ROLLERS.map((_, i) => [`roller_${i + 1}`, spinZ(DRIVE_TURNS)])),
     ram: { position: ramKeys }, billet,
