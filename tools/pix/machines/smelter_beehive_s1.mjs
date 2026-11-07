@@ -28,7 +28,7 @@ export const meta = {
   ],
   joints: {
     tap_door: { type: 'prismatic', axis: 'y', min: 0, max: 7 },
-    fire: { type: 'free', why: 'flames: light that flickers' },
+    fire: { type: 'free', light: true, why: 'flames: light that flickers' },
     ingot: { type: 'free', respawn: true, why: 'the work piece: a fresh ingot slides out at each tap, the next one forms inside' },
   },
   lint: { allow: [

@@ -39,7 +39,7 @@ export const meta = {
     drum: { type: 'revolute', axis: 'x' }, pinion: { type: 'revolute', axis: 'x' },
     shaft_in: { type: 'revolute', axis: 'x' },
     chute: { type: 'revolute', axis: 'z' }, stream: { type: 'free', why: 'molten metal stream, only while pouring' },
-    ...Object.fromEntries([1, 2, 3, 4].map((i) => [`flame_${i}`, { type: 'free', why: 'flame: light that flickers and lights up' }])),
+    ...Object.fromEntries([1, 2, 3, 4].map((i) => [`flame_${i}`, { type: 'free', light: true, why: 'flame: light that flickers and lights up' }])),
     roller_wn: { type: 'revolute', axis: 'x' }, roller_ws: { type: 'revolute', axis: 'x' },
     roller_en: { type: 'revolute', axis: 'x' }, roller_es: { type: 'revolute', axis: 'x' },
   },

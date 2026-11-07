@@ -17708,6 +17708,7 @@
    },
    "field": {
     "type": "free",
+    "light": true,
     "why": "induction field glow: light that pulses"
    },
    "stream": {

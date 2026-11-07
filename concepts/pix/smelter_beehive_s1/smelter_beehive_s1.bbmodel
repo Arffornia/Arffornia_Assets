@@ -7682,6 +7682,7 @@
    },
    "fire": {
     "type": "free",
+    "light": true,
     "why": "flames: light that flickers"
    },
    "ingot": {
