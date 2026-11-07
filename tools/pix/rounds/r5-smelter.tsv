@@ -1,0 +1,39 @@
+#group	ref	title	tier	mechanism	predict
+S	S1	Brick beehive kiln	0	domed beehive kiln built of warm red bricks with iron hoops, 2x2 footprint, a small wooden chute drops ore into a hopper on the dome, a coal door glows on one side, finished ingots slide out onto a stone tray on the other side, short brick chimney	y
+S	S2	Twin beehive kilns	0	two domed brick kilns side by side on a 4x2 stone plinth sharing one central chimney, a minecart rail runs along the front to load ore and carry ingots away, glowing doors
+S	S3	Flame-licked rotary kiln	2	long rotating steel drum on roller rings over a 5x2 footprint, a row of burners underneath with flames licking the drum, an ore conveyor belt climbs to the high end, ingots drop down a chute into a bin at the low end, a slag cart beside it	y
+S	S4	Kiln with coal bunker	2	L-shaped layout, a rotating drum kiln with a tall riveted coal bunker at the corner, a small conveyor carries coal from the bunker into the burner, ore enters by a separate belt, ingot chute out
+S	S5	Bloomery with slag runnel	0	long 5x3 layout, stone shaft furnace driven by an overshot water wheel and bellows, molten slag runs along a stone channel into a row of sand molds, the iron bloom comes out of a front door onto a stone slab	y
+S	S6	Twin shafts one wheel	1	one large water wheel in the middle of a 5x2 layout drives bellows for two stone shaft furnaces, one on each side, both with glowing tap holes pouring into molds
+T	T1	Induction coil carousel	4	open crucibles ride a conveyor loop through a ring of fat glowing copper induction coils, molten metal glows in the open tops, a mechanical ladle arm pours into ingot molds on a second conveyor, 5x3 footprint	y
+T	T2	Open-roof arc furnace	4	arc furnace with its roof swung aside, three graphite electrodes raised on a gantry with heavy cables, an overhead crane bucket drops ore in, the vessel tilts to pour into a ladle on a rail car, 4x3 footprint	y
+T	T3	Heating tunnel conveyor	4	long 7x2 tunnel furnace with an open side, ore travels on a mesh conveyor belt past glowing heating element bars, ingots exit into stacked crates at the far end, copper busbars run along the top
+T	T4	Tesla coil crucible	4	open crucible in the middle of a 3x3 square, four tesla coils with copper toroids stand on the corners as separate blocks, lightning arcs strike the crucible and the ore melts, cables link the coils	y
+T	T5	Induction rail line	4	L-shaped rail track, ingot carts pass through three induction coil rings in a row, each ring glows brighter than the last, the last cart tips glowing metal into a mold
+T	T6	Travelling arc trough	5	long open 6x2 trough of ore, an electrode carriage on rails travels along it melting the ore under a bright arc with sparks, molten metal flows to an outlet at the end
+T	T7	Capacitor bank smelter	4	a 4x2 wall of large capacitors with charge lights filling up, thick cables to an open crucible in front, a flash discharge melts the ore, glowing output spout
+T	T8	Transformer and tilting pot	4	electric melting pot on a hydraulic tilt cradle pouring into molds on a conveyor, a separate transformer block connected by cables and insulators, 4x2 footprint
+F	F1	Trip hammer line	0	long 6x2 line, a water wheel cam lifts a heavy wooden trip hammer, a glowing iron bloom slides on a wooden roller track from a small furnace to the anvil under the hammer, then into a quench trough with steam	y
+F	F2	Bellows and hammer corner	1	L-shaped forge yard, a bellows-fed hearth, a cam-driven hammer at the corner and a quench barrel, glowing metal moves between them on a small roller track
+F	F3	Steam hammer rolling line	2	7x3 line, glowing billets leave a reheating furnace on a roller conveyor, pass under a big steam hammer, then through two rolling mill stands, finished plates stack at the end	y
+F	F4	Rolling mill flywheel	2	reheating furnace feeding a two-high rolling mill stand with a giant flywheel and gears, a red-hot strip snakes between the rolls, 6x3 footprint
+F	F5	Extrusion press and reel	3	furnace pushes a hot billet into a horizontal extrusion press, a glowing rod comes out and coils onto a spinning reel, 5x2 footprint
+F	F6	Hydraulic press line	6	mass production line 6x3, robot arms move glowing blanks from a furnace to a four-post hydraulic press with black and yellow hazard edges, pressed plates leave on a conveyor, no screens	y
+F	F7	Drop forge battery	5	one conveyor feeds three drop hammers in a row, each stamps a different shape, glowing parts move from hammer to hammer, 7x2 footprint
+F	F8	Casting carousel	6	round 4x4 layout, a furnace pours molten metal into molds on a circular conveyor turntable, cooling water sprays, an ejector pushes finished ingots onto an outgoing belt
+L	L1	Crucible carousel hoppers	2	round 4x4 turntable with four crucibles under a coal-fired hood, three ore hoppers around it each feed a crucible by chute, one crucible tilts to pour into ingot molds on a conveyor	y
+L	L2	Crucible chain track	2	crucibles on a linear chain track pass under three different hoppers in turn, then through a furnace tunnel, then tip into molds, 6x2 footprint
+L	L3	Gantry mixing ladle	3	5x3 gantry frame over three small furnaces each melting a different metal, a big ladle on the gantry moves between them and pours the mixed alloy at a casting station	y
+L	L4	Glass lava basin with arm	7	open basin of glowing molten metal behind glass walls, a mechanical stirring arm moves inside it, three pipes bring different molten metals in from the sides, alloy flows out to a casting conveyor, few teal lights, 4x3 footprint	y
+L	L5	Spiral glass vat	7	tall glass vat with a spiral stirrer turning inside molten metal, input pipes of molten metal on three sides, outlet spout at the base onto a conveyor, 3x3 footprint
+L	L6	Weigh belt alloy kiln	5	a tower of three hoppers drops measured ore onto a weighing belt that feeds a furnace, industrial yellow trims, 3x4 footprint
+L	L7	Cupola with three hoists	2	central cupola furnace with three skip hoists on three sides carrying ore, coke and limestone up to the top, separate slag tap and iron tap at the base, cross-shaped 5x5 footprint
+L	L8	Ceramic twin stream mixer	8	white ceramic base, a glass crucible in which two molten streams of different colours spiral together, levitating ring mixers above it
+M	M1	Particle ring field	8	large 9x9 square loop of separate accelerator blocks placed on the ground, a violet field glows between them, a beam runs around the loop and into a transparent glass chamber in the centre where a block of ore melts and floats, white ceramic base	y
+M	M2	Raised ring on pillars	8	5x5 ring of accelerator segments raised on white ceramic pillars, a glass dome in the middle with the ore floating and glowing inside, violet beam visible along the ring	y
+M	M3	Glass fusion sphere	9	transparent glass sphere on a white ceramic hexagonal base, six laser emitter blocks around it fire beams onto a floating ore pellet in the centre that glows white, 5x5 footprint	y
+M	M4	Linear accelerator	9	long 9x2 line of magnet segments, a beam travels along it and ends in a glass target chamber where a molten droplet floats
+M	M5	Corner field emitters	8	four field emitter pylons as separate blocks on the corners of a 5x5 area, a transparent cube-shaped field between them with stacked spinning rings and a melting ore block inside
+M	M6	Coil cage on ceramic plinth	9	white ceramic hexagonal plinth, a copper coil cage behind glass, a blob of molten metal levitates and spins inside it, cyan accents
+M	M7	Pinch pylons pool	8	four tall pinch pylons with stacked coil bands around a central open glass pool of molten metal, violet arcs from each pylon into the pool
+M	M8	Ring gate converter	9	a conveyor carries ore into a vertical ring portal on a white ceramic base, glowing ingots come out the other side, light ripples across the ring

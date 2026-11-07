@@ -1,0 +1,10 @@
+{
+  "$comment": "Bench targets: Oritech machines (CC0, github.com/Rearth/Oritech). The artist sees only the reference renders and the brief, never the source model.",
+  "source": "https://raw.githubusercontent.com/Rearth/Oritech/HEAD/src/main/resources/assets/oritech",
+  "targets": {
+    "foundry": { "geo": "geckolib/models/block/models/foundry.geo.json", "tex": "textures/models/foundry.png", "brief": "Oritech Foundry: an alloy furnace. Two ingot inputs are melted and combined; a heavy industrial block with side towers, a central blue heating core and a press on top." },
+    "assembler": { "geo": "geckolib/models/block/models/assembler.geo.json", "tex": "textures/models/assembler.png", "glow": "textures/models/assembler_glowmask.png", "brief": "Oritech Assembler: combines several parts into a component. A workbench-like machine with a back wall, glowing work plates and an overhead gantry with a tool head." },
+    "centrifuge": { "geo": "geckolib/models/block/models/centrifuge.geo.json", "tex": "textures/models/centrifuge.png", "brief": "Oritech Centrifuge: separates materials by spinning. A base housing with a rotor carrying tanks that spin around a vertical axis." }
+  },
+  "views": [[38, 24], [218, 24], [128, 20], [308, 20]]
+}

@@ -95,6 +95,7 @@ export class Model {
 
   // pack every face into an atlas (32 texels per block), paint it, emit .bbmodel + png + glowmask
   build() {
+    const td = (this.meta.texelsPerBlock || 32) / 16;
     const DIMS = { north: [0, 1], south: [0, 1], east: [2, 1], west: [2, 1], up: [0, 2], down: [0, 2] };
     const islands = [];
     for (const el of this.elements) {
@@ -102,7 +103,7 @@ export class Model {
       for (const face of Object.keys(DIMS)) {
         if (el._hide.has(face)) { el.faces[face] = { uv: [0, 0, 0, 0], texture: null }; continue; }
         const [i, j] = DIMS[face];
-        const w = Math.max(1, Math.round(sz[i] * 2)), h = Math.max(1, Math.round(sz[j] * 2));
+        const w = Math.max(1, Math.round(sz[i] * td)), h = Math.max(1, Math.round(sz[j] * td));
         islands.push({ el, face, w, h, pw: sz[i], ph: sz[j] });
       }
     }

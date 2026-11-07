@@ -1,0 +1,27 @@
+{
+ "S": {
+  "tier": "Four simple",
+  "era": "Tiers 0–2",
+  "hint": "Choisis 1 piste par tier : le tier 0 (A5 ou A1 retravaillés) et le tier 2 (le four rotatif avec flammes). 1 minerai, 1 lingot."
+ },
+ "T": {
+  "tier": "Four électrique",
+  "era": "Tiers 4–5",
+  "hint": "Remplace C1. Choisis 1 piste, ou dis qu'aucune ne va. Procédé ouvert, pas de boîte."
+ },
+ "F": {
+  "tier": "Ligne de forge",
+  "era": "Tiers 0–6",
+  "hint": "Choisis 2 ou 3 pistes réparties sur les tiers. Ce seront les marques successives de la ligne de forge (A8, B4, D10)."
+ },
+ "L": {
+  "tier": "Four d'alliage",
+  "era": "Tiers 2–8",
+  "hint": "Choisis 2 ou 3 pistes réparties sur les tiers. Plusieurs entrées mélangées (B8, D1)."
+ },
+ "M": {
+  "tier": "Multibloc endgame",
+  "era": "Tiers 8–9",
+  "hint": "Choisis 1 ou 2 pistes. Blocs posés autour, champ visible, item au centre (E5, E9, E6)."
+ }
+}

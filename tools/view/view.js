@@ -15,7 +15,36 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { buildModel, pose, loadImage } from '../../render/bbmodel.js';
 
-let R, scene, camera, composer, model, opts;
+let R, scene, camera, composer, model, opts, fx = [];
+
+// Effect emitters declared in arffornia.fx ({ kind: 'smoke'|'ember', at: [x, y, z] px, anims, rise, spread,
+// drift, size }): the mod spawns real particles there; the preview shows deterministic stand-ins (a
+// function of t only, so GIF loops stay seamless).
+const hash = (i) => { const v = Math.sin(i * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+function setupFx(o) {
+  for (const e of (o.model.arffornia || {}).fx || []) {
+    if (e.anims && !e.anims.includes(o.anim)) continue;
+    const smoke = e.kind === 'smoke', n = e.count || (smoke ? 12 : 14), ps = [];
+    for (let i = 0; i < n; i++) {
+      const mat = smoke ? new THREE.MeshStandardMaterial({ color: e.color || '#7d7873', roughness: 1, transparent: true, depthWrite: false })
+        : new THREE.MeshBasicMaterial({ color: e.color || '#ffb347', transparent: true, depthWrite: false });
+      const m = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat); m.renderOrder = 4; scene.add(m); ps.push(m);
+    }
+    fx.push({ e, ps, life: e.life || (smoke ? 2 : 1) });
+  }
+}
+function poseFx(t) {
+  for (const { e, ps, life } of fx) {
+    const [x, y, z] = e.at.map((v) => v / 16), smoke = e.kind === 'smoke', sp = (e.spread || 2) / 16;
+    ps.forEach((m, i) => {
+      const age = (((t / life) + i / ps.length) % 1 + 1) % 1, k = Math.floor((t / life) + i / ps.length);
+      const jx = hash(i * 13 + k * 7) - 0.5, jz = hash(i * 29 + k * 3) - 0.5, grow = smoke ? 1 + age * 2.5 : 1;
+      m.position.set(x + jx * sp * grow + age * (e.drift || 0) / 16, y + age * (e.rise || (smoke ? 40 : 10)) / 16, z + jz * sp * grow);
+      m.scale.setScalar(((smoke ? 1.5 + age * 4 : 0.7 * (1 - age) + 0.25) * (e.size || 1)) / 16);
+      m.material.opacity = smoke ? 0.7 * Math.min(1, age * 8) * (1 - age) : 1 - age * 0.8;
+    });
+  }
+}
 
 function grad(cols) {
   const c = document.createElement('canvas'); c.width = 4; c.height = 512; const x = c.getContext('2d');
@@ -75,6 +104,7 @@ export async function init(o) {
   });
   pose(model, o.t || 0, o.anim);
   scene.add(model.root);
+  if (mode === 'hero') { setupFx(o); poseFx(o.t || 0); }
 
   const box = new THREE.Box3().setFromObject(model.root); const size = box.getSize(new THREE.Vector3()); const ctr = box.getCenter(new THREE.Vector3());
   const fp = (o.model.arffornia || {}).footprint || [Math.ceil(size.x), Math.ceil(size.z)];
@@ -132,7 +162,7 @@ export async function init(o) {
 }
 
 export function frame(t) {
-  if (t !== undefined) { pose(model, t, opts.anim); }
+  if (t !== undefined) { pose(model, t, opts.anim); poseFx(t); }
   composer.render();
   return document.getElementById('c').toDataURL('image/png');
 }
