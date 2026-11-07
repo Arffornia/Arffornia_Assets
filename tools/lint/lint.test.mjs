@@ -153,6 +153,27 @@ test('drivetrain: a turning part must be driven from a source, at the declared r
   assert.ok(checks(lintModel(mk({ sources: [{ bone: 'other', why: 'a motor elsewhere' }] }), rules)).includes('drivetrain'));
 });
 
+test('kinematics: a respawning work piece may teleport only while hidden', () => {
+  const piece = cube('piece', [-2, 4, -2], [2, 6, 2]);
+  const mk = (hiddenScale) => model([base(), piece], { outliner: [base().uuid, bone('piece', [0, 4, 0], [piece])],
+    meta: { joints: { piece: { type: 'free', why: 'work piece', respawn: true } } },
+    animations: [{ name: 'working', length: 1, loop: 'loop', animators: { 'b-piece': { name: 'piece', type: 'bone', keyframes: [
+      { channel: 'position', time: 0, data_points: [{ x: 0, y: 0, z: 0 }], interpolation: 'linear' },
+      { channel: 'position', time: 0.5, data_points: [{ x: 10, y: 0, z: 0 }], interpolation: 'linear' },
+      { channel: 'position', time: 0.51, data_points: [{ x: 0, y: 0, z: 0 }], interpolation: 'linear' },
+      { channel: 'position', time: 1, data_points: [{ x: 0, y: 0, z: 0 }], interpolation: 'linear' },
+      { channel: 'scale', time: 0, data_points: [{ x: 1, y: 1, z: 1 }], interpolation: 'linear' },
+      { channel: 'scale', time: 0.45, data_points: [{ x: 1, y: 1, z: 1 }], interpolation: 'linear' },
+      { channel: 'scale', time: 0.49, data_points: [{ x: hiddenScale, y: hiddenScale, z: hiddenScale }], interpolation: 'linear' },
+      { channel: 'scale', time: 0.52, data_points: [{ x: hiddenScale, y: hiddenScale, z: hiddenScale }], interpolation: 'linear' },
+      { channel: 'scale', time: 0.6, data_points: [{ x: 1, y: 1, z: 1 }], interpolation: 'linear' },
+      { channel: 'scale', time: 1, data_points: [{ x: 1, y: 1, z: 1 }], interpolation: 'linear' },
+    ] } } }] });
+  const kinErrors = (m) => lintModel(m, rules).findings.filter((f) => f.level === 'error' && f.check === 'kinematics' && /jumps|respawns/.test(f.msg));
+  assert.equal(kinErrors(mk(0.01)).length, 0);
+  assert.ok(kinErrors(mk(1)).length > 0);
+});
+
 test('kinematics: limits, rigid motion, hinge pivot, loop seam, scale, deploy', () => {
   const lid = cube('lid', [-6, 20, -6], [6, 22, 6]);
   const mk = (frames, joint, { origin = [0, 20, -6], loop = 'once', name = 'open', channel = 'rotation', length = 1 } = {}) => model([base(), post(), lid], {

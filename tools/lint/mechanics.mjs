@@ -395,8 +395,19 @@ export function checkKinematics(ctx) {
     const snap = (t) => { poseAt(sk, Math.max(0, Math.min(t, L - 1e-6)), an.name); return obbs(sk).map((o) => corners(o)); };
     const moved = (A, Bc) => { let m = 0, who = -1; A.forEach((cs, i) => cs.forEach((c, q) => { const d = c.distanceTo(Bc[i][q]); if (d > m) { m = d; who = i; } })); return { m, who }; };
     if (L > 0) {
+      // a work piece that respawns (joint free + respawn: true) may teleport, but only while hidden (scaled to 5% or less)
+      const boneOfEl = (i) => { let n = sk.elements[i].obj.parent; while (n) { if (joints[n.name]) return n.name; n = n.parent; } return null; };
+      const respawn = new Set(sk.elements.map((_, i) => i).filter((i) => { const bn = boneOfEl(i); return bn && joints[bn].type === 'free' && joints[bn].respawn; }));
+      const keepOut = (A) => A.map((cs, i) => (respawn.has(i) ? cs.map(() => new THREE.Vector3()) : cs));
       let prev = snap(0); let jump = null;
-      for (let s = 1; s <= k; s++) { const t = (s / k) * L; const cur = snap(t); const { m, who } = moved(prev, cur); if (m > rules.maxJumpPx * PX && (!jump || m > jump.m)) jump = { m, who, t }; prev = cur; }
+      for (let s = 1; s <= k; s++) {
+        const t = (s / k) * L; const cur = snap(t);
+        for (const i of respawn) {
+          const d = Math.max(...cur[i].map((c, q) => c.distanceTo(prev[i][q])));
+          if (d > rules.maxJumpPx * PX && sk.elements[i].obj.getWorldScale(new THREE.Vector3()).length() > 0.05 * Math.sqrt(3)) add('kinematics', 'error', `${an.name}: ${sk.elements[i].name} respawns ${px(d)} px away at ${fmtT(t)} while visible; scale it below 5% first.`, [sk.elements[i].name], { anim: an.name, t });
+        }
+        const { m, who } = moved(keepOut(prev), keepOut(cur)); if (m > rules.maxJumpPx * PX && (!jump || m > jump.m)) jump = { m, who, t }; prev = cur;
+      }
       if (jump) add('kinematics', 'error', `${an.name}: ${sk.elements[jump.who].name} jumps ${px(jump.m)} px in one 1/${rules.sweepHz} s step at ${fmtT(jump.t)}; real parts accelerate (no step keys, no teleport).`, [sk.elements[jump.who].name], { anim: an.name, t: jump.t });
       if (an.loop === 'loop' || an.loop === true) {
         // the seam: the pose just before the end against the pose at 0, minus one step of normal motion
