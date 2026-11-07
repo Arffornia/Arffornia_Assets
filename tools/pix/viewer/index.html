@@ -1,0 +1,162 @@
+<title>Arffornia Machine Viewer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: the 3D stage fills the page; a slim control bar on top, machine notes in a corner card. Dark by design: a studio. */
+:root {
+  --bg: #15181c; --panel: #1f2328; --ink: #e8e4de; --muted: #9a958e; --line: #33383f; --orange: #f07a35; --orange-ink: #15181c;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif; --body: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100% }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); display: flex; flex-direction: column }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--panel); border-bottom: 1px solid var(--line) }
+h1 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: .03em }
+h1 span { color: var(--orange) }
+select, button { font: inherit; font-size: .9rem; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 5px 9px; cursor: pointer }
+button[aria-pressed="true"] { background: var(--orange); color: var(--orange-ink); border-color: var(--orange) }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px }
+label { font-size: .8rem; color: var(--muted); display: flex; align-items: center; gap: 6px }
+.time { font-family: var(--mono); font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 9ch }
+.stage { position: relative; flex: 1; min-height: 0 }
+canvas { display: block; width: 100%; height: 100%; touch-action: none }
+.note { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: 16px; max-width: min(420px, calc(100% - 32px)); background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; font-size: .85rem; line-height: 1.45 }
+.note b { font-family: var(--display); font-size: 1.05rem; letter-spacing: .02em; text-transform: uppercase; display: block; color: var(--orange) }
+.hint { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 16px; font-size: .75rem; color: var(--muted) }
+.status { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted) }
+@media (max-width: 600px) { .hint { display: none } }
+</style>
+
+<div class="bar">
+  <h1>Arffornia <span>Viewer</span></h1>
+  <label for="model">Machine <select id="model"></select></label>
+  <label for="anim">Animation <select id="anim"></select></label>
+  <button id="play" aria-pressed="true">Pause</button>
+  <label for="speed">Vitesse <select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+  <button id="fx" aria-pressed="true">Effets</button>
+  <span class="time" id="time">0.00 s</span>
+</div>
+<div class="stage" id="stage">
+  <canvas id="c"></canvas>
+  <div class="status" id="status">Chargement…</div>
+  <div class="note" id="note" hidden></div>
+  <div class="hint">Glisser : tourner · Molette : zoom · Clic droit : déplacer</div>
+</div>
+
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/" } }</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { buildModel, pose, loadImage } from './bbmodel.js';
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('c'), stage = $('stage');
+const R = new THREE.WebGLRenderer({ canvas, antialias: true });
+R.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); R.outputColorSpace = THREE.SRGBColorSpace;
+R.toneMapping = THREE.AgXToneMapping; R.toneMappingExposure = 1.25; R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#1d2228');
+const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 200);
+const controls = new OrbitControls(camera, canvas); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight('#c8d4e0', '#3a3530', 1.15));
+const key = new THREE.DirectionalLight('#ffe7cf', 3.2); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.015; scene.add(key, key.target);
+const rim = new THREE.DirectionalLight('#8fc8ff', 1.4); scene.add(rim);
+const fill = new THREE.DirectionalLight('#ffffff', 0.45); scene.add(fill);
+// block-grid floor
+const ft = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); x.fillStyle = '#3b4048'; x.fillRect(0, 0, 64, 64); x.fillStyle = '#4a5059'; x.fillRect(0, 0, 64, 2); x.fillRect(0, 0, 2, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(80, 80); return t; })();
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ map: ft, roughness: 0.95 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const composer = new EffectComposer(R); composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.55, 0.5, 0.82); composer.addPass(bloom); composer.addPass(new OutputPass());
+
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; R.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage);
+
+// effect emitters (arffornia.fx): deterministic stand-ins for the mod's particles, as in the render tool
+const hash = (i) => { const v = Math.sin(i * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+let fx = [], model = null, list = [], cur = null, t = 0, playing = true, speed = 1, showFx = true;
+function clearFx() { for (const f of fx) for (const m of f.ps) scene.remove(m); fx = []; }
+function setupFx(json, anim) {
+  clearFx();
+  for (const e of (json.arffornia || {}).fx || []) {
+    if (e.anims && !e.anims.includes(anim)) continue;
+    const smoke = e.kind === 'smoke', n = e.count || (smoke ? 12 : 14), ps = [];
+    for (let i = 0; i < n; i++) {
+      const mat = smoke ? new THREE.MeshStandardMaterial({ color: e.color || '#7d7873', roughness: 1, transparent: true, depthWrite: false }) : new THREE.MeshBasicMaterial({ color: e.color || '#ffb347', transparent: true, depthWrite: false });
+      const m = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat); m.renderOrder = 4; scene.add(m); ps.push(m);
+    }
+    fx.push({ e, ps, life: e.life || (smoke ? 2 : 1) });
+  }
+}
+function poseFx(time) {
+  for (const { e, ps, life } of fx) {
+    const [x, y, z] = e.at.map((v) => v / 16), smoke = e.kind === 'smoke', sp = (e.spread || 2) / 16;
+    ps.forEach((m, i) => {
+      m.visible = showFx;
+      const age = (((time / life) + i / ps.length) % 1 + 1) % 1, k = Math.floor((time / life) + i / ps.length);
+      const jx = hash(i * 13 + k * 7) - 0.5, jz = hash(i * 29 + k * 3) - 0.5, grow = smoke ? 1 + age * 2.5 : 1;
+      m.position.set(x + jx * sp * grow + age * (e.drift || 0) / 16, y + age * (e.rise || (smoke ? 40 : 10)) / 16, z + jz * sp * grow);
+      m.scale.setScalar(((smoke ? 1.5 + age * 4 : 0.7 * (1 - age) + 0.25) * (e.size || 1)) / 16);
+      m.material.opacity = smoke ? 0.7 * Math.min(1, age * 8) * (1 - age) : 1 - age * 0.8;
+    });
+  }
+}
+
+async function load(entry) {
+  $('status').hidden = false; $('status').textContent = `Chargement de ${entry.title}…`;
+  const json = await (await fetch(entry.model)).json();
+  const m = await buildModel(json, { emissive: false, material: { roughness: 0.78, metalness: 0.0 } });
+  if (entry.glow) {
+    const img = await loadImage(entry.glow);
+    m.root.traverse((n) => { if (!n.isMesh) return; n.castShadow = !/^glass/i.test(n.name); n.receiveShadow = true;
+      for (const mm of [].concat(n.material)) { if (mm.transparent) { mm.opacity = 0.3; mm.color = new THREE.Color('#9fd4e8'); continue; }
+        const tx = new THREE.Texture(img); tx.colorSpace = THREE.SRGBColorSpace; tx.magFilter = THREE.NearestFilter; tx.needsUpdate = true; mm.emissiveMap = tx; mm.emissive = new THREE.Color(1, 1, 1); mm.emissiveIntensity = (json.arffornia?.look?.glow) || 1.4; } });
+  }
+  if (model) scene.remove(model.root);
+  model = m; cur = entry; scene.add(m.root);
+  const anims = (json.animations || []).map((a) => a.name);
+  $('anim').replaceChildren(...anims.map((n) => Object.assign(document.createElement('option'), { value: n, textContent: n })));
+  if (anims.includes('working')) $('anim').value = 'working';
+  t = 0; pose(model, 0, $('anim').value); setupFx(json, $('anim').value);
+  // frame the camera on the machine
+  const box = new THREE.Box3().setFromObject(m.root), ctr = box.getCenter(new THREE.Vector3()), r = box.getBoundingSphere(new THREE.Sphere()).radius;
+  controls.target.copy(ctr); camera.position.set(ctr.x + r * 1.9, ctr.y + r * 1.25, ctr.z + r * 2.3); controls.update();
+  key.position.set(ctr.x - r * 1.5, ctr.y + r * 3, ctr.z + r * 2); key.target.position.copy(ctr);
+  Object.assign(key.shadow.camera, { left: -r * 2, right: r * 2, top: r * 2, bottom: -r * 2, near: 0.1, far: r * 10 }); key.shadow.camera.updateProjectionMatrix();
+  rim.position.set(ctr.x + r * 3, ctr.y + r * 1.5, ctr.z - r * 3); fill.position.set(ctr.x + r * 3, ctr.y + r, ctr.z + r * 2);
+  $('note').hidden = false; $('note').innerHTML = ''; const b = document.createElement('b'); b.textContent = `${entry.ref} · ${entry.title}`; const p = document.createElement('div'); p.textContent = entry.note || ''; $('note').append(b, p);
+  $('status').hidden = true;
+  try { localStorage.setItem('viewer-model', entry.id); } catch {}
+}
+
+$('model').addEventListener('change', () => load(list.find((e) => e.id === $('model').value)));
+$('anim').addEventListener('change', () => { t = 0; if (model) { pose(model, 0, $('anim').value); setupFx(model.json, $('anim').value); } });
+$('play').addEventListener('click', () => { playing = !playing; $('play').setAttribute('aria-pressed', String(playing)); $('play').textContent = playing ? 'Pause' : 'Lecture'; });
+$('speed').addEventListener('change', () => { speed = Number($('speed').value); });
+$('fx').addEventListener('click', () => { showFx = !showFx; $('fx').setAttribute('aria-pressed', String(showFx)); });
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = clock.getDelta();
+  if (model) {
+    const an = (model.json.animations || []).find((a) => a.name === $('anim').value), L = an?.length || 1;
+    if (playing) t += dt * speed;
+    const tt = an?.loop === 'loop' || an?.loop === undefined ? t % L : Math.min(t, L);
+    pose(model, tt, $('anim').value); poseFx(tt); $('time').textContent = `${tt.toFixed(2)} / ${L.toFixed(1)} s`;
+  }
+  controls.update(); composer.render(); requestAnimationFrame(frame);
+}
+
+(async () => {
+  try {
+    list = await (await fetch('models.json')).json();
+    $('model').replaceChildren(...list.map((e) => Object.assign(document.createElement('option'), { value: e.id, textContent: `${e.ref} · ${e.title}` })));
+    let saved = null; try { saved = localStorage.getItem('viewer-model'); } catch {}
+    const first = list.find((e) => e.id === saved) || list[0];
+    $('model').value = first.id; resize(); await load(first); frame();
+  } catch (err) { $('status').textContent = `Impossible de charger le modèle : ${err.message}`; }
+})();
+</script>

@@ -15,10 +15,10 @@ addRamp('stone', ['#232426', '#3c3e41', '#5a5c5f', '#7b7d80', '#a3a5a7'], { clus
 addRamp('wood', ['#2a1a0e', '#4a2f18', '#6b4524', '#8c5d33', '#b07d4a'], { streaks: 0.14, clusters: 0.04 });
 
 // dome: a 12-sided base drum, then stepped courses; flats face the axes (south flat at z = r)
-const BASE_R = 18, BASE_TOP = 16;
-const STEPS = [[16.5, 16, 20], [14.5, 20, 24], [12, 24, 28], [9, 28, 31], [6, 31, 33.5]];
-const HOOPS = [20, 24, 28];
-const TOP = 33.5;
+const BASE_R = 18, BASE_TOP = 20; // a tall brick drum under the dome (Brian: the base looked low)
+const STEPS = [[16.5, 20, 24], [14.5, 24, 28], [12, 28, 32], [9, 32, 35], [6, 35, 37.5]];
+const HOOPS = [24, 28, 32];
+const TOP = 37.5;
 
 export const meta = {
   title: 'Smelter (beehive kiln)', note: 'Ore to ingots in a coal-fired brick kiln. Tier 0.', footprint: [3, 3], height: 3, tier: 0,
@@ -101,17 +101,17 @@ export function build(b, { mat: plainMat }) {
   HOOPS.forEach((y, i) => { const r = STEPS.find(([, y0, y1]) => y >= y0 && y < y1)[0]; b.prism(`hoop_${i + 1}`, [0, y + 0.6, 0], r + 0.4, 1, 'y', hoopMat, 12); });
 
   // hopper on the dome top, fed by an inclined wooden chute from the west port
-  b.box('hopper', [-4.5, TOP, -4.5], [4.5, TOP + 3.5, 4.5], oreMat);
+  b.box('hopper', [-4.5, TOP, -4.5], [4.5, TOP + 2.5, 4.5], oreMat);
   b.box('port_in', [-24, 36, -4], [-23, 44, 4], portMat('west'));
-  const SL = { origin: [-13.5, 39.5, 0], rotation: [0, 0, -12] };
-  b.box('chute#1', [-23, 38.5, -3], [-4, 39.5, 3], woodMat, SL);
-  b.box('chute#2', [-23, 39.5, -3], [-4, 41.5, -2.3], woodMat, SL);
-  b.box('chute#3', [-23, 39.5, 2.3], [-4, 41.5, 3], woodMat, SL);
-  b.box('trestle#1', [-21.5, 3, -1.5], [-18.5, 40.5, 1.5], woodMat);
+  const SL = { origin: [-13.5, 41.5, 0], rotation: [0, 0, -5] };
+  b.box('chute#1', [-23, 40.5, -3], [-4, 41.5, 3], woodMat, SL);
+  b.box('chute#2', [-23, 41.5, -3], [-4, 43.5, -2.3], woodMat, SL);
+  b.box('chute#3', [-23, 41.5, 2.3], [-4, 43.5, 3], woodMat, SL);
+  b.box('trestle#1', [-21.5, 3, -1.5], [-18.5, 41.7, 1.5], woodMat);
   b.box('trestle#2', [-22.5, 3, -3], [-17.5, 5, 3], woodMat);
 
   // chimney on the dome's north shoulder
-  b.box('chimney#1', [-3, 24, -16.5], [3, 45.9, -10.5], brickMat);
+  b.box('chimney#1', [-3, 28, -16.5], [3, 45.9, -10.5], brickMat);
   b.box('chimney#2', [-3.5, 44.5, -17], [3.5, 46, -10], ironMat);
 
   // firebox door (south flat) with the fire behind the grate
