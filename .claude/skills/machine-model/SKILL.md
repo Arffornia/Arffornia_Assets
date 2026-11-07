@@ -148,6 +148,17 @@ A machine module exports `meta`, an optional `look`, and `build(b, { mat })`. Se
   placed on it). Oritech lets caps and ports overhang; in a bench run declare the next larger footprint
   (`footprint: [3, 2]` instead of `[2, 1]`; the origin stays the centre of the new grid) and say so.
 
+## Brian's review rules (Nov 2026, from S3 and F3)
+
+- **No belts.** Belts look wrong in Minecraft, worst at low tiers. Transmit with gears (a big gear on a
+  small one reads well) or a chain; a long shaft with bevel boxes is fine too.
+- **No thin moving parts.** A part that drives or lifts something is at least 3 px thick (a cam, a crank,
+  a tappet, a lever). At tiers 0–2 prefer wood for big mechanical parts: a cam made of a log, like a fence
+  post, reads as hand-built and heavy.
+- **Rich textures everywhere.** Brian found the S3 drum and all of F3 "not rich": large faces need more
+  than a fill and a frame. Every face 8 px or more gets a material story (plates and seams, bolts, wear,
+  stains, scorch, paint chips, grain on wood) and the bare share should land near 0.40, not just under 0.55.
+
 ## Mechanics must be proven, not eyeballed
 
 Brian's rule (Nov 2026): every mechanism follows real-world physics, and a deterministic check proves it.

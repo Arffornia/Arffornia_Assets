@@ -68,7 +68,9 @@ const range = (n) => [...Array(n).keys()];
 // angular distance to the nearest multiple of `step` degrees
 const near = (a, step, ph = 0) => { const m = (((a - ph) % step) + step) % step; return Math.min(m, step - m); };
 
-export function build(b, { mat }) {
+export function build(b, { mat: plainMat }) {
+  // every face gets the weathering pass (Brian: the drum was not rich enough)
+  const mat = (ramp, design, o = {}) => plainMat(ramp, design, { weather: 1, ...o });
   // ---------------------------------------------------------------- materials
   // plinth: tread plate deck framed by a riveted rim; the long sides carry cast feet and bolt heads
   const plinth = mat('gun', {

@@ -5,11 +5,11 @@ Concept r5 F3 (reheating furnace, hammer, rolling mill, plate stack). Ingots in,
 | Step | What happens | Real-world basis | Part in the model | Animation |
 |---|---|---|---|---|
 | Power in | a shaft enters at the back (rotation port) | line shafting | port collar, gearbox | shaft turns |
-| Distribution | the gearbox output drives a roller chain, a belt up to the hammer cam, a belt to the mill | belt and chain drives in 19th c. mills | sprockets, pulleys, chain, belts | all turn at declared ratios |
+| Distribution | the gearbox output drives a roller chain, a chain to the mill, and a gear train (drive gear, idler, big cam gear) up to the cam log | gear and chain drives in 19th c. mills | sprockets, chains, gears | all turn at declared ratios |
 | Fuel in | coal slides down an inclined chute into the furnace firebox | gravity-fed coal chute | chute from the fuel port | firebox glow |
 | Load | an ingot enters the reheating furnace (west port) | reheating furnace | furnace door, glowing mouth | |
 | Heat | the ingot comes out glowing and rolls along live rollers | live roller table | rollers driven by the chain | rollers turn, billet travels |
-| Forge | a cam lifts the hammer ram and lets it fall on the billet; three blows flatten it | cam-lifted drop hammer (trip hammer, vertical) | frame, guides, ram with tappet arm, cam on a shaft | ram rises with the cam, drops on release |
+| Forge | a wooden cam log lifts the ram by its tappet and lets it fall on the billet; three blows flatten it | cam-lifted drop hammer (trip hammer, vertical) | frame, ram with a thick tappet, log cam with a pegged lobe | ram rises with the cam, drops when the lobe slips off |
 | Roll | two rolls, geared together, squeeze the billet into a plate | two-high rolling mill with pinion stand | housing, rolls, pinion gears | rolls counter-rotate |
 | Output | plates stack on the exit table (east port) | cooling bed | plate stack, port | billet lands on the stack |
 | Byproduct | flue gas | | furnace stack | smoke, sparks at each blow |
@@ -22,3 +22,5 @@ Checks:
 4. Tier 2: one line, one furnace, no doubling. Pass.
 
 Loop 1: passed.
+
+Loop 2 (Brian's F3 review): belts replaced by gears and chains, thick wooden cam and tappet. Passed.

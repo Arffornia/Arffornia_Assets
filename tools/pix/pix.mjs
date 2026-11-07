@@ -192,6 +192,25 @@ export function surface(d, ramp, o = {}) {
 // a material: a lit surface of a ramp + optional designs per face ({ south(d) {...}, side(d), top(d), all(d) })
 // o.surface: options for surface() (motif, cell, skip...); o.plate: old bevelled plate with an outline
 // (use for raised panels and small parts only); o.flat: one flat shade (glow); o.clean: no grain
+// weathering after the design (opt-in, o.weather = 0..1): works on every ramp the face uses, so painted
+// panels, trims and stone get the same wear as the base: shade clusters, drips under bolts and seams, grime low
+// on side faces, light scuffs on top faces. Glowing ramps are left alone.
+function weather(c, k) {
+  const keyOf = (v) => `${v[0]},${v[1]},${v[2]}`;
+  const look = new Map();
+  for (const [name, shades] of Object.entries(RAMPS)) if (!GLOW.has(name)) R(name).forEach((col, i) => { if (!look.has(keyOf(col))) look.set(keyOf(col), [name, i]); });
+  const at = (x, y) => look.get(keyOf(c.get(x, y)));
+  const set = (x, y, name, i) => c.put(x, y, R(name)[Math.max(0, Math.min(4, i))]);
+  const s = c.seed + 101, side = c.face !== 'up' && c.face !== 'down';
+  for (let y = 0; y < c.h; y++) for (let x = 0; x < c.w; x++) {
+    const m = at(x, y); if (!m) continue; const [name, i] = m;
+    if (i >= 1 && i <= 3 && hsh(x >> 1, y >> 1, s) < 0.16 * k && hsh(x, y, s + 1) < 0.7) set(x, y, name, i + (hsh(x >> 1, y >> 1, s + 2) < 0.55 ? -1 : 1));
+    else if (i === 2 && hsh(x, y, s + 3) < 0.05 * k) set(x, y, name, 3);
+    if (side && y > 0) { const up = at(x, y - 1); if (up && up[1] === 0 && i >= 2 && hsh(x, 0, s + 5) < 0.35 * k && hsh(x, y, s + 6) < 0.6) set(x, y, name, i - 1); }
+  }
+  if (side && c.y0 < 10) for (let y = Math.floor(c.h * 0.7); y < c.h; y++) for (let x = 0; x < c.w; x++) { const m = at(x, y); if (m && m[1] >= 1 && ((x + y) & 1) && hsh(x, y, s + 9) < 0.3 * k) set(x, y, m[0], m[1] - 1); }
+}
+
 export function mat(ramp, design = {}, o = {}) {
   return { paint(c) {
     const d = api(c);
@@ -202,5 +221,6 @@ export function mat(ramp, design = {}, o = {}) {
     const side = c.face !== 'up' && c.face !== 'down';
     for (const f of [design.all, side ? design.side : design.top, design[c.face]]) if (f) f(d);
     if (!o.flat && !o.clean && GRAIN[ramp] && design.wear !== false) grain(c, ramp, { clusters: (GRAIN[ramp].clusters || 0) * 0.4 });
+    if (o.weather) weather(c, o.weather);
   } };
 }

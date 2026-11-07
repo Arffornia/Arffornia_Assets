@@ -145,6 +145,19 @@ export function lintModel(json, rules, { id = json.name } = {}) {
   }
   if (anims.length && !movers.size) add('sweep', 'warn', 'animations exist but no element is under an animated bone.');
 
+  // thin moving parts (Brian, Nov 2026): a moving part thinner than minMovingPx reads as a wire. Prism slabs and
+  // gear teeth are exempt: their compound (members turned about one shared origin) is the visible part.
+  const same = (p, q) => p && q && p.every((v, k) => Math.abs(v - q[k]) < 1e-6);
+  const sharedOrigin = (e) => sk.elements.some((o) => o !== e && stemOf(o.name) === stemOf(e.name) && same(o.el.origin, e.el.origin) && (o.el.rotation || e.el.rotation));
+  for (let i = 0; i < n; i++) {
+    const el = sk.elements[i]; if (!el.mover || sharedOrigin(el)) continue;
+    const d = rest[i].e.map((v) => (v * 2) / PX).sort((a, b) => a - b), min = rules.minMovingPx ?? 2;
+    const wire = d[1] < min, blade = d[0] < 1.5 && d[2] >= 4;
+    if (!wire && !blade) continue;
+    if (waivedOne(rest[i].name, 'thin')) continue;
+    add('thin', 'warn', `${rest[i].name} moves and is ${d[0].toFixed(1)} x ${d[1].toFixed(1)} px in section: ${wire ? 'a wire' : 'a blade'}. Driving parts need ${min} px or more (3 px for cams, cranks, levers).`, [rest[i].name]);
+  }
+
   // 6b. mechanics: cantilevers and seats, belts and gears, joint kinematics (tools/lint/mechanics.mjs)
   const mctx = { sk, json, meta, rest, boxes, rules, add, waivedOne, anims };
   checkCantilevers(mctx);

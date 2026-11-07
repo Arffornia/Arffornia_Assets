@@ -1,8 +1,8 @@
 // Forge line F3, tier 2 (r5 concept F3; process sheet forge_line_f3.process.md). Ingots enter a coal-fired
 // reheating furnace (west), roll out glowing on live rollers, take three blows from a cam-lifted drop hammer,
-// pass a two-high rolling mill and land as plates on the exit stack (east). One shaft at the back powers it
-// all: a gearbox drives a roller chain, a belt up to the hammer cam and a belt to the mill's bottom roll; the
-// top roll follows through the pinion gears.
+// pass a two-high rolling mill and land as plates in the exit bin (east). One shaft at the back powers it all:
+// the gearbox output carries a roller chain, a chain to the mill's bottom roll and a gear that turns, through an
+// idler, the big gear of the wooden cam log; the top roll follows the bottom one through the pinion gears.
 import { addRamp, hsh } from '../pix.mjs';
 import { teeth } from '../parts.mjs';
 
@@ -13,18 +13,27 @@ addRamp('amber', ['#5c1c04', '#b4460c', '#ff8a1e', '#ffc24e', '#fff2c4'], null, 
 addRamp('slag', ['#0c0b0c', '#1a1716', '#2a2421', '#3d322b', '#57463a'], { clusters: 0.1 });
 addRamp('brickish', ['#24120c', '#4a2216', '#6e3220', '#8e472c', '#b0623e']);
 addRamp('steel', ['#1b1d21', '#33373d', '#555a61', '#7d838a', '#b3b8bc'], { streaks: 0.08 });
+addRamp('wood', ['#2a1a0e', '#4a2f18', '#6b4524', '#8c5d33', '#b07d4a'], { streaks: 0.14, clusters: 0.04 });
 
 // line axis z = 0, work surface y = 9 (roller tops, anvil top)
 const WORK = 9, ROLLER_R = 1.5, ROLLER_Y = WORK - ROLLER_R;
-const ROLLERS = [-20, -15, -10, 12];
+const ROLLERS = [-20, -15, -10, 14.5];
 const DRIVE = [8, ROLLER_Y]; // gearbox output shaft (axis z)
-const CAM = [6.5, 31.5], CAM_PULLEY_R = 6, LOBE = 6, TAPPET = CAM[1]; // tappet underside in the bind pose (die on the anvil)
-const MILL_X = 23, ROLL_R = 3.5, GAP = 1.0, BOT_Y = WORK - ROLL_R, TOP_Y = WORK + GAP + ROLL_R, PIN_R = (TOP_Y - BOT_Y) / 2, MILL_PULLEY_R = 3;
-const Z_CHAIN = [-14.5, -13.5], Z_MILL = [-16, -15], Z_CAM = [-17.5, -16.5];
+// gear train in the plane z -18..-16: drive gear, idler, the big cam gear; positions solved so that on each line
+// between centres one gear shows a tooth and the other a gap (phase error 0.16 deg)
+const GD = 4, GI = 3, GC = 8, IDLER = [5.1976, 13.9145], CAM = [11.75, 22.75], LOBE = 6, LOG_R = 2.5;
+const TAPPET = CAM[1]; // tappet underside in the bind pose (die on the anvil)
+const ARM_END = CAM[0] - LOG_R - 0.4, RELEASE = Math.acos((CAM[0] - ARM_END) / LOBE); // the lobe tip slips off the tappet end
+const MILL_X = 23, ROLL_R = 3.5, GAP = 1.0, BOT_Y = WORK - ROLL_R, TOP_Y = WORK + GAP + ROLL_R, PIN_R = (TOP_Y - BOT_Y) / 2, MILL_SPRK = 3;
+const Z_CHAIN = [-14.5, -13.5], Z_GEAR = [-18, -16], Z_MILL = [-19.5, -18.5];
 const BILLET = { len: 8, h: 2.5, w: 6 };
+const deg = (a, b) => (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI;
+const mod = (v, m) => ((v % m) + m) % m;
+const PH_D = deg(DRIVE, IDLER), PH_I = deg(IDLER, DRIVE) + 30;
+const PH_C = (() => { const m = mod(deg(IDLER, CAM) - PH_I, 60); return deg(CAM, IDLER) + (m < 15 || m > 45 ? 11.25 : 0); })();
 
-// open belt between two pulleys in a plane z0..z1: the two straight runs, as boxes tangent to both
-function beltRuns(c1, r1, c2, r2) {
+// open chain between two sprockets: the two straight runs, tangent to both
+function runs(c1, r1, c2, r2) {
   const d = [c2[0] - c1[0], c2[1] - c1[1]], L = Math.hypot(...d), u = [d[0] / L, d[1] / L], p = [-u[1], u[0]];
   const sa = (r2 - r1) / L, ca = Math.sqrt(1 - sa * sa);
   return [1, -1].map((s) => {
@@ -41,26 +50,33 @@ export const meta = {
     { id: 'fuel', kind: 'item', face: 'north', cell: [0, 0] }, { id: 'power', kind: 'rotation', face: 'north', cell: [3, 0], bone: 'shaft_in' },
   ],
   joints: {
-    shaft_in: { type: 'revolute', axis: 'z' }, drive_out: { type: 'revolute', axis: 'z' }, cam: { type: 'revolute', axis: 'z' },
-    roll_bot: { type: 'revolute', axis: 'z' }, roll_top: { type: 'revolute', axis: 'z' },
+    shaft_in: { type: 'revolute', axis: 'z' }, drive_out: { type: 'revolute', axis: 'z' }, idler: { type: 'revolute', axis: 'z' },
+    cam: { type: 'revolute', axis: 'z' }, roll_bot: { type: 'revolute', axis: 'z' }, roll_top: { type: 'revolute', axis: 'z' },
     ...Object.fromEntries(ROLLERS.map((_, i) => [`roller_${i + 1}`, { type: 'revolute', axis: 'z' }])),
     ram: { type: 'prismatic', axis: 'y' }, stack: { type: 'revolute', axis: 'z' },
     billet: { type: 'free', respawn: true, why: 'the work piece: travels down the line, deforms under the hammer and the rolls, and the next ingot starts in the furnace' },
   },
   drives: [{ a: 'shaft_in', b: 'drive_out', ratio: -1.5, via: 'gearbox' }],
   belts: [
-    { id: 'chain', pulleys: [{ part: 'sprk_drive', r: ROLLER_R }, ...ROLLERS.map((_, i) => ({ part: `sprk_${i + 1}`, r: ROLLER_R }))], segments: ['chain_top', 'chain_bot'] },
-    { id: 'cam_belt', pulleys: [{ part: 'pul_cam_drive', r: 1.5 }, { part: 'pul_cam', r: CAM_PULLEY_R }], segments: ['camb_1', 'camb_2'] },
-    { id: 'mill_belt', pulleys: [{ part: 'pul_mill_drive', r: 1.5 }, { part: 'pul_mill', r: MILL_PULLEY_R }], segments: ['millb_1', 'millb_2'] },
+    { id: 'roller_chain', pulleys: [{ part: 'sprk_drive', r: ROLLER_R }, ...ROLLERS.map((_, i) => ({ part: `sprk_${i + 1}`, r: ROLLER_R }))], segments: ['chain_top', 'chain_bot'] },
+    { id: 'mill_chain', pulleys: [{ part: 'sprk_mill_drive', r: 1.5 }, { part: 'sprk_mill', r: MILL_SPRK }], segments: ['millc_1', 'millc_2'] },
   ],
-  gears: [{ a: 'pin_bot', b: 'pin_top', ra: PIN_R, rb: PIN_R, ta: 8, tb: 8 }],
+  gears: [
+    { a: 'g_drive', b: 'g_idler', ra: GD, rb: GI, ta: 8, tb: 6 },
+    { a: 'g_idler', b: 'g_cam', ra: GI, rb: GC, ta: 6, tb: 16 },
+    { a: 'pin_bot', b: 'pin_top', ra: PIN_R, rb: PIN_R, ta: 8, tb: 8 },
+  ],
   lint: { allow: [
-    { a: 'cam*', b: 'cam_bearing_*', check: 'overlap', why: 'the cam shaft runs in its bearings' },
+    { a: 'cam*', b: 'cam_bearing_*', check: 'overlap', why: 'the cam log runs in its bearings' },
     { a: 'roll_*', b: 'housing_*', check: 'overlap', why: 'the roll necks run in the housing bearings' },
     { a: 'roller_*', b: 'rail_*', check: 'overlap', why: 'the roller axles run in the table rails' },
-    { a: 'billet', b: 'furnace#*', check: 'overlap', why: 'the ingot heats inside the furnace' },
-    { a: 'drive_out', b: 'pul_*', check: 'overlap', why: 'the pulleys are keyed on the output shaft' },
+    { a: 'drive_out', b: 'g_drive#*', check: 'overlap', why: 'the gear is keyed on the output shaft' },
+    { a: 'drive_out', b: 'sprk_*', check: 'overlap', why: 'the sprockets are keyed on the output shaft' },
+    { a: 'idler#*', b: 'g_idler#*', check: 'overlap', why: 'the idler gear turns on its stub shaft' },
+    { a: 'cam#*', b: 'g_cam#*', check: 'overlap', why: 'the big gear is keyed on the cam log' },
     { a: 'roll_*#9', b: 'pin_*', check: 'overlap', why: 'the pinions are keyed on the roll necks' },
+    { a: 'billet', b: 'furnace#*', check: 'overlap', why: 'the ingot heats inside the furnace' },
+    { a: 'ram*', b: 'cam*', check: 'sweep', why: 'the cam lobe lifts the tappet: they touch by design' },
   ] },
 };
 export const look = { glow: 1.3 };
@@ -72,7 +88,9 @@ meta.fx = [
 const range = (n) => [...Array(n).keys()];
 const near = (a, step, ph = 0) => { const m = (((a - ph) % step) + step) % step; return Math.min(m, step - m); };
 
-export function build(b, { mat }) {
+export function build(b, { mat: plainMat }) {
+  // every face of this machine gets the weathering pass (Brian: textures were not rich enough)
+  const mat = (ramp, design, o = {}) => plainMat(ramp, design, { weather: 1, ...o });
   // ---------------------------------------------------------------- materials
   const capStripes = (d) => d.stripes(1, d.h - 3, d.w - 2, 2, ['gun', 0], ['sig', 3]);
   const frame = mat('gun', {
@@ -177,6 +195,19 @@ export function build(b, { mat }) {
     up(d) { d.fill((x, y) => ['slag', hsh(x, y, 4) < 0.3 ? 3 : 0]); },
   });
   const handle = mat('cu', { all(d) { d.rect(0, 0, d.w, d.h, 'cu', 3); d.hline(0, 0, d.w, 'cu', 4); } }, { clean: true });
+  // the cam log: bark along the sides with iron hoops, end grain rings at the cut faces
+  const logMat = mat('wood', {
+    top(d) { d.fill((x, y) => ['wood', x % 9 === 4 ? 0 : (y + (x >> 2)) % 3 === 0 ? 1 : (hsh(x, y >> 1, 3) < 0.2 ? 3 : 2)]); for (let x = 2; x < d.w; x += 9) d.vline(x, 0, d.h, 'gun', 2); },
+    side(d) { d.radial((r) => (r > LOG_R - 0.6 ? ['wood', 1] : ['wood', (r * 2.2 | 0) % 2 ? 3 : 2])); },
+  });
+  const lobeMat = mat('wood', {
+    all(d) { d.fill((x, y) => ['wood', y === 0 ? 4 : (x + y * 3) % 5 === 0 ? 1 : 2]); d.rings(0, 0, d.w, d.h, [['gun', 1]]); d.px(1, 1, 'cu', 4); if (d.w > 3) d.px(d.w - 2, d.h - 2, 'cu', 3); },
+  });
+  const gearBody = (R) => mat('gun', {
+    top(d) { d.fill((x) => ['gun', x === 0 ? 4 : x === d.w - 1 ? 0 : 2]); },
+    side(d) { d.radial((r, a) => (r < 1.2 ? ['cu', 4] : r < 2 ? ['gun', 0] : r > R - 1.6 ? ['gun', 4] : r > R - 2.4 ? ['gun', 1] : near(a, 45, 22.5) < 9 && r > 2.5 ? ['slag', 1] : ['sig', near(a, 45) < 5 ? 3 : 2])); },
+  });
+  const gearTooth = mat('gun', { all(d) { d.fill((x, y) => ['gun', x === 0 || y === 0 ? 4 : x === d.w - 1 ? 1 : 3]); } });
 
   // ---------------------------------------------------------------- base and furnace
   // the deck leaves a pit under the mill pinions
@@ -204,56 +235,65 @@ export function build(b, { mat }) {
 
   // ---------------------------------------------------------------- roller tables (live rollers, chain at the back)
   for (const [n, x0, x1] of [['1', -24, -6], ['2', 6, 16]]) {
-    b.box(`rail_${n}n`, [x0, 2, -7.5], [x1, WORK - 0.5, -6], frame);
-    b.box(`rail_${n}s`, [x0, 2, 6], [x1, WORK - 0.5, 7.5], frame);
+    b.box(`rail_${n}n`, [x0, 2, -7.5], [x1, WORK - 0.6, -6], frame);
+    b.box(`rail_${n}s`, [x0, 2, 6], [x1, WORK - 0.6, 7.5], frame);
   }
   ROLLERS.forEach((x, i) => {
     b.group(`roller_${i + 1}`, [x, ROLLER_Y, -6.75], () => {
       b.prism(`roller_${i + 1}`, [x, ROLLER_Y, 0], ROLLER_R, 12, 'z', rollerMat, 8);
-      b.box(`roller_${i + 1}#9`, [x - 0.5, ROLLER_Y - 0.5, Z_CHAIN[1]], [x + 0.5, ROLLER_Y + 0.5, -5.99], axle);
+      b.box(`roller_${i + 1}#9`, [x - 1, ROLLER_Y - 1, Z_CHAIN[1]], [x + 1, ROLLER_Y + 1, -5.99], axle);
       b.prism(`sprk_${i + 1}`, [x, ROLLER_Y, (Z_CHAIN[0] + Z_CHAIN[1]) / 2], ROLLER_R, 1, 'z', sprocket, 8);
     });
   });
   const chainX0 = Math.min(...ROLLERS), chainX1 = Math.max(...ROLLERS);
-  b.box('chain_top', [chainX0, WORK, Z_CHAIN[0]], [chainX1, WORK + 0.4, Z_CHAIN[1]], chainMat);
-  b.box('chain_bot', [chainX0, ROLLER_Y - ROLLER_R - 0.4, Z_CHAIN[0]], [chainX1, ROLLER_Y - ROLLER_R, Z_CHAIN[1]], chainMat);
-  for (const x of [-22, 14]) b.box(`chain_guard_${x < 0 ? 'w' : 'e'}`, [x - 1, 2, Z_CHAIN[0] - 0.5], [x + 1, ROLLER_Y - ROLLER_R - 0.4, Z_CHAIN[1] + 0.5], frame);
+  b.box('chain_top', [chainX0, WORK, Z_CHAIN[0]], [chainX1, WORK + 0.8, Z_CHAIN[1]], chainMat);
+  b.box('chain_bot', [chainX0, ROLLER_Y - ROLLER_R - 0.8, Z_CHAIN[0]], [chainX1, ROLLER_Y - ROLLER_R, Z_CHAIN[1]], chainMat);
+  for (const x of [-22, 17]) b.box(`chain_guard_${x < 0 ? 'w' : 'e'}`, [x - 1, 2, Z_CHAIN[0] - 0.5], [x + 1, ROLLER_Y - ROLLER_R - 0.8, Z_CHAIN[1] + 0.5], frame);
 
-  // ---------------------------------------------------------------- power: port, gearbox, output shaft with three wheels
+  // ---------------------------------------------------------------- power: port, gearbox, output shaft, idler
   b.box('port_power', [4, 4, -24], [12, 12, -23], portMat('north'));
-  b.group('shaft_in', [8, 8, -23], () => b.prism('shaft_in', [8, 8, -22.5], 1.5, 1, 'z', rollerMat, 8));
-  b.box('gearbox', [3, 0, -22], [13, 16, -18], panel);
-  b.group('drive_out', [DRIVE[0], DRIVE[1], -18], () => {
-    b.box('drive_out', [DRIVE[0] - 0.5, DRIVE[1] - 0.5, -18.2], [DRIVE[0] + 0.5, DRIVE[1] + 0.5, Z_CHAIN[1] - 0.1], axle);
-    b.prism('pul_cam_drive', [...DRIVE, (Z_CAM[0] + Z_CAM[1]) / 2], 1.5, 1, 'z', pulley, 8);
-    b.prism('pul_mill_drive', [...DRIVE, (Z_MILL[0] + Z_MILL[1]) / 2], 1.5, 1, 'z', pulley, 8);
+  b.group('shaft_in', [8, 8, -23], () => b.prism('shaft_in', [8, 8, -22.5], 2, 1, 'z', rollerMat, 8));
+  b.box('gearbox', [2, 0, -22], [14, 17, -20], panel);
+  b.box('gearbox#2', [1.5, 17, -22.5], [14.5, 18, -19.5], frame);
+  b.group('drive_out', [DRIVE[0], DRIVE[1], -20], () => {
+    b.box('drive_out', [DRIVE[0] - 1, DRIVE[1] - 1, -20.2], [DRIVE[0] + 1, DRIVE[1] + 1, Z_CHAIN[1] - 0.1], axle);
+    b.prism('g_drive', [...DRIVE, (Z_GEAR[0] + Z_GEAR[1]) / 2], GD - 1, 2, 'z', gearBody(GD - 1), 8);
+    teeth(b, 'g_drive', [...DRIVE, (Z_GEAR[0] + Z_GEAR[1]) / 2], 'z', GD + 1, 4, 1.8, 1.4, gearTooth, { start: 5, phase: PH_D });
+    b.prism('sprk_mill_drive', [...DRIVE, (Z_MILL[0] + Z_MILL[1]) / 2], 1.5, 1, 'z', sprocket, 8);
     b.prism('sprk_drive', [...DRIVE, (Z_CHAIN[0] + Z_CHAIN[1]) / 2], ROLLER_R, 1, 'z', sprocket, 8);
   });
-  const run = (name, c1, r1, c2, r2, [z0, z1], m) => beltRuns(c1, r1, c2, r2).forEach((s, i) => {
-    const t = 0.4, mid = [(s.P1[0] + s.P2[0]) / 2 + s.n[0] * t / 2, (s.P1[1] + s.P2[1]) / 2 + s.n[1] * t / 2];
-    b.box(`${name}_${i + 1}`, [mid[0] - s.len / 2, mid[1] - t / 2, z0], [mid[0] + s.len / 2, mid[1] + t / 2, z1], m, { origin: [...mid, (z0 + z1) / 2], rotation: [0, 0, s.ang] });
+  b.group('idler', [IDLER[0], IDLER[1], -20], () => {
+    b.box('idler#1', [IDLER[0] - 1, IDLER[1] - 1, -20.2], [IDLER[0] + 1, IDLER[1] + 1, -15.5], axle);
+    b.prism('g_idler', [...IDLER, (Z_GEAR[0] + Z_GEAR[1]) / 2 + 0.02], GI - 1, 2, 'z', gearBody(GI - 1), 8);
+    teeth(b, 'g_idler', [...IDLER, (Z_GEAR[0] + Z_GEAR[1]) / 2 + 0.02], 'z', GI + 1, 3, 1.7, 1.4, gearTooth, { start: 5, phase: PH_I });
   });
-  run('camb', DRIVE, 1.5, CAM, CAM_PULLEY_R, Z_CAM, beltMat);
-  run('millb', DRIVE, 1.5, [MILL_X, BOT_Y], MILL_PULLEY_R, Z_MILL, beltMat);
+  const chain = (name, c1, r1, c2, r2, [z0, z1]) => runs(c1, r1, c2, r2).forEach((sg, i) => {
+    const t = 0.8, mid = [(sg.P1[0] + sg.P2[0]) / 2 + sg.n[0] * t / 2, (sg.P1[1] + sg.P2[1]) / 2 + sg.n[1] * t / 2];
+    b.box(`${name}_${i + 1}`, [mid[0] - sg.len / 2, mid[1] - t / 2, z0], [mid[0] + sg.len / 2, mid[1] + t / 2, z1], chainMat, { origin: [...mid, (z0 + z1) / 2], rotation: [0, 0, sg.ang] });
+  });
+  chain('millc', DRIVE, 1.5, [MILL_X, BOT_Y], MILL_SPRK, Z_MILL);
 
-  // ---------------------------------------------------------------- drop hammer: anvil, frame, ram, cam
-  b.box('anvil', [-5, 2, -5], [5, WORK, 5], anvilMat);
+  // ---------------------------------------------------------------- drop hammer: anvil, frame, ram, wooden cam log
+  b.box('anvil#1', [-5, 2, -5], [5, WORK, 5], anvilMat);
+  b.box('anvil#2', [-6, 2, -6], [6, 4, 6], frame);
   for (const [s, z0] of [['n', -11], ['s', 7]]) b.box(`post_${s}`, [-4, 2, z0], [4, 44, z0 + 4], frame);
-  b.box('crosshead', [-9, 44, -13], [9, 47, 11], panel);
-  for (const [s, z0] of [['n', -13], ['s', 1.6]]) b.box(`cam_bearing_${s}`, [CAM[0] - 1.5, CAM[1] - 1.5, z0], [CAM[0] + 1.5, 44, z0 + 1.4], frame);
-  // bind pose: die resting on the anvil
+  b.box('crosshead', [-9, 44, -13], [15, 47, 11], panel);
+  // bearings: a pedestal behind (between the gear and the chain plane) and a hanger in front of the lobe
+  b.box('cam_bearing_back', [CAM[0] - 2, 2, -13.3], [CAM[0] + 2, CAM[1] + 0.5, -11.8], frame);
+  b.box('cam_bearing_front', [CAM[0] - 1.5, CAM[1] + LOG_R - 0.6, -3.2], [CAM[0] + 1.5, 44, -1.7], frame);
   const DIE = WORK;
   b.group('ram', [0, DIE, 0], () => {
     b.box('ram', [-4, DIE, -5], [4, DIE + 2, 5], ramMat);
-    b.box('ram#2', [-4, DIE + 2, -7], [4, DIE + 10, 7], ramMat);
-    b.box('ram#3', [-1, DIE + 10, -1], [1, TAPPET + 0.1, 1], axle);
-    b.box('ram#4', [-1, TAPPET, -1], [CAM[0], TAPPET + 1.5, 1], frame);
+    b.box('ram#2', [-4, DIE + 2, -7], [4, TAPPET + 3, 7], ramMat);
+    // tappet: a thick iron-shod block on the ram's east side, over the lobe's path
+    b.box('ram#3', [3.5, TAPPET, -6.5], [ARM_END, TAPPET + 3, -3.5], lobeMat);
   });
-  b.group('cam', [CAM[0], CAM[1], -12.3], () => {
-    b.box('cam', [CAM[0] - 0.75, CAM[1] - 0.75, Z_CAM[1]], [CAM[0] + 0.75, CAM[1] + 0.75, 2.5], axle);
+  b.group('cam', [CAM[0], CAM[1], -12.5], () => {
+    b.prism('cam', [CAM[0], CAM[1], -9.55], LOG_R, 16.1, 'z', logMat, 8);
     // the lobe points west at rest, under the tappet; turning clockwise it lifts the tappet, then slips off its end
-    b.box('cam#2', [CAM[0] - LOBE, CAM[1] - 1, -1.5], [CAM[0], CAM[1] + 0, 1.5], frame);
-    b.prism('pul_cam', [...CAM, (Z_CAM[0] + Z_CAM[1]) / 2], CAM_PULLEY_R, 1, 'z', pulley, 12);
+    b.box('cam_lobe', [CAM[0] - LOBE, CAM[1] - 3, -6.5], [CAM[0] - LOG_R + 0.5, CAM[1], -3.5], lobeMat);
+    b.prism('g_cam', [...CAM, (Z_GEAR[0] + Z_GEAR[1]) / 2 - 0.02], GC - 1, 2, 'z', gearBody(GC - 1), 12);
+    teeth(b, 'g_cam', [...CAM, (Z_GEAR[0] + Z_GEAR[1]) / 2 - 0.02], 'z', GC + 1, 8, 1.72, 1.4, gearTooth, { start: 7, phase: PH_C });
   });
 
   // ---------------------------------------------------------------- rolling mill: housings, rolls, pinion gears
@@ -261,15 +301,15 @@ export function build(b, { mat }) {
     b.box(`housing_${s}`, [MILL_X - 5, 2, z0], [MILL_X + 5, TOP_Y + ROLL_R + 4, z0 + 4], panel);
   }
   b.box('housing_cap', [MILL_X - 5.5, TOP_Y + ROLL_R + 4, -11.5], [MILL_X + 5.5, TOP_Y + ROLL_R + 6, 11.5], frame);
-  b.box('screwdown', [MILL_X - 1, TOP_Y + ROLL_R + 6, -1], [MILL_X + 1, TOP_Y + ROLL_R + 9, 1], handle);
-  for (const [n, y, r] of [['bot', BOT_Y, 1], ['top', TOP_Y, -1]]) {
+  b.box('screwdown', [MILL_X - 1.5, TOP_Y + ROLL_R + 6, -1.5], [MILL_X + 1.5, TOP_Y + ROLL_R + 9, 1.5], handle);
+  for (const [n, y] of [['bot', BOT_Y], ['top', TOP_Y]]) {
     b.group(`roll_${n}`, [MILL_X, y, -9], () => {
       b.prism(`roll_${n}`, [MILL_X, y, 0], ROLL_R, 14, 'z', rollMat, 12);
       const pz = n === 'bot' ? -12.5 : -12.48;
-      b.box(`roll_${n}#9`, [MILL_X - 0.8, y - 0.8, n === 'bot' ? Z_MILL[0] + 0.1 : -13.4], [MILL_X + 0.8, y + 0.8, -6.99], axle);
+      b.box(`roll_${n}#9`, [MILL_X - 1.2, y - 1.2, n === 'bot' ? Z_MILL[0] + 0.1 : -13.4], [MILL_X + 1.2, y + 1.2, -6.99], axle);
       b.prism(`pin_${n}`, [MILL_X, y, pz], PIN_R - 1, 2, 'z', gearMat, 8);
       teeth(b, `pin_${n}`, [MILL_X, y, pz], 'z', PIN_R + 1, 4, 1.8, 2, toothMat, { start: 5, phase: n === 'bot' ? 0 : 22.5 });
-      if (n === 'bot') b.prism('pul_mill', [MILL_X, y, (Z_MILL[0] + Z_MILL[1]) / 2], MILL_PULLEY_R, 1, 'z', pulley, 8);
+      if (n === 'bot') b.prism('sprk_mill', [MILL_X, y, (Z_MILL[0] + Z_MILL[1]) / 2], MILL_SPRK, 1, 'z', sprocket, 8);
     });
   }
 
@@ -287,30 +327,34 @@ export function build(b, { mat }) {
   b.group('billet', [BX, WORK, 0], () => b.box('billet', [BX - BILLET.len / 2, WORK, -BILLET.w / 2], [BX + BILLET.len / 2, WORK + BILLET.h, BILLET.w / 2], billetMat));
 
   // ---------------------------------------------------------------- animation
-  const L = 6, TC = 2, DRIVE_TURNS = -12;
-  const spinZ = (turns) => ({ rotation: range(8 * L + 1).map((q) => [q / 8, [0, 0, (turns * 360 * q) / (8 * L)]]) });
-  // hammer: the die rests on what lies under it; the cam lifts the tappet by LOBE·sin(angle) during the first
-  // quarter turn of each cycle, then the lobe slips off and the ram falls
+  const L = 6, TC = 2, DRIVE_TURNS = -6;
+  const spinZ = (turns, off = 0) => ({ rotation: range(8 * L + 1).map((q) => [q / 8, [0, 0, off + (turns * 360 * q) / (8 * L)]]) });
+  // hammer: the cam lifts the tappet by LOBE·sin(angle) from the moment the lobe reaches west, until the tip slips
+  // off the tappet end (RELEASE); then the ram falls onto whatever lies on the anvil. Blows at 0.6, 2.6 and 4.6 s.
+  const TR = (TC * RELEASE) / (2 * Math.PI), BLOWS = [0.6, 2.6, 4.6], T0 = BLOWS[0] - TR;
   const H = [BILLET.h, 2.0, 1.6, 1.6]; // billet height before blow 1, after blow 1, 2, 3
-  const restAt = (t) => (t < 0.5 ? 0 : t < 2.5 ? H[1] : t < 4.5 ? H[2] : t < 4.85 ? H[3] : 0); // die height above the anvil at rest
-  const lifted = (t) => { const c = t % TC; return c > TC / 4 ? null : CAM[1] - TAPPET + LOBE * Math.sin((2 * Math.PI * c) / TC); };
+  const restAt = (t) => (t < BLOWS[0] ? 0 : t < BLOWS[1] ? H[1] : t < BLOWS[2] ? H[2] : t < 4.95 ? H[3] : 0); // die height above the anvil at rest
+  const lifted = (t) => { const c = mod(t - T0, TC); return c > TR ? null : CAM[1] - TAPPET + LOBE * Math.sin((2 * Math.PI * c) / TC); };
   const ramKeys = [];
   for (let q = 0; q <= 8 * L; q++) {
-    const t = q / 8; if ([0.5, 2.5, 4.5].some((tb) => Math.abs(t - tb) < 0.13)) continue; const lf = lifted(t);
+    const t = q / 8; if (BLOWS.some((tb) => t > tb - 0.13 && t < tb + 0.13)) continue; const lf = lifted(t);
     ramKeys.push([t, [0, lf === null ? restAt(t) : Math.max(restAt(t), lf), 0]]);
   }
-  for (const tb of [0.5, 2.5, 4.5]) ramKeys.push([tb - 0.01, [0, CAM[1] - TAPPET + LOBE, 0]], [tb + 0.12, [0, restAt(tb + 0.01), 0]]);
-  ramKeys.push([4.84, [0, restAt(4.8), 0]], [4.95, [0, restAt(4.95), 0]]);
-  ramKeys.sort((a, b) => a[0] - b[0]);
-  // billet: out of the furnace, under the hammer for three blows, through the rolls, onto the stack
+  for (const tb of BLOWS) ramKeys.push([tb - 0.01, [0, Math.max(restAt(tb - 0.02), LOBE * Math.sin(RELEASE)), 0]], [tb + 0.12, [0, restAt(tb + 0.01), 0]]);
+  ramKeys.push([4.9, [0, restAt(4.9), 0]], [5.0, [0, restAt(5.0), 0]]);
+  ramKeys.sort((a, c) => a[0] - c[0]);
+  // billet: out of the furnace, under the hammer for three blows, through the rolls, into the bin
   const bx = (x, y = 0) => [x - BX, y, 0];
+  const h = (k) => H[k] / BILLET.h;
   const billet = {
-    position: [[0, bx(-32)], [0.45, bx(0)], [4.6, bx(0)], [5.0, bx(MILL_X - 4)], [5.4, bx(MILL_X + 8)], [5.55, bx(36)], [5.7, bx(39.5, -1)], [5.88, bx(39.5, -1)], [5.89, bx(-32)], [L, bx(-32)]],
-    scale: [[0, [1, 1, 1]], [0.5, [1, 1, 1]], [0.62, [1.1, H[1] / BILLET.h, 1]], [2.5, [1.1, H[1] / BILLET.h, 1]], [2.62, [1.2, H[2] / BILLET.h, 1]], [4.5, [1.2, H[2] / BILLET.h, 1]], [4.62, [1.3, H[3] / BILLET.h, 1]], [5.0, [1.3, H[3] / BILLET.h, 1]], [5.2, [1.6, GAP / BILLET.h, 1]], [5.85, [1.6, GAP / BILLET.h, 1]], [5.86, [0.02, 0.02, 0.02]], [5.9, [0.02, 0.02, 0.02]], [L, [1, 1, 1]]],
+    position: [[0, bx(-32)], [0.5, bx(0)], [4.75, bx(0)], [5.05, bx(MILL_X - 4)], [5.4, bx(MILL_X + 8)], [5.55, bx(36)], [5.7, bx(39.5, -1)], [5.88, bx(39.5, -1)], [5.89, bx(-32)], [L, bx(-32)]],
+    scale: [[0, [1, 1, 1]], [0.6, [1, 1, 1]], [0.72, [1.1, h(1), 1]], [2.6, [1.1, h(1), 1]], [2.72, [1.2, h(2), 1]], [4.6, [1.2, h(2), 1]], [4.72, [1.3, h(3), 1]], [5.05, [1.3, h(3), 1]], [5.25, [1.6, GAP / BILLET.h, 1]], [5.85, [1.6, GAP / BILLET.h, 1]], [5.86, [0.02, 0.02, 0.02]], [5.9, [0.02, 0.02, 0.02]], [L, [1, 1, 1]]],
   };
+  const CAM_TURNS = (DRIVE_TURNS * GD) / GC;
   const working = {
-    shaft_in: spinZ(DRIVE_TURNS / -1.5), drive_out: spinZ(DRIVE_TURNS), cam: spinZ(DRIVE_TURNS * 1.5 / CAM_PULLEY_R),
-    roll_bot: spinZ(DRIVE_TURNS * 1.5 / MILL_PULLEY_R), roll_top: spinZ(-DRIVE_TURNS * 1.5 / MILL_PULLEY_R),
+    shaft_in: spinZ(DRIVE_TURNS / -1.5), drive_out: spinZ(DRIVE_TURNS), idler: spinZ(-DRIVE_TURNS * GD / GI),
+    cam: spinZ(CAM_TURNS, -((CAM_TURNS * 360) / L) * T0),
+    roll_bot: spinZ(DRIVE_TURNS * 1.5 / MILL_SPRK), roll_top: spinZ(-DRIVE_TURNS * 1.5 / MILL_SPRK),
     ...Object.fromEntries(ROLLERS.map((_, i) => [`roller_${i + 1}`, spinZ(DRIVE_TURNS)])),
     ram: { position: ramKeys }, billet,
   };
