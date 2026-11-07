@@ -274,7 +274,7 @@ function lbList() { return round.groups.flatMap((g) => visibleItems().filter((it
 function openLb(ref) { lbIndex = lbList().findIndex((it) => it.ref === ref); $("lb").hidden = false; fillLb(); }
 function fillLb() {
   const it = lbList()[lbIndex]; if (!it) return closeLb();
-  $("lbimg").src = it.img; $("lbimg").alt = `${it.ref} ${it.title}`;
+  $("lbimg").src = it.gif || it.img; $("lbimg").alt = `${it.ref} ${it.title}`;
   $("lbref").textContent = it.ref; $("lbtitle").textContent = it.title; $("lbmech").textContent = it.mechanism;
   $("lbvotes").replaceWith(Object.assign(voteButtons(it.ref), { id: "lbvotes" }));
   if (document.activeElement !== $("lbnote")) $("lbnote").value = pick(it.ref).note || "";

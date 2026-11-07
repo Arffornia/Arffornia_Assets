@@ -1,0 +1,7 @@
+{
+ "S": { "tier": "Four simple", "era": "Tiers 0 et 2", "hint": "Le four simple : S1 au tier 0, S3 (validé) au tier 2." },
+ "F": { "tier": "Ligne de forge", "era": "Tier 2", "hint": "Rework de F3 : engrenages au lieu des courroies, came en rondin." },
+ "T": { "tier": "Four électrique", "era": "Tier 4", "hint": "Remplace le four à arc." },
+ "L": { "tier": "Four d'alliage", "era": "Tier 2", "hint": "Deux minerais, un alliage." },
+ "M": { "tier": "Multibloc endgame", "era": "Tier 8", "hint": "L'anneau en cercle, la chambre en verre." }
+}

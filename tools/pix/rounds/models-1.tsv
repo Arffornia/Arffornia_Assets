@@ -1,0 +1,7 @@
+#group	ref	title	tier	mechanism	predict
+S	S1	Beehive kiln	0	Brick dome, natural draft. Ore by a wooden chute into the top hopper, coal into the firebox, the tap door lifts and the ingot slides onto the stone tray.	
+S	S3	Indirect-fired rotary kiln	2	Validated base. Shaft port and gearbox drive the drum, a row of flames under the drum, gravity coal chute at the back, folding discharge chute.	
+F	F3	Forge line	2	Reheating furnace, live rollers on a chain, wooden cam log with a big gear lifting the drop hammer, two-high rolling mill on a chain, plates into a bin.	
+T	T1	Induction carousel	4	Motor pinion on a ring gear indexes four crucibles: hopper, water-cooled induction coils, tilting pour into the mold.	
+L	L1	Alloy crucible carousel	2	Vertical shaft from the top port drives the carousel: copper hopper, tin hopper, coal-fired brick hood, tilting pour of bronze.	
+M	M1	Particle ring	8	Twelve magnets in a circle on a ceramic base, kicker and injection line, ore levitating and melting in a glass chamber.	
