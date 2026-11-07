@@ -30,6 +30,11 @@ export function lintModel(json, rules, { id = json.name } = {}) {
   const boxes = rest.map(aabb);
   const near = (i, j, B = boxes, pad = TOL) => [0, 1, 2].every((k) => B[i].min[k] - pad <= B[j].max[k] && B[j].min[k] - pad <= B[i].max[k]);
 
+  // parts under a joint marked light (fire, glow, fields) are not solid: no support, no seat, no loose check
+  const jointsAll = meta.joints || {};
+  const lightNames = new Set(sk.elements.filter((e) => { let n = e.obj.parent; while (n) { if (jointsAll[n.name]) return !!jointsAll[n.name].light; n = n.parent; } return false; }).map((e) => e.name));
+  for (const nm of [...lightNames]) lightNames.add(stemOf(nm)); // a compound's stem names it in the cantilever report
+  const solid = (grp) => grp.filter((nm) => !lightNames.has(nm));
   // 1. overlaps between parts (static relation), hidden parts
   const restPen = new Map();
   for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
@@ -38,6 +43,7 @@ export function lintModel(json, rules, { id = json.name } = {}) {
     restPen.set(`${i}:${j}`, pen);
     if (pen <= EMBED) continue;
     const a = rest[i].name, b = rest[j].name;
+    if (lightNames.has(a) || lightNames.has(b)) continue;
     const sameStem = stemOf(a) === stemOf(b) && a.includes('#');
     if (contains(rest[j], rest[i]) || contains(rest[i], rest[j])) {
       const [inner, outer] = contains(rest[j], rest[i]) ? [a, b] : [b, a];
@@ -69,10 +75,6 @@ export function lintModel(json, rules, { id = json.name } = {}) {
     }
   }
 
-  // parts under a joint marked light (fire, glow, fields) are not solid: no support, no seat, no loose check
-  const jointsAll = meta.joints || {};
-  const lightNames = new Set(sk.elements.filter((e) => { let n = e.obj.parent; while (n) { if (jointsAll[n.name]) return !!jointsAll[n.name].light; n = n.parent; } return false; }).map((e) => e.name));
-  const solid = (grp) => grp.filter((nm) => !lightNames.has(nm));
   // 3. connectivity: every part must be held by something that reaches the ground
   const grounded = (B) => B.map((b) => b.min[1] <= TOL);
   const components = (O, B) => {
@@ -130,6 +132,7 @@ export function lintModel(json, rules, { id = json.name } = {}) {
         if (!near(i, j, B)) continue;
         const pen = sat(O[i], O[j]); if (pen <= EMBED) continue;
         const a = O[i].name, b = O[j].name;
+        if (lightNames.has(a) || lightNames.has(b)) continue;
         if (stemOf(a) === stemOf(b) && a.includes('#')) continue;
         const w = waived(a, b, 'sweep') || waived(a, b, 'overlap'); if (w) { w.used++; continue; }
         const key = `${a}|${b}`; const h = hits.get(key);

@@ -124,7 +124,7 @@ export function checkCantilevers(ctx) {
   const { sk, rest, boxes, rules, add, waivedOne, anims } = ctx;
   const worst = new Map();
   const consider = (r, t, anim) => {
-    if (ctx.lightNames && [r.name, ...(r.parts || [])].every((nm) => ctx.lightNames.has(nm))) return;
+    if (ctx.lightNames && ctx.lightNames.has(r.name)) return;
     const cur = worst.get(r.name);
     const score = Math.max(r.Lpx / Math.max(r.tpx, 1e-6) / rules.cantileverMax, r.stress / rules.seatStressMax);
     if (!cur || score > cur.score) worst.set(r.name, { ...r, t, anim, score });
