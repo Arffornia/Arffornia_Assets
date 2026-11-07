@@ -179,7 +179,7 @@ export function lintModel(json, rules, { id = json.name } = {}) {
 
   // 8. texel density
   const res = json.resolution || { width: 16, height: 16 };
-  const target = rules.texelsPerBlock;
+  const target = meta.texelsPerBlock || rules.texelsPerBlock;
   const dens = []; let bad = 0, warn = 0; const worstEl = new Map();
   for (const x of sk.elements) {
     const el = x.el; const sz = [0, 1, 2].map((k) => Math.abs(el.to[k] - el.from[k]) + 2 * (el.inflate || 0));

@@ -138,6 +138,21 @@ test('gears: centre distance must equal the sum of pitch radii', () => {
   assert.ok(checks(lintModel(g(3), rules)).includes('belt'));
 });
 
+test('gears: meshing gears must share a tooth pitch', () => {
+  const g = (tb) => model([base(), cube('g1', [-8, 4, -1], [0, 12, 1]), cube('g2', [0, 4, -1], [8, 12, 1])], { meta: { gears: [{ a: 'g1', b: 'g2', ta: 12, tb }] } });
+  assert.ok(!checks(lintModel(g(12), rules)).includes('belt'));
+  assert.ok(checks(lintModel(g(8), rules)).includes('belt'));
+});
+
+test('drivetrain: a turning part must be driven from a source, at the declared ratio', () => {
+  const shaft = cube('shaft', [-8, 6, -1], [8, 8, 1]);
+  const spinKeys = (turns) => rotKeys('shaft', [[0, [0, 0, 0]], [0.25, [turns * 90, 0, 0]], [0.5, [turns * 180, 0, 0]], [0.75, [turns * 270, 0, 0]], [1, [turns * 360, 0, 0]]], 'linear');
+  const mk = (meta) => model([base(), post(), shaft], { outliner: [base().uuid, post().uuid, bone('shaft', [0, 7, 0], [shaft])],
+    meta: { joints: { shaft: { type: 'revolute', axis: 'x' } }, ...meta }, animations: [{ name: 'working', length: 1, loop: 'loop', animators: spinKeys(1) }] });
+  assert.ok(checks(lintModel(mk({ ports: [{ id: 'p', kind: 'rotation', face: 'west', cell: [0, 0], bone: 'shaft' }] }), rules)).every((c) => c !== 'drivetrain'));
+  assert.ok(checks(lintModel(mk({ sources: [{ bone: 'other', why: 'a motor elsewhere' }] }), rules)).includes('drivetrain'));
+});
+
 test('kinematics: limits, rigid motion, hinge pivot, loop seam, scale, deploy', () => {
   const lid = cube('lid', [-6, 20, -6], [6, 22, 6]);
   const mk = (frames, joint, { origin = [0, 20, -6], loop = 'once', name = 'open', channel = 'rotation', length = 1 } = {}) => model([base(), post(), lid], {
