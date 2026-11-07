@@ -1,0 +1,64 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# The Arffornia machine-model pipeline: from a machine idea to a validated, animated Blockbench model.
+# Sources: tools/pix/, tools/lint/, .claude/skills/machine-model/SKILL.md, docs/MACHINE-PIPELINE.md.
+
+elements:
+  # people and agents
+  - {id: brian, kind: frontend, shape: actor, icon: user, title: "Brian", desc: "Picks concepts, reviews models"}
+  - {id: claude, kind: backend, icon: robot, title: "Claude Code", tech: "[machine-model skill]", desc: "Writes prompts, sheets, models, checks"}
+
+  # concepts
+  - {id: rounds, kind: database, icon: file, title: "Concept rounds", tech: "[tools/pix/rounds/*.tsv]", desc: "Prompts, tiers, my predictions"}
+  - {id: round-sh, kind: tool, icon: script, title: "round.sh + lab.sh", tech: "[Bash, Go client]", desc: "One image per prompt"}
+  - {id: lab, kind: external, icon: docker, title: "Image lab", tech: "[ComfyUI · Qwen-Image Q4]", desc: "Brian's RTX 5080, ~30 s an image",
+     ports: [{name: http, protocol: TCP, port: 8080}]}
+  - {id: picker, kind: frontend, icon: page, title: "Concept Picker", tech: "[claude.ai artifact · db]", desc: "Votes, comments, prediction score",
+     ports: [{name: https, protocol: TCP, port: 443}]}
+  - {id: picker-pack, kind: tool, icon: script, title: "picker/pack.mjs", tech: "[Node]", desc: "Images and rounds.json"}
+
+  # design and build
+  - {id: skill, kind: database, icon: brain, title: "machine-model skill", tech: "[SKILL.md]", desc: "Method, DA, rules, review lessons"}
+  - {id: sheet, kind: database, icon: file, title: "Process sheet", tech: "[<id>.process.md]", desc: "Steps, real basis, parts, 4 checks"}
+  - {id: module, kind: database, icon: file, title: "Machine module", tech: "[machines/<id>.mjs]", desc: "Cubes, pixel art, keyframes, meta"}
+  - {id: kit, kind: tool, icon: script, title: "kit + pix + parts", tech: "[tools/da, tools/pix]", desc: "Boxes, prisms, teeth, materials, weathering"}
+  - {id: build, kind: backend, icon: script, title: "build.mjs", tech: "[Node]", desc: "bbmodel, texture, glowmask, renders"}
+  - {id: lint, kind: security, icon: check, title: "Model lint", tech: "[tools/lint · 19 tests]", desc: "Physics, mechanics, deploy, ports"}
+  - {id: bbmodel, kind: database, icon: cube, title: "Blockbench model", tech: "[concepts/pix/<id>/]", desc: "The deliverable, with meta and FX"}
+
+  # review
+  - {id: gif, kind: tool, icon: script, title: "gif.mjs", tech: "[Playwright, ffmpeg]", desc: "15 fps loops, no strobe"}
+  - {id: viewer, kind: frontend, icon: page, title: "Machine Viewer", tech: "[claude.ai artifact · three.js]", desc: "Orbit the animated model",
+     ports: [{name: https, protocol: TCP, port: 443}]}
+
+  # memory
+  - {id: memory, kind: database, icon: brain, title: "Claude memory", tech: "[~/.claude/projects/…/memory]", desc: "Brian's taste, project state"}
+  - {id: status, kind: database, icon: file, title: "Status doc", tech: "[docs/MACHINE-MODEL-STATUS.md]", desc: "Where the work stands"}
+
+connections:
+  - {id: c-brian-claude, from: brian, to: claude, kind: flow, verb: ask, protocol: chat}
+  - {id: c-claude-rounds, from: claude, to: rounds, kind: flow, verb: write, protocol: file}
+  - {id: c-claude-roundsh, from: claude, to: round-sh, kind: flow, verb: run, protocol: shell}
+  - {id: c-roundsh-lab, from: round-sh, to: lab, kind: flow, port: http, verb: generate, protocol: HTTP}
+  - {id: c-claude-pack, from: claude, to: picker-pack, kind: flow, verb: run, protocol: shell}
+  - {id: c-claude-picker, from: claude, to: picker, kind: flow, port: https, verb: publish · read votes, protocol: Artifact API}
+  - {id: c-brian-picker, from: brian, to: picker, kind: flow, port: https, verb: vote, protocol: browser}
+  - {id: c-claude-sheet, from: claude, to: sheet, kind: flow, verb: write, protocol: file}
+  - {id: c-claude-module, from: claude, to: module, kind: flow, verb: write, protocol: file}
+  - {id: c-claude-build, from: claude, to: build, kind: flow, verb: run, protocol: shell}
+  - {id: c-build-module, from: build, to: module, kind: flow, verb: import, protocol: ESM}
+  - {id: c-build-lint, from: build, to: lint, kind: flow, verb: check, protocol: call}
+  - {id: c-build-bbmodel, from: build, to: bbmodel, kind: flow, verb: write, protocol: file}
+  - {id: c-claude-gif, from: claude, to: gif, kind: flow, verb: run, protocol: shell}
+  - {id: c-claude-viewer, from: claude, to: viewer, kind: flow, port: https, verb: publish, protocol: Artifact API}
+  - {id: c-brian-viewer, from: brian, to: viewer, kind: flow, port: https, verb: review, protocol: browser}
+  - {id: c-claude-skill, from: claude, to: skill, kind: flow, verb: read · amend, protocol: file}
+  - {id: c-claude-lint, from: claude, to: lint, kind: flow, verb: add check + test, protocol: file}
+  - {id: c-claude-memory, from: claude, to: memory, kind: flow, verb: remember, protocol: file}
+  - {id: c-claude-status, from: claude, to: status, kind: flow, verb: update, protocol: file}
+  - {id: c-lint-module, from: lint, to: module, kind: flow, verb: read meta, protocol: call}
+
+references:
+  - {id: r-module-kit, from: module, to: kit, kind: imports}
+  - {id: r-sheet-module, from: sheet, to: module, kind: drives}

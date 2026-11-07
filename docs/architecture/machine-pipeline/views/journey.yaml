@@ -1,0 +1,33 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: sequence
+title: "Arffornia · Machine pipeline · One machine, A to Z"
+subtitle: "How one machine goes from an idea to a validated model, and how each review upgrades the pipeline."
+meta:
+  - "Example used: the smelter family (rounds r4 and r5, then S3 validated)."
+  - "Out of scope: game balance and recipes (progression rework, later)."
+  - "v0.1 · source: docs/architecture/machine-pipeline"
+participants: [brian, claude, rounds, round-sh, lab, picker, sheet, module, build, lint, viewer, skill]
+steps:
+  - {id: ask, from: brian, to: claude, over: c-brian-claude, text: "a machine to design (smelter)"}
+  - {id: tsv, from: claude, to: rounds, over: c-claude-rounds, text: "10 prompts per tier + my predictions"}
+  - {id: gen, from: claude, to: round-sh, over: c-claude-roundsh, text: "round.sh <round>.tsv"}
+  - {id: img, from: round-sh, to: lab, over: c-roundsh-lab, text: "one prompt, ~30 s"}
+  - {reply: img, text: "PNG"}
+  - {reply: gen, text: "50 images"}
+  - {id: pub, from: claude, to: picker, over: c-claude-picker, text: "pack.mjs, publish the round"}
+  - {id: vote, from: brian, to: picker, over: c-brian-picker, text: "keep · maybe · no, comments"}
+  - {id: read, from: claude, to: picker, over: c-claude-picker, text: "read votes, score predictions"}
+  - {id: write-sheet, from: claude, to: sheet, over: c-claude-sheet, text: "steps, real basis, 4 checks"}
+  - {note: claude, text: "≤ 3 loops; ask Brian if a check still fails"}
+  - {id: code, from: claude, to: module, over: c-claude-module, text: "cubes, pixel art, keyframes, meta"}
+  - {id: run, from: claude, to: build, over: c-claude-build, text: "node tools/pix/build.mjs <id>"}
+  - {id: check, from: build, to: lint, over: c-build-lint, text: "physics, gears, drivetrain, deploy"}
+  - {reply: check, text: "errors, warnings"}
+  - {reply: run, text: "bare share, sheet.jpg"}
+  - {note: claude, text: "fix to 0 errors, self-review the render"}
+  - {id: show, from: claude, to: viewer, over: c-claude-viewer, text: "publish models, GIFs"}
+  - {id: review, from: brian, to: viewer, over: c-brian-viewer, text: "orbit, play, comment"}
+  - {id: feedback, from: brian, to: claude, over: c-brian-claude, text: "what is wrong, what he likes"}
+  - {id: rule, from: claude, to: skill, over: c-claude-skill, text: "a taste → a rule in the skill"}
+  - {id: proof, from: claude, to: lint, over: c-claude-lint, text: "a physics bug → a check + a test"}

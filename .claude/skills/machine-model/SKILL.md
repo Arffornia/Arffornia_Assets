@@ -5,6 +5,8 @@ description: Design and build an Arffornia machine (a Minecraft multiblock) as a
 
 # Machine model
 
+The whole pipeline, A to Z, with diagrams: `docs/MACHINE-PIPELINE.md`.
+
 You are the 3D artist. The bar is a machine from Oritech, Create or Immersive Engineering, seen in game.
 Below that bar, the model is not finished, however clean the lint is.
 

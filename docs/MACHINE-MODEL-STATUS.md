@@ -21,6 +21,17 @@ nothing committed yet. The method is the skill `.claude/skills/machine-model/SKI
 No Blockbench app or MCP is used yet; nothing has been seen in game (no GeckoLib export).
 On NixOS set `CHROME_PATH=/etc/profiles/per-user/brian/bin/google-chrome-stable` for every render.
 
+## 2026-11-08: first autonomous batch and documentation
+
+- The whole pipeline is documented A to Z in `docs/MACHINE-PIPELINE.md`, with three noodle diagrams
+  (`docs/architecture/`): what it is made of, one machine A to Z, how it upgrades itself.
+- Furnace families (smelting, alloy, forming) and their tier slots are in that doc, section 3.0.
+- Built: S1 beehive kiln (liked), F3 forge line (reworked: gears, wooden cam, 12 s cycle), L1 alloy carousel
+  (good). Not validated: T1 induction carousel (to replace with a readable arc furnace), M1 particle ring
+  (to redesign: booster ring plus main ring, modular multiblock).
+- Next: twin S1 alloy multiblock (tier 1), arc furnace (tier 4), M1 redesign, smelting tier 1.
+- Review tools: Machine Viewer artifact (3D, animated) and the picker's model rounds.
+
 ## Since the morning
 
 - Concept rounds are versioned TSVs (`tools/pix/rounds/`, `tools/pix/round.sh`) and Brian picks in the Concept

@@ -1,0 +1,39 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: landscape
+title: "Arffornia · Machine pipeline · What is it made of?"
+subtitle: "The tools and files at each stage, from a concept image to a reviewed Blockbench model."
+meta:
+  - "Scope: the machine-model pipeline in Arffornia_Assets (tools/pix, tools/lint, the machine-model skill)."
+  - "Out of scope: in-game export (GeckoLib) and the mod code, not built yet."
+  - "v0.1 · source: docs/architecture/machine-pipeline"
+bands:
+  - id: concepts
+    title: 1 · Concepts
+    sub: ideas in images, Brian picks
+    color: amber
+    flow: true
+    sections:
+      - {title: Prompts, items: [rounds]}
+      - {title: Generation, items: [round-sh, lab]}
+      - {title: Picking, items: [picker-pack, picker]}
+  - id: design
+    title: 2 · Design and build
+    sub: the machine must work before it is drawn
+    color: emerald
+    flow: true
+    sections:
+      - {title: Method, items: [skill, sheet]}
+      - {title: Model code, items: [module, kit]}
+      - {title: Build, items: [build, bbmodel]}
+  - id: proof
+    title: 3 · Proof and review
+    sub: deterministic checks, then Brian's eye
+    color: violet
+    flow: true
+    sections:
+      - {title: Proof, items: [lint]}
+      - {title: Renders, items: [gif]}
+      - {title: Review, items: [viewer]}
+side:
+  - {title: Memory, color: rose, items: [memory, status]}
