@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Generate a concept round from a TSV (group, ref, title, tier, mechanism, predict) into out/concepts/<round>/<ref>.png.
 #   tools/pix/round.sh tools/pix/rounds/r4-smelter.tsv [only-refs-regex]
+#   THEME=magic tools/pix/round.sh tools/pix/rounds/r6-magic.tsv   (arcane branch prompts)
 # Existing images are skipped, so the script can be re-run after an interruption.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -11,7 +12,18 @@ OUT=out/concepts/$ROUND
 mkdir -p "$OUT"
 
 STYLE="A modded Minecraft machine made in Blockbench, in the spirit of the Create and Immersive Engineering mods: blocky cube geometry, crisp 16x16 pixel-art textures. The working process is visible from outside, with clearly marked input and output ports. Three-quarter isometric view, whole machine in frame, plain light grey background, no text."
-era() {
+THEME=${THEME:-tech}
+if [ "$THEME" = magic ]; then
+  STYLE="A modded Minecraft arcane machine made in Blockbench, in the spirit of the Ars Nouveau and Botania mods mixed with Create craftsmanship: blocky cube geometry, crisp 16x16 pixel-art textures. The ritual or process is visible from outside, with clearly marked input and output points. Thin signal-orange accent bands tie it to the Arffornia machine family. Three-quarter isometric view, whole machine in frame, plain light grey background, no text."
+  era() {
+    case $1 in
+      0|1|2|3) echo "Early arcane era: carved dark oak and mossy stone, brass fittings, small amethyst crystals, soft purple glow, floating dust particles." ;;
+      4|5|6) echo "Arcane engineering era: polished brass and blackstone, large cut gems in brass cages, glowing glyph rings, liquid mana in glass vessels, orbiting motes of light." ;;
+      7|8|9) echo "Void era: obsidian and pale bone-white stone, a tear in reality with starry void inside, levitating rune plates, cyan and violet energy, quantum shimmer." ;;
+    esac
+  }
+fi
+[ "$THEME" = magic ] || era() {
   case $1 in
     0|1) echo "Primitive era: rough stone, clay, timber, leather and wrought iron, a few signal-orange painted iron plates with rivets, warm fire glow." ;;
     2|3) echo "Heavy industry era: warm anthracite riveted steel frame, chipped signal-orange painted panels, copper pipes with flanges, amber heat glow, smoke." ;;
