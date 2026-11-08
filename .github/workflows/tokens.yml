@@ -1,0 +1,19 @@
+# Design tokens (spec 018): generated files up to date, WCAG contrast pairs pass, unit tests.
+name: tokens
+on:
+  pull_request:
+    paths: ['ui/tokens/**', '.github/workflows/tokens.yml']
+  push:
+    branches: [main]
+    paths: ['ui/tokens/**', '.github/workflows/tokens.yml']
+permissions:
+  contents: read
+jobs:
+  tokens:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm run tokens:check

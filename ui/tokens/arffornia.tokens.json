@@ -1,0 +1,104 @@
+{
+  "$description": "Arffornia player-facing identity (spec 018, D1: the launcher's palette). W3C Design Tokens format. Edit here, then run `npm run tokens`.",
+  "color": {
+    "$type": "color",
+    "brand": {
+      "orange": {"$value": "#ff7300", "$description": "The brand accent (launcher, website, title screen)."},
+      "orange-strong": {"$value": "#e06500", "$description": "Pressed and hover state of orange."},
+      "orange-deep": {"$value": "#b74512", "$description": "Orange text on light surfaces."},
+      "teal": {"$value": "#2fd1c1", "$description": "Second accent: logic, running, available."},
+      "teal-deep": {"$value": "#0f7f77", "$description": "Teal text on light surfaces."}
+    },
+    "plum": {
+      "950": {"$value": "#09070a"},
+      "900": {"$value": "#1a1422"},
+      "850": {"$value": "#261d31"},
+      "800": {"$value": "#3d2f4e"},
+      "700": {"$value": "#54456a"},
+      "500": {"$value": "#7d6e93"},
+      "300": {"$value": "#b3a7c2"},
+      "200": {"$value": "#d1c4e9"},
+      "100": {"$value": "#ece6f5"},
+      "50": {"$value": "#f8f5fc"}
+    },
+    "state": {
+      "success": {"$value": "#27ae60"},
+      "warning": {"$value": "#f39c12"},
+      "danger": {"$value": "#e5484d"}
+    },
+    "tier": {
+      "$description": "Stage accents, from spec 003 bands. Used for stage bands and machine GUI trims.",
+      "0": {"$value": "#ff7300"},
+      "3": {"$value": "#7ea6c4"},
+      "5": {"$value": "#f2c230"},
+      "7": {"$value": "#2fd1c1"},
+      "8": {"$value": "#a98be0"},
+      "9": {"$value": "#bfeaf5"}
+    }
+  },
+  "theme": {
+    "$description": "Semantic colours. Components use only these. dark is the default (launcher, game); light is for the website.",
+    "dark": {
+      "bg": {"$value": "{color.plum.950}"},
+      "surface": {"$value": "{color.plum.850}"},
+      "surface-raised": {"$value": "{color.plum.800}"},
+      "border": {"$value": "{color.plum.700}"},
+      "text": {"$value": "{color.plum.100}"},
+      "text-muted": {"$value": "{color.plum.300}"},
+      "accent": {"$value": "{color.brand.orange}"},
+      "accent-hover": {"$value": "{color.brand.orange-strong}"},
+      "on-accent": {"$value": "{color.plum.950}"},
+      "accent-text": {"$value": "{color.brand.orange}"},
+      "second": {"$value": "{color.brand.teal}"},
+      "second-text": {"$value": "{color.brand.teal}"},
+      "focus": {"$value": "{color.brand.teal}"}
+    },
+    "light": {
+      "bg": {"$value": "{color.plum.50}"},
+      "surface": {"$value": "#ffffff"},
+      "surface-raised": {"$value": "{color.plum.100}"},
+      "border": {"$value": "{color.plum.200}"},
+      "text": {"$value": "{color.plum.850}"},
+      "text-muted": {"$value": "{color.plum.700}"},
+      "accent": {"$value": "{color.brand.orange}"},
+      "accent-hover": {"$value": "{color.brand.orange-strong}"},
+      "on-accent": {"$value": "{color.plum.950}"},
+      "accent-text": {"$value": "{color.brand.orange-deep}"},
+      "second": {"$value": "{color.brand.teal}"},
+      "second-text": {"$value": "{color.brand.teal-deep}"},
+      "focus": {"$value": "{color.brand.teal-deep}"}
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "body": {"$value": ["Montserrat", "system-ui", "sans-serif"]},
+    "display": {"$value": ["Chakra Petch", "Montserrat", "sans-serif"]},
+    "mono": {"$value": ["Monocraft", "ui-monospace", "monospace"]}
+  },
+  "size": {
+    "$type": "dimension",
+    "text": {
+      "xs": {"$value": "12px"}, "sm": {"$value": "14px"}, "md": {"$value": "16px"},
+      "lg": {"$value": "20px"}, "xl": {"$value": "28px"}, "2xl": {"$value": "40px"}
+    },
+    "space": {
+      "1": {"$value": "4px"}, "2": {"$value": "8px"}, "3": {"$value": "12px"}, "4": {"$value": "16px"},
+      "6": {"$value": "24px"}, "8": {"$value": "32px"}, "12": {"$value": "48px"}
+    },
+    "radius": {
+      "sm": {"$value": "4px"}, "md": {"$value": "8px"}, "lg": {"$value": "14px"}, "pill": {"$value": "999px"}
+    }
+  },
+  "motion": {
+    "$type": "duration",
+    "fast": {"$value": "120ms"}, "base": {"$value": "200ms"}, "slow": {"$value": "360ms"}
+  },
+  "contrast": {
+    "$description": "Pairs the build checks against WCAG AA (4.5 for text, 3 for large text and UI).",
+    "pairs": {"$value": [
+      ["text", "bg", 4.5], ["text", "surface", 4.5], ["text", "surface-raised", 4.5],
+      ["text-muted", "surface", 4.5], ["accent-text", "surface", 4.5], ["second-text", "surface", 4.5],
+      ["on-accent", "accent", 4.5], ["focus", "surface", 3], ["border", "surface", 1.3]
+    ]}
+  }
+}
