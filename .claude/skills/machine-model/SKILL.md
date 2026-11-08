@@ -73,6 +73,13 @@ power source. The player reads progress at a glance: riveted heavy industry, the
 | 8 | Particles | graphite, polished | orange ceramic, smooth bevels | violet energy conduits | rings, levitating parts, field emitters | violet plasma, fields |
 | 9 | Quantum | white ceramic and graphite | orange as a thin accent band only | white and cyan | monolithic shells, floating parts, few seams | light itself |
 
+## Provenance: show what the machine eats (Brian, 2026-11-08)
+
+Arffornia chains take inputs from several mods. The machine shows it: a part fed by a magic mod gets
+magic material (gems, glyph rings, motes, mana in glass), a part fed by Create gets brass and shafts, and
+so on. The player should guess the inputs from the model. Particles are allowed for this. Magic branch
+concepts use `THEME=magic tools/pix/round.sh`; they keep thin signal-orange accent bands to stay in the family.
+
 ## Lineage: how a machine changes across tiers (choose per machine, write the reason)
 
 | Mode | What changes | Use it for | Example |

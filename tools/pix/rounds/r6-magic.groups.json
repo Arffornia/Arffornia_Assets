@@ -1,0 +1,7 @@
+{
+ "R": {"tier": "Failles et dimensions", "era": "Tiers 7–9", "hint": "Ouvrir une dimension Arffornia en récompense de palier. Choisis 1 ou 2 pistes."},
+ "A": {"tier": "Autels", "era": "Tiers 4–8", "hint": "Craft arcane à la frontière avec la tech. Lequel lit le mieux ce qu'il fait ?"},
+ "P": {"tier": "Rituels en multibloc variable", "era": "Tiers 3–6", "hint": "Pièces posées séparément puis liées, comme les pylônes de l'accélérateur."},
+ "H": {"tier": "Hybrides tech et magie", "era": "Tiers 3–7", "hint": "On doit voir sur la machine qu'elle ingère des objets des deux branches."},
+ "E": {"tier": "Production d'essences", "era": "Tiers 4–7", "hint": "Ressources magiques en masse pour les chaînes Arffornia."}
+}
