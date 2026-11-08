@@ -16,7 +16,9 @@
     "concepts:prompts": "python3 tools/concepts/generate.py prompts",
     "concepts:generate": "python3 tools/concepts/generate.py lab",
     "concepts:test": "python3 -m unittest discover -s tools/concepts",
-    "concepts:review": "python3 tools/concepts/review.py out/concepts/r1"
+    "concepts:review": "python3 tools/concepts/review.py out/concepts/r1",
+    "tokens": "node ui/tokens/build.mjs",
+    "tokens:check": "node ui/tokens/build.mjs --check && node --test ui/tokens/build.test.mjs"
   },
   "dependencies": {
     "three": "0.180.0"
