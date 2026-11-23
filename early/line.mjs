@@ -20,7 +20,7 @@ const server = http.createServer((req, res) => {
   res.writeHead(200, { 'content-type': p.endsWith('.html') ? 'text/html' : p.endsWith('.js') ? 'text/javascript' : 'application/octet-stream' }); fs.createReadStream(p).pipe(res);
 });
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
-const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--force-color-profile=srgb'] });
+const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--force-color-profile=srgb'] });
 async function frames(size, camera, times, transparent = false) {
   const pg = await browser.newPage({ viewport: { width: size[0], height: size[1] } });
   await pg.goto(`http://127.0.0.1:${server.address().port}/render/stage.html`); await pg.waitForFunction(() => window.STAGE);
