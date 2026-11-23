@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Title screen background (spec 007, D11 a)</title>
+<style>
+  /* The in-game title screen's background, baked once: the factory at the menu-left camera, night look,
+     graded to plum with the same layers as ui/directions/g-honeycomb-r4.html (grade, grade2, scrim,
+     grain). The mod draws it 2 % oversized and slides it a few pixels against the selection. */
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #09070a; }
+  img { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+  .grade { position: absolute; inset: 0; background: #2a1838; mix-blend-mode: color; opacity: .55; }
+  .grade2 { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(26, 18, 34, .78), rgba(26, 18, 34, .55) 45%, rgba(26, 18, 34, 0) 60%); }
+  .scrim { position: absolute; inset: 0; background: radial-gradient(70% 55% at 0% 0%, rgba(9, 7, 10, .88), rgba(9, 7, 10, 0) 70%), linear-gradient(0deg, rgba(9, 7, 10, .75), rgba(9, 7, 10, 0) 22%); }
+  .grain { position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); }
+</style></head>
+<body><img src="../../out/scenes/factory-line/ui/menu-left-night.frames/f0000.png" alt=""><div class="grade"></div><div class="grade2"></div><div class="scrim"></div><div class="grain"></div></body></html>
