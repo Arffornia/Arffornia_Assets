@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { buildModel, pose, bakeClip, animLength } from './bbmodel.js';
+import { buildModel, pose as poseModel, bakeClip, animLength } from './bbmodel.js';
 
 // Looks: the art direction knobs. "night" matches the Night Shift previews, "maquette" the light ones.
 export const LOOKS = {
@@ -18,7 +18,7 @@ export const LOOKS = {
 };
 
 const BELT_V = 0.9, GAP = 1.5;
-let beltV = BELT_V;
+const beltV = BELT_V;
 const ITEM = { ore: '#5b4a42', ingot: '#e0703c', plate: '#b9c6cf', rod: '#7f909c', rplate: '#d6dee4', pkg: '#e0703c' };
 
 let R, scene, camera, composer, bloom, models = [], belts = [], opts, root;
@@ -29,11 +29,11 @@ function gradientTexture(cols, w = 4, h = 256) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 
-function beltTexture(look) {
+function beltTexture(look, chevrons = true) {
   const c = document.createElement('canvas'); c.width = 64; c.height = 32; const x = c.getContext('2d');
   x.fillStyle = look === 'night' ? '#141c22' : '#5d6e78'; x.fillRect(0, 0, 64, 32);
   x.strokeStyle = look === 'night' ? '#46566060' : '#8fa0aa'; x.lineWidth = 3;
-  for (const s of [0, 32]) { x.beginPath(); x.moveTo(s + 4, 4); x.lineTo(s + 13, 16); x.lineTo(s + 4, 28); x.stroke(); }
+  if (chevrons) for (const s of [0, 32]) { x.beginPath(); x.moveTo(s + 4, 4); x.lineTo(s + 13, 16); x.lineTo(s + 4, 28); x.stroke(); }
   x.fillStyle = '#8a9aa6'; x.fillRect(0, 0, 64, 3); x.fillRect(0, 29, 64, 3);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.magFilter = THREE.NearestFilter; return t;
 }
@@ -78,11 +78,14 @@ function makeBelt(cv, look) {
     const it = new THREE.Mesh(new THREE.BoxGeometry(...(along ? s : [s[2], s[1], s[0]])), new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, metalness: 0.4, emissive: cv.item === 'ingot' ? col : '#000', emissiveIntensity: look === 'night' ? 0.8 : 0.2 }));
     it.castShadow = true; scene.add(it); items.push(it);
   }
-  return { cv, group: g, tex, items, n };
+  return { cv, group: g, tex, top, items, n, look };
 }
 
+let staticMode = false;
+
 function updateBelt(b, t) {
-  const { cv, tex, items, n } = b; const cyc = n * GAP; const along = cv.axis === 'x';
+  const { cv, tex, items, n } = b;
+  if (staticMode) { items.forEach((it) => { it.visible = false; }); return; } const cyc = n * GAP; const along = cv.axis === 'x';
   tex.offset.x = -((t * beltV) % 1);
   items.forEach((it, k) => {
     const u = ((((t * beltV + (cv.ph || 0) + k * GAP) / cyc) % 1 + 1) % 1) * cyc - 0.05;
@@ -122,7 +125,7 @@ export async function init(o) {
   const fill = new THREE.DirectionalLight(L.fill[0], L.fill[1]); fill.position.set(14, 4, 2);
   root = new THREE.Group(); scene.add(root, key, rim, fill);
   const tgt = new THREE.Object3D(); scene.add(tgt); key.target = tgt;
-  models = []; belts = []; beltV = BELT_V;
+  models = []; belts = [];
   const S = o.scene;
   if (S) {
     const [cx, cy] = S.center || [11, 2]; tgt.position.set(cx, 0, cy); key.position.set(cx - 6, 14, cy + 12); key.shadow.camera.updateProjectionMatrix();
@@ -132,7 +135,7 @@ export async function init(o) {
     for (const p of S.models) {
       const m = await buildModel(o.models[p.model]); m.root.traverse((n) => { if (n.material) [].concat(n.material).forEach((mm) => { if (mm.emissiveMap) mm.emissiveIntensity = L.emissive; }); });
       const fp = (o.models[p.model].arffornia || {}).footprint || [1, 1];
-      m.root.position.set(p.at[0] + fp[0] / 2, 0, p.at[1] + fp[1] / 2); m.speed = p.speed || 1; m.offset = p.offset || 0; m.anim = p.anim;
+      m.root.position.set(p.at[0] + fp[0] / 2, 0, p.at[1] + fp[1] / 2); m.speed = p.speed || 1; m.offset = p.offset || 0; m.anim = p.anim; m.name = p.model;
       root.add(m.root); models.push(m);
     }
     for (const l of S.lights || []) { const pl = new THREE.PointLight(l.color, l.intensity * (look === 'night' ? 1 : 0.3), l.range || 6, 2); pl.position.set(l.at[0], l.at[2], l.at[1]); root.add(pl); }
@@ -145,7 +148,6 @@ export async function init(o) {
     const ph = 0.816 * size.y + 0.408 * (size.x + size.z), pw = 0.707 * (size.x + size.z);
     opts.camera = { target: [c.x, c.y, c.z], height: Math.max(ph, pw * o.size[1] / o.size[0]) * (o.margin || 1.24), ...(o.camera || {}) };
   }
-  if (o.loop) closeLoop(o.loop);
   composer = new EffectComposer(R); composer.setPixelRatio(1); composer.setSize(w, h);
   composer.addPass(new RenderPass(scene, camera));
   if (!transparent && o.bloom !== false) { bloom = new UnrealBloomPass(new THREE.Vector2(w, h), L.bloom[0], L.bloom[1], L.bloom[2]); composer.addPass(bloom); }
@@ -153,19 +155,8 @@ export async function init(o) {
   return { anim: models.map((m) => animLength(m.json, m.anim)) };
 }
 
-// Retime every periodic motion to a whole number of cycles in `loop` seconds, so frame 0 follows the
-// last frame without a jump. The belt texture repeats every 1 block and its items every GAP blocks.
-function closeLoop(loop) {
-  const cycles = (period) => Math.max(1, Math.round(loop / period));
-  beltV = cycles(3 / BELT_V) * 3 / loop;
-  for (const m of models) {
-    const len = animLength(m.json, m.anim);
-    if (len > 0) m.speed = cycles(len / m.speed) * len / loop;
-  }
-}
-
 export function renderFrame(t) {
-  for (const m of models) pose(m, (t + (m.offset || 0)) * (m.speed || 1), m.anim);
+  for (const m of models) poseModel(m, (t + (m.offset || 0)) * (m.speed || 1), m.anim);
   for (const b of belts) updateBelt(b, t);
   placeCamera(camera, t);
   if (opts.transparent) R.render(scene, camera); else composer.render();
@@ -180,7 +171,142 @@ export async function exportGLB() {
   return btoa(s);
 }
 
-window.STAGE = { init, renderFrame, exportGLB };
+// ---- Layers for the procedural factory (spec 007): Arffornia_Mods draws the scene itself every frame
+// from a still of everything that does not move, sprites of what moves, and "mattes": the still's
+// pixels that sit in front of a moving part, drawn over it so it goes behind machines and pillars.
+export const MOVING_BONES = { miner: ['fan', 'drill'], constructor: ['piston'], assembler: ['arm'], 'space-elevator': ['capsule'] };
+export const BELT = { V: BELT_V, GAP };
+
+function movingBone(m, name) { return m.bones.get(name); }
+
+export function pose(t) {
+  for (const m of models) poseModel(m, (t + (m.offset || 0)) * (m.speed || 1), m.anim);
+  for (const b of belts) updateBelt(b, t);
+  placeCamera(camera, 0);
+}
+
+// Everything that moves is hidden and the belts lose their chevrons (drawn by the mod, scrolling).
+export function staticOnly() {
+  staticMode = true;
+  for (const b of belts) { b.items.forEach((it) => { it.visible = false; }); b.top.material.map = beltTexture(b.look, false); b.top.material.map.repeat.set(b.cv.len, 1); b.top.material.needsUpdate = true; }
+  for (const m of models) for (const name of MOVING_BONES[m.name] || []) {
+    const g = movingBone(m, name);
+    if (!SHADOW_ONLY.has(name)) { g.visible = false; continue; }
+    // turns in place: its shadow stays in the still, the part itself is drawn by the mod
+    g.traverse((n) => { if (n.isMesh) n.userData.drawn = n.material; if (n.isMesh) n.material = [].concat(n.material).map((mm) => { const c = mm.clone(); c.colorWrite = false; c.depthWrite = false; return c; }); });
+  }
+}
+const SHADOW_ONLY = new Set(['fan']);
+
+let hidden = [];
+// Shows only the given objects (and their children); lights stay. Undone by showAll().
+export function only(objs) {
+  const keep = new Set(); objs.forEach((o) => o.traverse((n) => keep.add(n)));
+  scene.traverse((n) => { if (n.isMesh || n.isLine || n.isLineSegments) { if (!keep.has(n) && n.visible) { n.visible = false; hidden.push(n); } } });
+  objs.forEach((o) => { for (let p = o; p; p = p.parent) if (!p.visible) { p.visible = true; hidden.push({ restore: p }); } });
+}
+export function showAll() { for (const h of hidden) { if (h.restore) h.restore.visible = false; else h.visible = true; } hidden = []; }
+
+export function render() {
+  if (opts.transparent) R.render(scene, camera); else composer.render();
+  return document.getElementById('c').toDataURL('image/png');
+}
+
+export function project(p) {
+  const v = new THREE.Vector3(...p).project(camera);
+  return [(v.x + 1) / 2 * opts.size[0], (1 - v.y) / 2 * opts.size[1]];
+}
+
+// White where `box` (world AABB, three.js axes) is behind the visible scene: the scene's own depth,
+// then the box with the depth test inverted. Transparent materials (glass) write no depth, so they
+// do not hide what is behind them.
+export function mask(box) {
+  const saved = [];
+  scene.traverse((n) => { if (n.isMesh || n.isLine || n.isLineSegments) [].concat(n.material).forEach((mm) => { saved.push([mm, mm.colorWrite]); mm.colorWrite = false; }); });
+  const prevBg = scene.background; scene.background = null;
+  R.setClearColor(0x000000, 0); R.autoClear = false; R.clear(true, true, true);
+  R.render(scene, camera);
+  const size = new THREE.Vector3(), c = new THREE.Vector3(); box.getSize(size); box.getCenter(c);
+  const cube = new THREE.Mesh(new THREE.BoxGeometry(size.x, size.y, size.z), new THREE.MeshBasicMaterial({ color: 0xffffff, depthFunc: THREE.GreaterDepth, depthWrite: false }));
+  cube.position.copy(c); const bs = new THREE.Scene(); bs.add(cube);
+  R.render(bs, camera);
+  const url = document.getElementById('c').toDataURL('image/png');
+  saved.forEach(([mm, v]) => { mm.colorWrite = v; }); scene.background = prevBg; R.autoClear = true;
+  return url;
+}
+
+const meshes = () => { const l = []; scene.traverse((n) => { if (n.isMesh || n.isLine || n.isLineSegments) l.push(n); }); return l; };
+const isGlass = (n) => [].concat(n.material).some((mm) => mm.transparent);
+
+// The given objects as the camera sees them in the scene: everything else still hides them (depth)
+// and shades them, but draws no colour.
+export function occluded(objs) {
+  const ghosts = [];
+  objs.forEach((o) => { o.visible = true; o.traverse((n) => { n.layers.set(1); if (n.userData.drawn) { ghosts.push([n, n.material]); n.material = n.userData.drawn; } }); });
+  scene.traverse((n) => { if (n.isLight) n.layers.enable(1); });
+  const prevBg = scene.background; scene.background = null;
+  R.setClearColor(0x000000, 0); R.autoClear = false; R.clear(true, true, true);
+  scene.overrideMaterial = new THREE.MeshBasicMaterial({ colorWrite: false });
+  camera.layers.set(0); R.render(scene, camera);
+  scene.overrideMaterial = null; camera.layers.set(1); R.render(scene, camera);
+  camera.layers.set(0); objs.forEach((o) => o.traverse((n) => n.layers.set(0)));
+  ghosts.forEach(([n, m]) => { n.material = m; });
+  scene.background = prevBg; R.autoClear = true;
+  return document.getElementById('c').toDataURL('image/png');
+}
+
+// Glass in front of `box`: the opaque scene and the box fill the depth, then only the glass draws.
+// White in the second image where the box is on screen.
+export function glassFront(box) {
+  const size = new THREE.Vector3(), c = new THREE.Vector3(); box.getSize(size); box.getCenter(c);
+  const cube = new THREE.Mesh(new THREE.BoxGeometry(size.x, size.y, size.z), new THREE.MeshBasicMaterial({ colorWrite: false }));
+  cube.position.copy(c);
+  const all = meshes(); const glass = all.filter(isGlass);
+  const prevBg = scene.background; scene.background = null;
+  R.setClearColor(0x000000, 0); R.autoClear = false; R.clear(true, true, true);
+  const saved = [];
+  all.forEach((n) => [].concat(n.material).forEach((mm) => saved.push([mm, mm.colorWrite])));
+  glass.forEach((n) => { n.visible = false; });
+  all.forEach((n) => [].concat(n.material).forEach((mm) => { mm.colorWrite = false; }));
+  R.render(scene, camera); scene.add(cube); R.render(scene, camera); scene.remove(cube);
+  saved.forEach(([mm, v]) => { mm.colorWrite = v; });
+  const others = all.filter((n) => !isGlass(n) && n.visible); others.forEach((n) => { n.visible = false; }); glass.forEach((n) => { n.visible = true; });
+  R.render(scene, camera);
+  const url = document.getElementById('c').toDataURL('image/png');
+  others.forEach((n) => { n.visible = true; });
+  R.clear(true, true, true);
+  const sil = new THREE.Mesh(cube.geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false })); sil.position.copy(c);
+  const ss = new THREE.Scene(); ss.add(sil); R.render(ss, camera);
+  const silUrl = document.getElementById('c').toDataURL('image/png');
+  scene.background = prevBg; R.autoClear = true;
+  return [url, silUrl];
+}
+
+export function boneBox(modelName, bone, t) {
+  const m = models.find((x) => x.name === modelName); pose(t); m.root.updateMatrixWorld(true);
+  const g = movingBone(m, bone); const was = g.visible; g.visible = true;
+  const b = new THREE.Box3().setFromObject(g); g.visible = was; return b;
+}
+export function boneOrigin(modelName, bone, t) {
+  const m = models.find((x) => x.name === modelName); pose(t); m.root.updateMatrixWorld(true);
+  return movingBone(m, bone).getWorldPosition(new THREE.Vector3()).toArray();
+}
+export function boneObject(modelName, bone) { return movingBone(models.find((x) => x.name === modelName), bone); }
+export function beltInfo() { return belts.map((b) => ({ cv: b.cv, n: b.n, itemHeight: b.items[0].geometry.parameters.height })); }
+export function beltItem(i, u) {
+  const b = belts[i]; const it = b.items[0]; const along = b.cv.axis === 'x';
+  it.visible = true; it.scale.setScalar(1);
+  it.position.set(along ? b.cv.x0 + u : b.cv.c, 0.2 + it.geometry.parameters.height / 2, along ? b.cv.c : b.cv.y0 + u);
+  return it;
+}
+// Catches an item's shadow on its belt top only, so a sprite never carries a shadow onto a machine wall.
+export function shadowCatcher(i) {
+  const { cv } = belts[i]; const along = cv.axis === 'x'; const len = cv.len + 0.7;
+  const p = new THREE.Mesh(new THREE.PlaneGeometry(along ? len : 0.6, along ? 0.6 : len), new THREE.ShadowMaterial({ opacity: 0.45 }));
+  p.rotation.x = -Math.PI / 2; p.position.set(along ? cv.x0 + cv.len / 2 : cv.c, 0.202, along ? cv.c : cv.y0 + cv.len / 2); p.receiveShadow = true; scene.add(p); return p;
+}
+
+window.STAGE = { init, renderFrame, exportGLB, pose, staticOnly, only, showAll, render, project, mask, occluded, glassFront, boneBox, boneOrigin, boneObject, beltInfo, beltItem, shadowCatcher, MOVING_BONES, BELT, THREE };
 
 // Live preview when opened by hand: stage.html?model=miner or ?scene=factory-line&look=maquette
 const q = new URLSearchParams(location.search);

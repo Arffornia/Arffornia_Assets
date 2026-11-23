@@ -8,8 +8,9 @@ import path from 'node:path';
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const out = path.join(root, 'out/early');
 const b = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined, args: ['--force-color-profile=srgb', '--font-render-hinting=none'] });
-// @2x for `earlyWindowFBScale = 2`: the provider draws into a 1708x960 framebuffer.
-for (const [scale, suffix] of [[1, ''], [2, '@2x']]) {
+// @2x for `earlyWindowFBScale = 2` (a 1708x960 framebuffer); @4x for windows the provider renders at
+// up to 4x (a maximised window on a 4K screen).
+for (const [scale, suffix] of [[1, ''], [2, '@2x'], [4, '@4x']]) {
   const p = await b.newPage({ viewport: { width: 854, height: 480 }, deviceScaleFactor: scale });
   for (const [q, f, transparent] of [['layer=backdrop', 'w4-backdrop', false], ['layer=overlay', 'w4-overlay', true], ['layer=overlay&sample', 'w4-sample', true]]) {
     await p.goto(`file://${root}/early/window-line.html?${q}`); await p.evaluate(() => document.fonts.ready);

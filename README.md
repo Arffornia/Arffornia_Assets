@@ -20,6 +20,9 @@ npm run concepts:prompts  # concept image prompts (brief x machines x tiers) -> 
 npm run concepts:generate # render them through image-generation-lab (LAB_URL, LAB_TOKEN), see tools/concepts/README.md
 npm run concepts:test     # prompt pack, lineage and lab-client tests
 node early/line.mjs       # round 3 early window: the assembly line as a 20 fps sheet -> out/early/
+node early/window-line.mjs # early-window layers (backdrop, logo + wordmark overlay) at 1x, 2x, 4x -> out/early/
+node early/scene.mjs      # spec 007 procedural factory for Arffornia_Mods: still + sprites + mattes + motion -> out/scene/<early|title>/
+python3 early/scene_preview.py out/scene/early /tmp/prev 0 7 30   # what the mod draws, frame by frame
 ```
 
 Open a model live: serve the repo root (`npx serve .`) and visit
