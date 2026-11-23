@@ -18,6 +18,7 @@ export const LOOKS = {
 };
 
 const BELT_V = 0.9, GAP = 1.5;
+let beltV = BELT_V;
 const ITEM = { ore: '#5b4a42', ingot: '#e0703c', plate: '#b9c6cf', rod: '#7f909c', rplate: '#d6dee4', pkg: '#e0703c' };
 
 let R, scene, camera, composer, bloom, models = [], belts = [], opts, root;
@@ -82,9 +83,9 @@ function makeBelt(cv, look) {
 
 function updateBelt(b, t) {
   const { cv, tex, items, n } = b; const cyc = n * GAP; const along = cv.axis === 'x';
-  tex.offset.x = -((t * BELT_V) % 1);
+  tex.offset.x = -((t * beltV) % 1);
   items.forEach((it, k) => {
-    const u = ((((t * BELT_V + (cv.ph || 0) + k * GAP) / cyc) % 1 + 1) % 1) * cyc - 0.05;
+    const u = ((((t * beltV + (cv.ph || 0) + k * GAP) / cyc) % 1 + 1) % 1) * cyc - 0.05;
     const vis = u >= 0 && u <= cv.len + 0.28; it.visible = vis; if (!vis) return;
     const sc = cv.noFade ? 1 : Math.min(1, Math.max(0.001, u / 0.3));
     it.scale.setScalar(sc);
@@ -121,7 +122,7 @@ export async function init(o) {
   const fill = new THREE.DirectionalLight(L.fill[0], L.fill[1]); fill.position.set(14, 4, 2);
   root = new THREE.Group(); scene.add(root, key, rim, fill);
   const tgt = new THREE.Object3D(); scene.add(tgt); key.target = tgt;
-  models = []; belts = [];
+  models = []; belts = []; beltV = BELT_V;
   const S = o.scene;
   if (S) {
     const [cx, cy] = S.center || [11, 2]; tgt.position.set(cx, 0, cy); key.position.set(cx - 6, 14, cy + 12); key.shadow.camera.updateProjectionMatrix();
@@ -144,11 +145,23 @@ export async function init(o) {
     const ph = 0.816 * size.y + 0.408 * (size.x + size.z), pw = 0.707 * (size.x + size.z);
     opts.camera = { target: [c.x, c.y, c.z], height: Math.max(ph, pw * o.size[1] / o.size[0]) * (o.margin || 1.24), ...(o.camera || {}) };
   }
+  if (o.loop) closeLoop(o.loop);
   composer = new EffectComposer(R); composer.setPixelRatio(1); composer.setSize(w, h);
   composer.addPass(new RenderPass(scene, camera));
   if (!transparent && o.bloom !== false) { bloom = new UnrealBloomPass(new THREE.Vector2(w, h), L.bloom[0], L.bloom[1], L.bloom[2]); composer.addPass(bloom); }
   composer.addPass(new OutputPass());
   return { anim: models.map((m) => animLength(m.json, m.anim)) };
+}
+
+// Retime every periodic motion to a whole number of cycles in `loop` seconds, so frame 0 follows the
+// last frame without a jump. The belt texture repeats every 1 block and its items every GAP blocks.
+function closeLoop(loop) {
+  const cycles = (period) => Math.max(1, Math.round(loop / period));
+  beltV = cycles(3 / BELT_V) * 3 / loop;
+  for (const m of models) {
+    const len = animLength(m.json, m.anim);
+    if (len > 0) m.speed = cycles(len / m.speed) * len / loop;
+  }
 }
 
 export function renderFrame(t) {
