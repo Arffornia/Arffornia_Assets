@@ -1,337 +1,337 @@
 {
- "engine": "eddb3be5776fc016",
+ "engine": "ab104eef748085dd",
  "outputs": {
   "assembler:card": {
-   "hash": "a8688072c69fab34",
+   "hash": "ad3819e57b9aabf2",
    "files": [
     "models/assembler/assembler.night.png"
    ]
   },
   "assembler:glb": {
-   "hash": "afa632ea8d85069d",
+   "hash": "8a7b7d41843f7ef4",
    "files": [
     "models/assembler/assembler.glb"
    ]
   },
   "assembler:icon": {
-   "hash": "4df259cc235542b6",
+   "hash": "9187eb60a3df0875",
    "files": [
     "models/assembler/assembler.icon.png"
    ]
   },
   "assembler:sheet": {
-   "hash": "8589511eee625200",
+   "hash": "209f56637f4d450b",
    "files": [
     "models/assembler/assembler.sheet.png"
    ]
   },
   "assembler:svg": {
-   "hash": "33ceedf448e91281",
+   "hash": "51d9d426d25408f1",
    "files": [
     "models/assembler/assembler.anim.svg"
    ]
   },
   "assembler:turntable": {
-   "hash": "bfb6c4cae7b37d5d",
+   "hash": "abe36606e267cc0c",
    "files": [
     "models/assembler/assembler.turntable.mp4",
     "models/assembler/assembler.turntable.webp"
    ]
   },
   "constructor:card": {
-   "hash": "daec14de59956c0a",
+   "hash": "591eac64a2256b1a",
    "files": [
     "models/constructor/constructor.night.png"
    ]
   },
   "constructor:glb": {
-   "hash": "8c921027f9c89e73",
+   "hash": "9591d8134e67764e",
    "files": [
     "models/constructor/constructor.glb"
    ]
   },
   "constructor:icon": {
-   "hash": "d7453640b3272ec4",
+   "hash": "73253d3d141696b6",
    "files": [
     "models/constructor/constructor.icon.png"
    ]
   },
   "constructor:sheet": {
-   "hash": "55400d458ac5ec96",
+   "hash": "ac4f55dcfb6fd1e7",
    "files": [
     "models/constructor/constructor.sheet.png"
    ]
   },
   "constructor:svg": {
-   "hash": "25723132fd84dcc1",
+   "hash": "63da8a133f3e5d66",
    "files": [
     "models/constructor/constructor.anim.svg"
    ]
   },
   "constructor:turntable": {
-   "hash": "74c7fefbb2a6b149",
+   "hash": "3a5fe9a405dfd1b5",
    "files": [
     "models/constructor/constructor.turntable.mp4",
     "models/constructor/constructor.turntable.webp"
    ]
   },
   "early-press:fml-strip": {
-   "hash": "e3511a1ab47bab94",
+   "hash": "cbfbe6ff71d792e1",
    "files": [
     "early/fml-strip.png"
    ]
   },
   "early-press:loop-20fps": {
-   "hash": "eb8f7e3f30cdf873",
+   "hash": "b1eced7c5a32158b",
    "files": [
     "early/press-20fps.sheet.png"
    ]
   },
   "factory-line:early-window": {
-   "hash": "2a4ebf333367d90f",
+   "hash": "8dc6bcfb5cbf640c",
    "files": [
     "scenes/factory-line/early-window.sheet.png"
    ]
   },
   "factory-line:fancymenu-bg": {
-   "hash": "8ab5085a8126f326",
+   "hash": "ac432359bd487e98",
    "files": [
     "scenes/factory-line/loading-bg.night.png"
    ]
   },
   "factory-line:login-maquette": {
-   "hash": "965fda60a82f230d",
+   "hash": "3f590684075b97a0",
    "files": [
     "scenes/factory-line/login.maquette.webm"
    ]
   },
   "factory-line:login-night": {
-   "hash": "e36174ee3a4ca7ff",
+   "hash": "4ba7111bf16cffed",
    "files": [
     "scenes/factory-line/login.night.webm"
    ]
   },
   "factory-line:login-poster-maquette": {
-   "hash": "d23ed43f80aed2a5",
+   "hash": "3129cc07a5bdb96e",
    "files": [
     "scenes/factory-line/login.maquette.jpg"
    ]
   },
   "factory-line:login-poster-night": {
-   "hash": "fceda821db37b6d8",
+   "hash": "0d1175f08daf5584",
    "files": [
     "scenes/factory-line/login.night.jpg"
    ]
   },
   "factory-line:loop": {
-   "hash": "922374d906ad2274",
+   "hash": "193c571c66a1f6ae",
    "files": [
     "scenes/factory-line/title.loop.mp4"
    ]
   },
   "factory-line:title-maquette": {
-   "hash": "1f25e1837694c036",
+   "hash": "7cb181ffca7db476",
    "files": [
     "scenes/factory-line/title.maquette.png"
    ]
   },
   "factory-line:title-night": {
-   "hash": "c4f979f537773ba8",
+   "hash": "8fe2af5fd7f46bb8",
    "files": [
     "scenes/factory-line/title.night.png"
    ]
   },
   "factory-line:ui-frames-menu-left-night": {
-   "hash": "11e0c67b75eb153a",
+   "hash": "e4aa38e3a77f0275",
    "files": [
     "scenes/factory-line/ui/menu-left-night.frames"
    ]
   },
   "factory-line:ui-frames-menu-right-maquette": {
-   "hash": "aae8168079c09364",
+   "hash": "027460c2e1a6e522",
    "files": [
     "scenes/factory-line/ui/menu-right-maquette.frames"
    ]
   },
   "factory-line:ui-frames-menu-right-night": {
-   "hash": "018dc85b4cbaedc9",
+   "hash": "f353434c47875c4e",
    "files": [
     "scenes/factory-line/ui/menu-right-night.frames"
    ]
   },
   "factory-line:ui-frames-title-night": {
-   "hash": "a058b9dce13023fa",
+   "hash": "a9cd5f3cc935dabf",
    "files": [
     "scenes/factory-line/ui/title-night.frames"
    ]
   },
   "factory-line:ui-still-menu-left-night": {
-   "hash": "fbd424fb5dc238b7",
+   "hash": "eea22ab00285f74b",
    "files": [
     "scenes/factory-line/ui/menu-left-night.png"
    ]
   },
   "factory-line:ui-still-menu-right-maquette": {
-   "hash": "145390efb0b99c50",
+   "hash": "d1ac2c6469fb2a45",
    "files": [
     "scenes/factory-line/ui/menu-right-maquette.png"
    ]
   },
   "factory-line:ui-still-menu-right-night": {
-   "hash": "21ab16fdec2a03d6",
+   "hash": "3a97bc7e11b4b8cd",
    "files": [
     "scenes/factory-line/ui/menu-right-night.png"
    ]
   },
   "factory-line:ui-still-title-night": {
-   "hash": "5854596c6778fe50",
+   "hash": "ca69df0e3251af67",
    "files": [
     "scenes/factory-line/ui/title-night.png"
    ]
   },
   "foundry:card": {
-   "hash": "74d827082b5f9551",
+   "hash": "700de2d1b8b844cb",
    "files": [
     "models/foundry/foundry.night.png"
    ]
   },
   "foundry:glb": {
-   "hash": "d3c5f31042bd4a70",
+   "hash": "2cf8eb449c3096d1",
    "files": [
     "models/foundry/foundry.glb"
    ]
   },
   "foundry:icon": {
-   "hash": "bcbfebcb539120cf",
+   "hash": "aae3bf6a8e2fdbee",
    "files": [
     "models/foundry/foundry.icon.png"
    ]
   },
   "foundry:sheet": {
-   "hash": "33af7ce068ab6f8e",
+   "hash": "d3937178cc3dc545",
    "files": [
     "models/foundry/foundry.sheet.png"
    ]
   },
   "foundry:svg": {
-   "hash": "1f9c93c104da4dd3",
+   "hash": "492e13f548193b89",
    "files": [
     "models/foundry/foundry.anim.svg"
    ]
   },
   "foundry:turntable": {
-   "hash": "37a98b96d8c229db",
+   "hash": "587affd39bb54679",
    "files": [
     "models/foundry/foundry.turntable.mp4",
     "models/foundry/foundry.turntable.webp"
    ]
   },
   "miner:card": {
-   "hash": "0e5a79afb05a3955",
+   "hash": "faf2fbcf3973b267",
    "files": [
     "models/miner/miner.night.png"
    ]
   },
   "miner:glb": {
-   "hash": "79f4b9d61fc9bed3",
+   "hash": "c22831ac1fb0cafb",
    "files": [
     "models/miner/miner.glb"
    ]
   },
   "miner:icon": {
-   "hash": "2dc168a83cd457cb",
+   "hash": "82613bcf72973f01",
    "files": [
     "models/miner/miner.icon.png"
    ]
   },
   "miner:sheet": {
-   "hash": "b91befbcaa205e91",
+   "hash": "03e375c36129c7db",
    "files": [
     "models/miner/miner.sheet.png"
    ]
   },
   "miner:svg": {
-   "hash": "dc70b338bf8409e6",
+   "hash": "4c97055856fbf70e",
    "files": [
     "models/miner/miner.anim.svg"
    ]
   },
   "miner:turntable": {
-   "hash": "20db25e8ce493a1c",
+   "hash": "0c0279a2a3682b2d",
    "files": [
     "models/miner/miner.turntable.mp4",
     "models/miner/miner.turntable.webp"
    ]
   },
   "smelter:card": {
-   "hash": "90ddff5f46fb5734",
+   "hash": "340294834bf9e4a6",
    "files": [
     "models/smelter/smelter.night.png"
    ]
   },
   "smelter:glb": {
-   "hash": "a59d0d74e1834965",
+   "hash": "75c765eb6a7db333",
    "files": [
     "models/smelter/smelter.glb"
    ]
   },
   "smelter:icon": {
-   "hash": "9e3669bd54b28567",
+   "hash": "4b1e157fea1adab0",
    "files": [
     "models/smelter/smelter.icon.png"
    ]
   },
   "smelter:sheet": {
-   "hash": "d4d5ddda96c5fb36",
+   "hash": "1850bef4282e4fda",
    "files": [
     "models/smelter/smelter.sheet.png"
    ]
   },
   "smelter:svg": {
-   "hash": "33b4edfc496142c8",
+   "hash": "826d58784dce2bf6",
    "files": [
     "models/smelter/smelter.anim.svg"
    ]
   },
   "smelter:turntable": {
-   "hash": "31dc277297666f3d",
+   "hash": "bb76a5f141869857",
    "files": [
     "models/smelter/smelter.turntable.mp4",
     "models/smelter/smelter.turntable.webp"
    ]
   },
   "space-elevator:card": {
-   "hash": "c3b8acbab21a2bfb",
+   "hash": "3e657d217329ec8c",
    "files": [
     "models/space-elevator/space-elevator.night.png"
    ]
   },
   "space-elevator:glb": {
-   "hash": "01d6d11c9eebe80c",
+   "hash": "c6bb2b34bab62338",
    "files": [
     "models/space-elevator/space-elevator.glb"
    ]
   },
   "space-elevator:icon": {
-   "hash": "984fe6b8123cefdd",
+   "hash": "e172f5e6eb292c94",
    "files": [
     "models/space-elevator/space-elevator.icon.png"
    ]
   },
   "space-elevator:sheet": {
-   "hash": "07eeb237015d9a3c",
+   "hash": "9888f9b92002eb83",
    "files": [
     "models/space-elevator/space-elevator.sheet.png"
    ]
   },
   "space-elevator:svg": {
-   "hash": "9bf4afe1020752a8",
+   "hash": "80fd78f8af17c310",
    "files": [
     "models/space-elevator/space-elevator.anim.svg"
    ]
   },
   "space-elevator:turntable": {
-   "hash": "68e194e858f86a68",
+   "hash": "8cced2bcbdcbee80",
    "files": [
     "models/space-elevator/space-elevator.turntable.mp4",
     "models/space-elevator/space-elevator.turntable.webp"
