@@ -39,3 +39,9 @@ Open a model live: serve the repo root (`npx serve .`) and visit
 
 Rules: free tools only (Blockbench, three.js, Playwright, ffmpeg; GitHub-hosted CI on a public
 repo). Fonts are OFL and vendored in `ui/fonts/`. The logo is `brand/crafting-table.png`.
+
+## License
+
+Code: [MIT](LICENSE), (c) Brian Perret and Arffornia contributors.
+Original art: [CC BY 4.0](LICENSE-ASSETS); credit "Brian Perret and Arffornia contributors".
+Minecraft material stays with Mojang and Microsoft. NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
