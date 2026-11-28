@@ -18,7 +18,8 @@ nothing committed yet. The method is the skill `.claude/skills/machine-model/SKI
 4. **Bench** (to improve the skill): `tools/pix/bench/bench.mjs ref|score` reproduces Oritech machines (CC0)
    from images only and measures the gap.
 
-No Blockbench app or MCP is used yet; nothing has been seen in game (no GeckoLib export).
+No Blockbench app or MCP is used yet. GeckoLib export: `node tools/pix/geckolib.mjs <id> [--name <asset>]`
+(`out/geckolib/<id>/`); S1 is wired in game as the tier-0 Smelter (Arffornia_Mods #66).
 On NixOS set `CHROME_PATH=/etc/profiles/per-user/brian/bin/google-chrome-stable` for every render.
 
 ## 2026-11-08: first autonomous batch and documentation
@@ -81,6 +82,6 @@ Concept images: `out/concepts/r2/` (smelter variants, tier variants), `out/conce
   inside compounds.
 - Open a `.bbmodel` in the Blockbench app to confirm it loads; consider Blockbench MCP (sosadly/blockbench-mcp)
   for manual touch-ups and GeckoLib export.
-- GeckoLib exporter and an in-game check (depends on the machine framework decision, Mods issue #17).
+- In-game check of S1 by Brian (the exporter exists: `tools/pix/geckolib.mjs`).
 - Shared tooling changes on this branch: `tools/da/kit.mjs` (texel density per model), `tools/lint/checks.mjs`
   (per-model texel target), `tools/view/driver.mjs` (`CHROME_PATH`); `npm test` passes (15/15).

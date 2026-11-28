@@ -21,7 +21,8 @@ for (const b of g.bones) {
       faces = { east: [u, v + d, u + d, v + d + h], north: [u + d, v + d, u + d + w, v + d + h], west: [u + d + w, v + d, u + 2 * d + w, v + d + h], south: [u + 2 * d + w, v + d, u + 2 * d + 2 * w, v + d + h], up: [u + d + w, v + d, u + d, v], down: [u + d + 2 * w, v, u + d + w, v + d] };
       if (mir) for (const k in faces) { const f = faces[k]; faces[k] = [f[2], f[1], f[0], f[3]]; }
     } else {
-      faces = {}; for (const [k, f] of Object.entries(c.uv || {})) faces[k] = [f.uv[0], f.uv[1], f.uv[0] + f.uv_size[0], f.uv[1] + f.uv_size[1]];
+      // Bedrock stores up/down from their far corner with a negative size (Blockbench's codec): undo it
+      faces = {}; for (const [k, f] of Object.entries(c.uv || {})) { const flip = k === 'up' || k === 'down'; const [u, v] = flip ? [f.uv[0] + f.uv_size[0], f.uv[1] + f.uv_size[1]] : f.uv; const [w, h] = flip ? [-f.uv_size[0], -f.uv_size[1]] : f.uv_size; faces[k] = [u, v, u + w, v + h]; }
     }
     const el = { name: `${b.name}_c`, from, to, uuid: id(), type: 'cube', faces: {} };
     for (const [k, uv] of Object.entries(faces)) el.faces[k] = { uv, texture: 0 };

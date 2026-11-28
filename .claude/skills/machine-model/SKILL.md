@@ -109,6 +109,7 @@ Rules:
 |---|---|
 | `tools/pix/lab.sh <seed> <dir> "<prompt>"` | One concept image on Brian's GPU (image-generation-lab, `qwen21-q4`, ~30 s). |
 | `node tools/pix/build.mjs <id>` | Builds `tools/pix/machines/<id>.mjs` into `concepts/pix/<id>/`, lints it, renders two views to `out/pix/<id>/sheet.jpg`. |
+| `node tools/pix/geckolib.mjs <id> [--name <asset>]` | The built `.bbmodel` as GeckoLib files in `out/geckolib/<id>/` (geo, animations, texture, glowmask) for the mod. Only linear and catmullrom keyframes; an `idle` animation is what the mod plays while no recipe runs. |
 | `node tools/pix/geo2bb.mjs <geo.json> <png> <out.bbmodel>` | A GeckoLib model as a reference render (Oritech is CC0: `gh api repos/Rearth/Oritech/contents/...`). |
 
 On NixOS, Playwright's own Chromium misses system libraries: set

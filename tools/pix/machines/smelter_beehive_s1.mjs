@@ -150,4 +150,6 @@ export function build(b, { mat: plainMat }) {
     scale: [[0, [1, 1, 1]], [3.3, [1, 1, 1]], [3.55, [0.02, 0.02, 0.02]], [3.65, [0.02, 0.02, 0.02]], [L, [1, 1, 1]]],
   };
   b.anim('working', L, { fire: flicker, tap_door: door, ingot });
+  // idle in game: the fire is out, the door shut, nothing moves (the mod plays it while no recipe runs)
+  b.anim('idle', 1, { fire: { scale: [[0, [0.02, 0.02, 0.02]], [1, [0.02, 0.02, 0.02]]] } });
 }

@@ -181,8 +181,11 @@ review rounds before Brian validates, and lint errors found on old models by a n
 
 - Not proven by the lint yet: material flowing downhill, fluid levels, the speed of a carried part against the
   rollers that carry it, cam-to-tappet contact, bevel (perpendicular) drives.
-- Not built: GeckoLib export and an in-game check (depends on the machine framework, Mods issue #17), real
-  particles (the `meta.fx` emitters are a contract for the mod), heat haze (needs shaders).
+- GeckoLib export: `node tools/pix/geckolib.mjs <id> [--name <asset>]` writes `out/geckolib/<id>/` (geo, animations,
+  texture, glowmask), following Blockbench's Bedrock codec; the mod copies them into `assets/arffornia/geckolib/`.
+  The Smelter (S1) is the first machine wired in game (Mods #66). The mod plays `working` while a recipe runs and
+  `idle` otherwise.
+- Not built: real particles (the `meta.fx` emitters are a contract for the mod), heat haze (needs shaders).
 - Not validated by Brian: M1 (redesign as a booster ring plus a main ring, Oritech-style modular multiblock),
   T1 (replace with a readable arc furnace).
 
