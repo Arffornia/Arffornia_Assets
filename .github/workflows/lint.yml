@@ -4,10 +4,10 @@
 name: lint
 on:
   pull_request:
-    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'tools/concepts/**', 'render/bbmodel.js']
+    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'tools/concepts/**', 'tools/pix/**', 'render/bbmodel.js']
   push:
     branches: [main]
-    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'tools/concepts/**', 'render/bbmodel.js']
+    paths: ['models/**', 'concepts/**', 'tools/lint/**', 'tools/da/**', 'tools/view/**', 'tools/concepts/**', 'tools/pix/**', 'render/bbmodel.js']
   workflow_dispatch:
 permissions:
   contents: read

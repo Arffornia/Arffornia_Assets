@@ -1,0 +1,51 @@
+#group	ref	title	tier	mechanism	predict
+A	A1	Water-wheel bloomery	0	stone and clay bloomery shaft furnace, an overshot water wheel turns a cam shaft that pumps a big leather bellows into the tuyere, glowing slag runs out a stone channel	
+A	A2	Treadle bellows forge	0	squat brick furnace with a wooden treadle that pumps twin accordion bellows, charcoal baskets, glowing mouth, a tilting crucible on a wooden crane	
+A	A3	Windmill furnace	0	stone furnace tower with a small four-blade windmill on top that drives a fan through a vertical wooden shaft and gears, glowing hearth window	
+A	A4	Catalan forge	0	low stone forge with a water trompe column feeding air, wooden trough of running water, glowing hearth, iron bloom on an anvil beside it	
+A	A5	Clay beehive kiln	0	round domed clay kiln with iron hoops, side stoking door with flames, a chimney, a wooden hand-crank blower box on the side with a spinning fan	
+A	A6	Horse-gin furnace	0	brick furnace driven by a horizontal wooden capstan beam and gear wheel that turns a piston blower, glowing pour spout into sand molds	
+A	A7	Crucible pit furnace	0	stone ring furnace with a crucible lifted by a wooden A-frame winch and chain, glowing molten metal, hand pump bellows	
+A	A8	Tilt-hammer smelter	0	small furnace beside a water-driven trip hammer whose cam lifts a heavy iron hammer onto the bloom, wooden frame	
+A	A9	Stacked brick tower	0	tall narrow brick shaft furnace with iron bands and a ramp of ore carts, flames at the top, a pedal bellows at the base	
+A	A10	Riveted coal box furnace	0	early riveted iron box furnace on legs, coal hopper on top, crank-driven fan blower, firebox door glowing, short chimney	
+B	B1	Rotary kiln drum	2	long rotating steel drum on roller rings tilted on a frame, ring gear driven by a small steam engine, burner at the low end, glowing outlet	
+B	B2	Coke blast furnace	2	riveted steel blast furnace stack with a skip hoist rail feeding the top, hot blast stoves beside it, tap hole pouring molten iron into a channel	
+B	B3	Bessemer converter	2	egg-shaped steel converter on trunnions that tilts on a big gear, sparks shooting out of the mouth, air pipe into the base	
+B	B4	Steam-hammer furnace	2	reheating furnace with a heavy vertical steam hammer frame next to it, pistons, pressure gauge, glowing billets on rollers	
+B	B5	Cupola with skip hoist	2	cylindrical cupola furnace on four legs, inclined rail with a bucket skip climbing to the charge door, tapping spout pouring into a ladle	
+B	B6	Reverberatory furnace	2	long low brick furnace with an arched roof, firebox at one end, tall riveted chimney at the other, side doors with glowing slits, rabble rods	
+B	B7	Puddling furnace	2	brick puddling furnace with a worker-side door and a long iron rabble arm on a pivot stirring the molten pool, chimney, cast iron frame	
+B	B8	Crucible carousel	2	rotating turntable carrying four crucibles under a coal-fired hood, chain drive and gears, one crucible tilting to pour	
+B	B9	Steam-blower furnace	2	brick furnace fed by a large beam engine with a rocking beam and a flywheel blowing air through a riveted duct	
+B	B10	Twin-drum calciner	2	two parallel rotating drums on a shared steel frame, belt drive from a single motor shaft, hoppers above, glowing discharge chutes below	
+C	C1	Electric arc furnace	4	round steel arc furnace vessel with a swing-away roof, three thick graphite electrodes on mast arms that rise and fall, bright arcs inside, cable festoons	
+C	C2	Induction furnace	4	open crucible inside fat copper induction coils, cooling water pipes, a hydraulic tilt cradle, glowing white metal, control cabinet with gauges	
+C	C3	Tilting arc furnace	4	arc furnace on curved rockers that tilts forward to pour through a spout, three electrodes on a gantry, transformer box behind	
+C	C4	Electroslag remelter	4	tall vertical column with a consumable electrode lowered by a screw drive into a water-cooled copper mold, glowing slag band	
+C	C5	Vacuum induction furnace	4	sealed steel chamber with a round viewport and a bolted door, induction coil visible through the window, vacuum pumps and pipes on the side	
+C	C6	Resistance tunnel furnace	4	long insulated tunnel furnace with a roller conveyor carrying ingots through, heating element bars glowing through vents, power busbars on top	
+C	C7	Ladle furnace station	4	steel ladle on a rail car under a roof with electrodes, an overhead crane hook lifting it, argon stirring hoses	
+C	C8	Plasma torch cupola	4	compact steel cupola with three plasma torches angled into its sides, cooling hoses, bright blue-white flames, clean housings	
+C	C9	Coil stack smelter	4	vertical stack of three induction coil rings with crucibles moving up on a lift, cable trays, status lights	
+C	C10	Twin electrode tower	4	two tall electrode towers on either side of a crucible with a bright arc bridging them, insulators and busbars, protective cage	
+D	D1	Glass-crucible smelter	7	crucible visible through large glass panels, molten metal circulating in clear glass pipes to a cooling tank, teal screens	
+D	D2	Robotic foundry cell	7	enclosed furnace with a robot arm pouring from a crucible into a conveyor of molds, sensor heads, glass sides, teal status lights	
+D	D3	Centrifugal casting furnace	7	furnace feeding a spinning horizontal mold drum behind glass, flywheel and motor, molten metal spraying into the spinning mold	
+D	D4	Liquid metal loop	7	furnace core with molten metal pumped through glass tubes in a loop through a heat exchanger and tanks, gauges, screens	
+D	D5	Zone refining column	7	tall glass column with a heating ring travelling up and down a rod of metal, glowing band, control console with screens	
+D	D6	Electron beam furnace	7	vacuum chamber with an electron gun on top shooting a beam into a water-cooled hearth, glass viewport, teal lights	
+D	D7	Microwave smelter	7	boxy chamber with waveguide pipes feeding into it, magnetron modules on the sides, glowing interior through glass, monitoring screens	
+D	D8	Laser melting bed	7	enclosed chamber with several laser heads on a gantry focusing beams onto a glowing pool, glass enclosure, screens	
+D	D9	Fluidised bed furnace	7	tall glass reactor with glowing particles bubbling inside, blowers underneath, pipes and sensors, teal light	
+D	D10	Hydraulic press furnace	7	furnace integrated with a big hydraulic press that squeezes glowing ingots, glass guards, cylinders, readout screens	
+E	E1	Plasma torus furnace	9	ring-shaped torus chamber with violet plasma swirling inside, magnetic coil segments around it, crucible at the centre receiving a beam	
+E	E2	Levitation melter	9	metal blob levitating and glowing inside a cage of copper coils behind glass, field emitters, violet energy conduits	
+E	E3	Solar concentrator furnace	9	array of mirror panels on arms focusing a beam into a ceramic crucible on a tower, sun-bright glow, white and orange	
+E	E4	Star core forge	9	spherical containment shell with a tiny bright star inside held by four field emitter arms, metal drips into a mold below	
+E	E5	Particle beam smelter	9	short accelerator ring feeding a beam into a target crucible, violet beam line, magnets along the ring	
+E	E6	Gravity well furnace	9	floating rings stacked around a glowing core that crushes ore into a bright ingot, monolithic white ceramic base	
+E	E7	Matter stream forge	9	ore dissolves into a bright stream of light that flows through a floating ring and condenses into an ingot, white and cyan	
+E	E8	Rotating plasma crucible	9	crucible inside a fast spinning cage of field emitters with a violet plasma column, polished graphite base	
+E	E9	Fusion pellet furnace	9	sealed sphere with laser ports around it firing at a central pellet, bright flash, ceramic shell, cyan and white lights	
+E	E10	Magnetic pinch forge	9	tall cylinder with stacked coil bands that squeeze a plasma column into a bright line, molten metal collected below	

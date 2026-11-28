@@ -124,6 +124,7 @@ export function checkCantilevers(ctx) {
   const { sk, rest, boxes, rules, add, waivedOne, anims } = ctx;
   const worst = new Map();
   const consider = (r, t, anim) => {
+    if (ctx.lightNames && ctx.lightNames.has(r.name)) return;
     const cur = worst.get(r.name);
     const score = Math.max(r.Lpx / Math.max(r.tpx, 1e-6) / rules.cantileverMax, r.stress / rules.seatStressMax);
     if (!cur || score > cur.score) worst.set(r.name, { ...r, t, anim, score });
@@ -188,12 +189,15 @@ function spin(ctx, w, an) {
   if (!el.mover) return 0;
   const L = an.length || 0; if (L <= 0) return 0;
   const k = Math.max(2, Math.ceil(L * rules.sweepHz));
-  let prev = null, total = 0;
+  let prev = null, total = 0, col = -1;
   const ref = new THREE.Vector3();
   for (let s = 0; s <= k; s++) {
     poseAt(sk, Math.min((s / k) * L, L - 1e-6), an.name);
     const m = el.obj.matrixWorld; const cols = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]; m.extractBasis(...cols);
-    const v = cols.map((u) => u.normalize()).sort((a, b) => Math.abs(a.dot(w.axis)) - Math.abs(b.dot(w.axis)))[0];
+    cols.forEach((u) => u.normalize());
+    // pick the reference column once: re-picking per frame jumps between two equally perpendicular columns
+    if (col < 0) col = [0, 1, 2].sort((a, b) => Math.abs(cols[a].dot(w.axis)) - Math.abs(cols[b].dot(w.axis)))[0];
+    const v = cols[col];
     ref.copy(v).addScaledVector(w.axis, -v.dot(w.axis)).normalize();
     if (prev) { const a = Math.atan2(prev.clone().cross(ref).dot(w.axis), prev.dot(ref)); total += a; }
     prev = ref.clone();
@@ -279,7 +283,58 @@ export function checkBelts(ctx) {
     // pitch radius: the given one, or the apothem (the teeth are the parts outside it)
     const C = a.c.clone().sub(b.c).addScaledVector(a.axis, -a.c.clone().sub(b.c).dot(a.axis)).length();
     if (Math.abs(C - (a.r + b.r)) > tol * 2) add('belt', 'error', `${what}: centres are ${px(C)} px apart, pitch radii add to ${px(a.r + b.r)} px; the teeth ${C > a.r + b.r ? 'do not reach each other' : 'cut into each other'}.`, [g.a, g.b]);
+    // meshing gears share one tooth pitch (arc length per tooth on the pitch circle); otherwise the teeth
+    // cannot fit into each other, whatever the radii
+    if (g.ta && g.tb) {
+      const pa = (2 * Math.PI * a.r) / g.ta, pb = (2 * Math.PI * b.r) / g.tb;
+      if (Math.abs(pa - pb) > 0.05 * Math.max(pa, pb)) add('belt', 'error', `${what}: tooth pitch ${px(pa)} px vs ${px(pb)} px (${g.ta} and ${g.tb} teeth); meshing gears need the same pitch, so teeth must be in the ratio of the radii (${(a.r / b.r).toFixed(2)}).`, [g.a, g.b]);
+    }
     speedCheck(what, a, b, -1, (w) => w.r);
+  }
+
+  // Drivetrain: every part that keeps turning in a working loop must be driven, through declared gears,
+  // belts or drives (a closed gearbox: { a, b, ratio, via }), from a power source: a rotation port's `bone`
+  // or a meta.sources entry ({ bone, why }). A drive's ratio (signed, b turns per a turn) is measured.
+  for (const d of meta.drives || []) {
+    const what = `drive ${d.a}->${d.b}${d.via ? ` (${d.via})` : ''}`;
+    const a = wheel(ctx, { part: d.a, axis: (meta.joints || {})[d.a]?.axis }), b = wheel(ctx, { part: d.b, axis: (meta.joints || {})[d.b]?.axis });
+    if (!a || !b) { add('drivetrain', 'error', `${what}: ${!a ? d.a : d.b} matches no element, compound or bone.`); continue; }
+    if (typeof d.ratio !== 'number') { add('drivetrain', 'error', `${what}: needs a numeric ratio (turns of ${d.b} per turn of ${d.a}, negative when it reverses).`); continue; }
+    for (const an of anims) {
+      const wa = spin(ctx, a, an), wb = spin(ctx, b, an) * Math.sign(a.axis.dot(b.axis) || 1);
+      if (Math.abs(wa) < 1e-3 && Math.abs(wb) < 1e-3) continue;
+      const got = Math.abs(wa) < 1e-3 ? Infinity : wb / wa;
+      if (Math.abs(got - d.ratio) > 0.05 * Math.abs(d.ratio) + 1e-3) add('drivetrain', 'error', `${what} (${an.name}): ${d.b} turns ${Number.isFinite(got) ? got.toFixed(2) : 'while the input stands still'} per turn of ${d.a}; the declared ratio is ${d.ratio}.`, [d.a, d.b], { anim: an.name });
+    }
+  }
+  const sources = [...(meta.ports || []).filter((p) => p.kind === 'rotation' && p.bone).map((p) => p.bone), ...(meta.sources || []).map((x) => x.bone)];
+  for (const x of meta.sources || []) if (!x.why) add('drivetrain', 'error', `source ${x.bone}: an internal power source needs a why (what turns it).`);
+  const working = anims.filter((an) => /^(working|idle|run)/i.test(an.name));
+  // a spinner keeps turning relative to its parent: a crucible that only tilts on a turning carousel is not one
+  const localTurns = (bn, axis, an) => {
+    const bone = ctx.sk.bones.get(bn); if (!bone) return 0;
+    const k = Math.max(2, Math.ceil((an.length || 0) * rules.sweepHz)), ax = AXES[axis] ?? 0; let prev = null, total = 0;
+    for (let s = 0; s <= k; s++) {
+      poseAt(ctx.sk, Math.min((s / k) * an.length, an.length - 1e-6), an.name);
+      const q = bone.quaternion, v = [q.x, q.y, q.z][ax], a = 2 * Math.atan2(v, q.w);
+      if (prev !== null) { let d = a - prev; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; total += d; }
+      prev = a;
+    }
+    return Math.abs(total) / (2 * Math.PI);
+  };
+  const spinners = Object.entries(meta.joints || {}).filter(([, j]) => j.type === 'revolute').map(([bn, j]) => ({ bn, j }))
+    .filter(({ bn, j }) => working.some((an) => localTurns(bn, j.axis, an) >= 0.95));
+  if (spinners.length) {
+    const edges = new Map();
+    const link = (x, y) => { for (const [p, q] of [[x, y], [y, x]]) { if (!edges.has(p)) edges.set(p, new Set()); edges.get(p).add(q); } };
+    const boneOf = (part) => { const el = rest.find((o) => o.name === part || stemOf(o.name) === part); if (!el) return part; let n = ctx.sk.elements[rest.indexOf(el)].obj.parent; while (n) { if (meta.joints && meta.joints[n.name]) return n.name; n = n.parent; } return part; };
+    for (const g of meta.gears || []) link(boneOf(g.a), boneOf(g.b));
+    for (const d of meta.drives || []) link(boneOf(d.a), boneOf(d.b));
+    for (const bt of meta.belts || []) { const ps = (bt.pulleys || []).map((p) => boneOf(typeof p === 'string' ? p : p.part)); for (let i = 1; i < ps.length; i++) link(ps[0], ps[i]); }
+    const reached = new Set(sources); const stack = [...sources];
+    while (stack.length) { const n = stack.pop(); for (const m of edges.get(n) || []) if (!reached.has(m)) { reached.add(m); stack.push(m); } }
+    if (!sources.length) add('drivetrain', 'warn', `${spinners.length} part(s) turn but no power source is declared: give the rotation port a \`bone\`, or add meta.sources with a why.`);
+    else for (const { bn } of spinners) if (!reached.has(bn)) add('drivetrain', 'error', `${bn} turns in the working loop but nothing drives it: link it to a power source through meta.gears, meta.belts or meta.drives.`, [bn]);
   }
 }
 
@@ -353,8 +408,19 @@ export function checkKinematics(ctx) {
     const snap = (t) => { poseAt(sk, Math.max(0, Math.min(t, L - 1e-6)), an.name); return obbs(sk).map((o) => corners(o)); };
     const moved = (A, Bc) => { let m = 0, who = -1; A.forEach((cs, i) => cs.forEach((c, q) => { const d = c.distanceTo(Bc[i][q]); if (d > m) { m = d; who = i; } })); return { m, who }; };
     if (L > 0) {
+      // a work piece that respawns (joint free + respawn: true) may teleport, but only while hidden (scaled to 5% or less)
+      const boneOfEl = (i) => { let n = sk.elements[i].obj.parent; while (n) { if (joints[n.name]) return n.name; n = n.parent; } return null; };
+      const respawn = new Set(sk.elements.map((_, i) => i).filter((i) => { const bn = boneOfEl(i); return bn && joints[bn].type === 'free' && joints[bn].respawn; }));
+      const keepOut = (A) => A.map((cs, i) => (respawn.has(i) ? cs.map(() => new THREE.Vector3()) : cs));
       let prev = snap(0); let jump = null;
-      for (let s = 1; s <= k; s++) { const t = (s / k) * L; const cur = snap(t); const { m, who } = moved(prev, cur); if (m > rules.maxJumpPx * PX && (!jump || m > jump.m)) jump = { m, who, t }; prev = cur; }
+      for (let s = 1; s <= k; s++) {
+        const t = (s / k) * L; const cur = snap(t);
+        for (const i of respawn) {
+          const d = Math.max(...cur[i].map((c, q) => c.distanceTo(prev[i][q])));
+          if (d > rules.maxJumpPx * PX && sk.elements[i].obj.getWorldScale(new THREE.Vector3()).length() > 0.05 * Math.sqrt(3)) add('kinematics', 'error', `${an.name}: ${sk.elements[i].name} respawns ${px(d)} px away at ${fmtT(t)} while visible; scale it below 5% first.`, [sk.elements[i].name], { anim: an.name, t });
+        }
+        const { m, who } = moved(keepOut(prev), keepOut(cur)); if (m > rules.maxJumpPx * PX && (!jump || m > jump.m)) jump = { m, who, t }; prev = cur;
+      }
       if (jump) add('kinematics', 'error', `${an.name}: ${sk.elements[jump.who].name} jumps ${px(jump.m)} px in one 1/${rules.sweepHz} s step at ${fmtT(jump.t)}; real parts accelerate (no step keys, no teleport).`, [sk.elements[jump.who].name], { anim: an.name, t: jump.t });
       if (an.loop === 'loop' || an.loop === true) {
         // the seam: the pose just before the end against the pose at 0, minus one step of normal motion

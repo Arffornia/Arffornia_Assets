@@ -1,0 +1,22 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: sequence
+title: "Arffornia · Machine pipeline · How does it upgrade itself?"
+subtitle: "Where each kind of finding lands, so the next machine starts from a better pipeline."
+meta:
+  - "Real cases from November 2026: S3 drum too flat, F3 belts, a pinion cutting the ring gear, the GIF strobe."
+  - "Out of scope: the content of the rules themselves (see SKILL.md and docs/MACHINE-PIPELINE.md)."
+  - "v0.1 · source: docs/architecture/machine-pipeline"
+participants: [brian, claude, skill, lint, module, memory, status]
+steps:
+  - {id: taste, from: brian, to: claude, over: c-brian-claude, text: "taste: no belts, wooden cam, richer textures"}
+  - {id: rule, from: claude, to: skill, over: c-claude-skill, text: "rule in 'Brian's review rules'"}
+  - {id: mem, from: claude, to: memory, over: c-claude-memory, text: "feedback memory, with the why"}
+  - {id: bug, from: brian, to: claude, over: c-brian-claude, text: "physics: 'the gears collide'"}
+  - {note: claude, text: "reproduce: compute it, find why the lint missed it (a waiver)"}
+  - {id: check, from: claude, to: lint, over: c-claude-lint, text: "new check (tooth pitch) + a failing test first"}
+  - {id: proof, from: lint, to: module, over: c-lint-module, text: "re-run on every model: old bugs surface"}
+  - {reply: proof, text: "fixed in S3, v2, Mk2, Mk3, x4"}
+  - {id: false, from: claude, to: lint, over: c-claude-lint, text: "false positive (tilting crucible on a carousel) → refine the check"}
+  - {id: open, from: claude, to: status, over: c-claude-status, text: "open decisions (palette) and next steps"}
+  - {note: claude, text: "a mechanism without a check is unfinished: add the check before shipping it"}

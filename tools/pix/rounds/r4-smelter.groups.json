@@ -1,0 +1,7 @@
+{
+ "A": { "tier": "Tier 0", "era": "Primitif", "hint": "Pierre, bois, cuir, roue à eau. Alternatives au bas fourneau." },
+ "B": { "tier": "Tier 2", "era": "Industrie lourde", "hint": "Acier riveté, vapeur, feu. Alternatives au four rotatif." },
+ "C": { "tier": "Tier 4", "era": "Ingénierie propre", "hint": "Arcs, induction, câbles. Le créneau du four à arc." },
+ "D": { "tier": "Tier 7", "era": "Contrôle", "hint": "Verre, écrans, fluides visibles." },
+ "E": { "tier": "Tier 8–9", "era": "Endgame", "hint": "Plasma, champs, lumière. Doit encore se lire comme un four." }
+}
